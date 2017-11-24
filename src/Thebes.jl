@@ -14,6 +14,6 @@ export Axes3D, Point3D, Tetrahedron, Cube,   Projection, Model,  Pyramid,
     rotateX, rotateY, rotateZ, rotateto!, rotateto,
     move!,
     drawmodel, modeltopoly,
-    resize!, sortfaces!
+    changescale!, sortfaces!
 
 end # module

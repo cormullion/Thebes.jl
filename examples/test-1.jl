@@ -1,32 +1,35 @@
-using Luxor, Thebes
+using Luxor, Thebes, ColorSchemes
 
 @svg begin
     background("ivory")
-    tiles = Tiler(1200, 1200, 8, 8, margin=25)
+    tiles = Tiler(800, 800, 3, 3, margin=25)
     setopacity(0.9)
     setlinejoin("bevel")
-    persp = Projection(0, 0, Point3D(500, 500, 1200))
-    s = make(Axes3D)
-    @show s
-    resize!(s, 5, 5, 5)
+    persp = Projection(0, 0, Point3D(-120, 120, 800))
+    cube = make(Cube)
+    pyramid = make(Pyramid)
 
-    cols = ["white", "red", "green", "blue", "orange"]
+    changescale!(cube, 50, 50, 50)
+    changescale!(pyramid, 50, 50, 50)
+
+    # rotateto!(pyramid, 0, 0, pi/4)
+    move!(cube, 0, 0, 50)
+
     for (pos, n) in tiles
+        cols = shuffle!(eval(ColorSchemes, schemes[rand(1:end)]))
         @layer begin
-            angleX = rand()
-            angleY = rand()
-            angleZ = rand()
             translate(pos)
-            rotateto!(s, angleX, angleY, angleZ)
-            # move!(s, Point3D(10, 10, 10))
-            # sortfaces!(s)
-            verts, faces = modeltopoly(s, persp)
-            cols=["red"]
-            drawmodel(s, persp, cols, :fill)
-            sethue("black")
-            for pt in verts
-               circle(pt, .15, :fill)
+            for object in [cube, pyramid]
+                # angleX = 2pi * rand()
+                # angleY = 2pi * rand()
+                # angleZ = 2pi * rand()
+
+                # rotateto!(object, pi/5, pi/5, pi/5)
+
+                sortfaces!(object)
+                verts, faces = modeltopoly(object, persp)
+                drawmodel(object, persp, cols, :fill)
             end
         end
     end
-end 500 500
+end 800 800

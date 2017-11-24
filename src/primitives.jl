@@ -45,10 +45,10 @@ const Tetrahedron = (
     [4, 1, 3]])
 
 const Pyramid = ([
-    Point3D(-1, 0, 0),
-    Point3D(0, 1, 0),
-    Point3D(1, 0, 0),
-    Point3D(0, -1, 0),
+    Point3D(-1, -1, 0),
+    Point3D(1, -1, 0),
+    Point3D(1, 1, 0),
+    Point3D(-1, 1, 0),
     Point3D(0, 0, 1)],
    [[1, 2, 3, 4],
     [1, 2, 5],

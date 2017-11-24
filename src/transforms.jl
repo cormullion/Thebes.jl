@@ -75,15 +75,19 @@ function rotateto(m::Model, angleX, angleY, angleZ)
     return rotateto!(mcopy, angleX, angleY, angleZ)
 end
 
-function move!(m::Model, d::Point3D)
+function move!(m::Model, x, y, z)
     for n in 1:length(m.vertices)
         nv = m.vertices[n]
-        m.vertices[n] = Point3D(nv.x + d.x, nv.y + d.y, nv.z + d.z)
+        m.vertices[n] = Point3D(nv.x + x, nv.y + y, nv.z + z)
     end
     return m
 end
 
-function resize!(m::Model, x, y, z)
+"""
+    changescale!(m::Model, x, y, z)
+
+"""
+function changescale!(m::Model, x, y, z)
     for n in 1:length(m.vertices)
         nv = m.vertices[n]
         m.vertices[n] = Point3D(nv.x * x, nv.y * y, nv.z * z)
