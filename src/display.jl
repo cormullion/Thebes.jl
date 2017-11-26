@@ -2,7 +2,7 @@
     sortfaces(m::Model)
 
 Find the averages of the z values of the faces in model, and sort the faces
-of m so that the faces are in order of nearest.
+of m so that the faces are in order of nearest (highest) z?.
 """
 function sortfaces!(m::Model)
     avgs = []
@@ -22,12 +22,19 @@ end
 
 function drawmodel(m::Model, prj::Projection, cols=cols, action=:stroke)
     verts, faces = modeltopoly(m, prj)
-    @layer begin
-        for (n, p) in enumerate(faces)
-            x = mod1(n, length(cols))
-            c = cols[mod1(m.labels[x], length(cols))]
-            sethue(c)
-            poly(p, action, close=true)
+    if !isempty(faces)
+        @layer begin
+            for (n, p) in enumerate(faces)
+                x = mod1(n, length(cols))
+                c = cols[mod1(m.labels[x], length(cols))]
+                sethue(c)
+                poly(p, action, close=true)
+            end
+        end
+    else
+        @layer begin
+            sethue(cols[1])
+            poly(verts, action, close=true)
         end
     end
 end

@@ -5,31 +5,30 @@ using Luxor, Thebes, ColorSchemes
     tiles = Tiler(800, 800, 3, 3, margin=25)
     setopacity(0.9)
     setlinejoin("bevel")
-    persp = Projection(0, 0, Point3D(-120, 120, 800))
+    persp = Projection(1, 0, 0)
     cube = make(Cube)
     pyramid = make(Pyramid)
 
-    changescale!(cube, 50, 50, 50)
-    changescale!(pyramid, 50, 50, 50)
+    carpet = make(Carpet)
+
+    # changescale!(cube, 50, 50, 50)
+
+    move!(carpet, 0, 0, -10)
+    changescale!(carpet, 10, 10, 10)
 
     # rotateto!(pyramid, 0, 0, pi/4)
-    move!(cube, 0, 0, 50)
+    # move!(pyramid, 0, 0, 50)
 
-    for (pos, n) in tiles
-        cols = shuffle!(eval(ColorSchemes, schemes[rand(1:end)]))
-        @layer begin
-            translate(pos)
-            for object in [cube, pyramid]
-                # angleX = 2pi * rand()
-                # angleY = 2pi * rand()
-                # angleZ = 2pi * rand()
+    cols = shuffle!(eval(ColorSchemes, schemes[rand(1:end)]))
+    for object in [carpet, cube, pyramid]
+        # angleX = 2pi * rand()
+        # angleY = 2pi * rand()
+        # angleZ = 2pi * rand()
 
-                # rotateto!(object, pi/5, pi/5, pi/5)
+        # rotateto!(object, pi/5, pi/5, pi/5)
 
-                sortfaces!(object)
-                verts, faces = modeltopoly(object, persp)
-                drawmodel(object, persp, cols, :fill)
-            end
-        end
+        sortfaces!(object)
+        verts, faces = modeltopoly(object, persp)
+        drawmodel(object, persp, cols, :fill)
     end
 end 800 800

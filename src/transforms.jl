@@ -1,3 +1,40 @@
+# """
+#     viewpoint transform, world coords to eyepoint coords
+#
+# """
+# function viewtoeye(rho, theta, phi)
+#     sintheta = sin(theta)
+#     costheta = cos(theta)
+#     sinphi = sin(phi)
+#     cosphi = cos(phi)
+#     return [-sintheta (-costheta * cosphi) (-costheta * sinphi) 0 ;
+#              costheta (-sintheta * cosphi) (-sintheta * sinphi) 0 ;
+#              0         sinphi              -cosphi              0 ;
+#              0         0                   rho                  1 ]
+# end
+# function project1(pt3D::Point3D, proj::Projection)
+#     # transform pt using viewtoeye transform
+#     @show pt3D, proj
+#     newpt = proj.VEM * [pt3D.x, pt3D.y, pt3D.z, 1]
+#
+#     @show newpt
+#     # which returns Float64[]...
+#     d = norm(proj.eyepoint, Point3D(0, 0, 0))
+#     @show d
+#     xs = (d * newpt[1])/newpt[3]
+#     ys = (d * newpt[2])/newpt[3]
+#     @show xs, ys
+#     return Point(xs, ys)
+# end
+
+
+#=
+    factor = fov / (viewer_distance + self.z)
+    x = self.x * factor + win_width / 2
+    y = -self.y * factor + win_height / 2
+
+=#
+
 """
     Convert 3D point to 2D using a perspective projection.
 """
@@ -9,6 +46,10 @@ function project(pt3D::Point3D, proj::Projection)
     return Point(x, y)
 end
 
+"""
+    modeltopoly(m::Model, proj::Projection)
+
+"""
 function modeltopoly(m::Model, proj::Projection)
     vertices2D = Point[]
     for v in m.vertices
