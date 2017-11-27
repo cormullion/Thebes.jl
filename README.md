@@ -1,5 +1,10 @@
 # Thebes
 
+![image](test-2.png)
+
+Nothing to see here...
+
+
 [![Build Status](https://travis-ci.org/cormullion/Thebes.jl.svg?branch=master)](https://travis-ci.org/cormullion/Thebes.jl)
 
 [![Coverage Status](https://coveralls.io/repos/cormullion/Thebes.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/cormullion/Thebes.jl?branch=master)
