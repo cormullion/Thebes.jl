@@ -40,5 +40,3 @@ end
         end
     end
 end
-
-# ["red", "blue", "green", "yellow", "orange", "black"]

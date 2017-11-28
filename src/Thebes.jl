@@ -6,8 +6,8 @@ using Luxor
 # using StaticArrays, CoordinateTransformations
 
 export convertpoint,
-       Point3D, Tetrahedron, Cube,
-       Model, Pyramid, Carpet, AxesWire,
+       Point3D, Model,
+       Cube, Tetrahedron, Pyramid, Carpet,
        make,
        rotateX, rotateY, rotateZ,
        rotateto!, rotateto,
@@ -28,7 +28,7 @@ mutable struct Model
     labels
 end
 
-import Base: +, -, *, /, ^, !=, <, >, ==, norm
+import Base: +, -, !=, <, >, ==, norm
 import Base: size, getindex
 
 function norm(p1::Point3D, p2::Point3D)
@@ -48,7 +48,10 @@ Base.size(::Point3D) = 3
 Base.getindex(p::Thebes.Point3D, i::Int64) = [p.x, p.y, p.z][i]
 Base.convert(::Type{Luxor.Point}, v::AbstractVector) = Luxor.Point(v[1], v[2])
 
-include("samples.jl")
+include("objects.jl")
+
+# don't load all these
+# include("moreobjects.jl")
 
 function convertpoint(pt3D::Point3D, camerapoint::Point3D)
     focallength = norm(camerapoint, Point3D(0, 0, 0))
@@ -97,10 +100,10 @@ Find the averages of the z values of the faces in model, and sort the faces
 of m so that the faces are in order of nearest (highest) z?.
 """
 function sortfaces!(m::Model)
-    avgs = []
+    avgs = Float64[]
     for f in m.faces
         vs = m.vertices[f]
-        s = 0
+        s = 0.0
         for v in vs
             s += v.z
         end

@@ -5,6 +5,8 @@ Eg
 
     make(Cube)
 
+returns a Model object containing an array of vertices, and array of faces,
+and an array of labels.
 """
 function make(vf)
     # don't redefine constants when passed an array :)
@@ -58,42 +60,20 @@ const Pyramid = ([
 
 const AxesWire = (
     [
-Point3D(0.0, 0.0, 0.0),
-Point3D(10.0, 0.0, 0.0),
-Point3D(0.0, 0.0, 0.0),
-Point3D(0.0, 10.0, 0.0),
-Point3D(0.0, 0.0, 0.0),
-Point3D(0.0, 0.0, 10.0),
-Point3D(0.0, 0.0, 0.0)
+    Point3D(0.0, 0.0, 0.0),
+    Point3D(10.0, 0.0, 0.0),
+    Point3D(0.0, 0.0, 0.0),
+    Point3D(0.0, 10.0, 0.0),
+    Point3D(0.0, 0.0, 0.0),
+    Point3D(0.0, 0.0, 10.0),
+    Point3D(0.0, 0.0, 0.0)
     ], [])
 
 const Carpet = (
-[
-Point3D(-10.0, -10.0, 0.0),
-Point3D(-10.0, 10.0, 0.0),
-Point3D(10.0, 10.0, 0.0),
-Point3D(10.0, -10.0, 0.0)
-],
-[
-[1, 2, 3, 4]
-])
-
-const Octahedron = (
-[
-Point3D( 0.0,  0.0,  1.0),
-Point3D( 1.0,  0.0,  0.0),
-Point3D( 0.0,  1.0,  0.0),
-Point3D(-1.0,  0.0,  0.0),
-Point3D( 0.0, -1.0,  0.0),
-Point3D( 0.0,  0.0, -1.0)
-]
-,
-[[2, 1, 5],
- [5, 1, 4],
- [4, 1, 3],
- [3, 1, 2],
- [2, 6, 3],
- [3, 6, 4],
- [4, 6, 5],
- [5, 6, 2]]
-)
+    [
+    Point3D(-10.0, -10.0, 0.0),
+    Point3D(-10.0, 10.0, 0.0),
+    Point3D(10.0, 10.0, 0.0),
+    Point3D(10.0, -10.0, 0.0)
+    ],
+    [[1, 2, 3, 4]])
