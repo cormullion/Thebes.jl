@@ -1,20 +1,4 @@
-"""
-    make(primitive)
-
-Eg
-
-    make(Cube)
-
-returns a Model object containing an array of vertices, and array of faces,
-and an array of labels.
-"""
-function make(vf)
-    # don't redefine constants when passed an array :)
-    vertices = deepcopy(vf[1])
-    faces    = deepcopy(vf[2])
-    labels   = collect(1:length(faces))
-    return Model(vertices, faces, labels)
-end
+# just the basics, Cube, Tetrahedron, Pyramid, AxesWire, Carpet
 
 const Cube = (
    [

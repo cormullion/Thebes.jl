@@ -1,6 +1,12 @@
 # original .OFF objects designed by Ryan Holmes
 # http://www.holmes3d.net/graphics/
 
+# boxcube, boxtorus, concave, cone, crossshape, cube, cuboctahedron, dodecahedron , geodesic, helix2,
+# icosahedron, icosidodecahedron, octahedron, octtorus, rhombicosidodecahedron,
+# rhombicuboctahedron, rhombitruncated_cubeoctahedron, rhombitruncated_icosidodecahedron,
+# snub_cube, snub_dodecahedron, sphere2, tet3d, tetrahedron, triangle, truncated_cube,
+# truncated_dodecahedron, truncated_icosahedron, truncated_octahedron, truncated_tetrahedron
+
 boxcube = (Point3D[Point3D(-0.5, 0.5, 0.5),
 Point3D(0.5, 0.5, 0.5),
 Point3D(0.5, -0.5, 0.5),
@@ -494,7 +500,7 @@ Point3D(-1.21412, -0.0, -1.58931),
 Point3D(-0.375185, 1.1547, -1.58931),
 Point3D(0.982247, 0.713644, -1.58931)], Array{Int64,1}[[1, 2, 3, 4, 5], [1, 6, 11, 7, 2], [2, 7, 12, 8, 3], [3, 8, 13, 9, 4], [4, 9, 14, 10, 5], [5, 10, 15, 6, 1], [16, 11, 6, 15, 20], [17, 12, 7, 11, 16], [18, 13, 8, 12, 17], [19, 14, 9, 13, 18], [20, 15, 10, 14, 19], [20, 19, 18, 17, 16]])
 
-epcot = (Point3D[Point3D(1.045, -0.069, 0.069),
+geodesic = (Point3D[Point3D(1.045, -0.069, 0.069),
 Point3D(1.0, -0.0, 0.0),
 Point3D(0.981, -0.195, 0.0),
 Point3D(0.981, -0.0, 0.195),

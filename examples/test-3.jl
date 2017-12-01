@@ -2,14 +2,14 @@ using Thebes, Luxor
 
 using ColorSchemes
 
-
 @svg begin
     background("azure")
     setopacity(0.95)
     camerapoint = Point3D(200, 200, 400)
     setline(0.3)
+    colors = shuffle!(eval(ColorSchemes, schemes[rand(1:end)]))
     for k in 1:4:20
-        colors = shuffle!(eval(ColorSchemes, schemes[rand(1:end)]))
+        colors = ColorSchemes.leonardo
         @show length(colors)
         for i in 1:20
             object = make(Pyramid)

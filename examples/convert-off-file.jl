@@ -28,19 +28,20 @@ end
 iobuffer = IOBuffer()
 
 cd(expanduser("/tmp/geometry"))
+
 for f in ["boxcube.off", "boxtorus.off", "concave.off", "cone.off", "cross.off", "cube.off",
-"cuboctahedron.off", "dodecahedron.off", "epcot.off", "helix2.off", "icosahedron.off",
+"cuboctahedron.off", "dodecahedron.off", "geodesic.off", "helix2.off", "icosahedron.off",
 "icosidodecahedron.off", "octahedron.off", "octtorus.off", "rhombicosidodecahedron.off",
 "rhombicuboctahedron.off", "rhombitruncated_cubeoctahedron.off",
 "rhombitruncated_icosidodecahedron.off", "snub_cube.off", "snub_dodecahedron.off",
 "sphere2.off", "tet3d.off", "tetrahedron.off", "triangle.off", "truncated_cube.off",
 "truncated_dodecahedron.off", "truncated_icosahedron.off", "truncated_octahedron.off",
 "truncated_tetrahedron.off"]
-fname, _ = splitext(f)
-object = convert_off_file(f)
-println(iobuffer, fname, " ", object)
+    fname, _ = splitext(f)
+    object = convert_off_file(f)
+    println(iobuffer, fname, " ", object)
 end
 
 open("/tmp/objects.txt", "w") do f
-        write(f, String(take!(iobuffer)))
+    write(f, String(take!(iobuffer)))
 end

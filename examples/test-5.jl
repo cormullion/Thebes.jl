@@ -2,13 +2,13 @@ using Thebes
 
 include(Pkg.dir() * "/Thebes/src/moreobjects.jl")
 
-moreobjects = [boxcube, boxtorus, concave, cone, crossshape, cube, cuboctahedron, dodecahedron , epcot, helix2,
+moreobjects = [boxcube, boxtorus, concave, cone, crossshape, cube, cuboctahedron, dodecahedron , geodesic, helix2,
 icosahedron, icosidodecahedron, octahedron, octtorus, rhombicosidodecahedron,
 rhombicuboctahedron, rhombitruncated_cubeoctahedron, rhombitruncated_icosidodecahedron,
 snub_cube, snub_dodecahedron, sphere2, tet3d, tetrahedron, triangle, truncated_cube,
 truncated_dodecahedron, truncated_icosahedron, truncated_octahedron, truncated_tetrahedron]
 
-objectnames = ["boxcube", "boxtorus", "concave", "cone", "crossshape", "cube", "cuboctahedron", "dodecahedron", "epcot", "helix2",
+objectnames = ["boxcube", "boxtorus", "concave", "cone", "crossshape", "cube", "cuboctahedron", "dodecahedron", "geodesic", "helix2",
 "icosahedron", "icosidodecahedron", "octahedron", "octtorus", "rhombicosidodecahedron",
 "rhombicuboctahedron", "rhombitruncated_cubeoctahedron", "rhombitruncated_icosidodecahedron",
 "snub_cube", "snub_dodecahedron", "sphere2", "tet3d", "tetrahedron", "triangle", "truncated_cube",

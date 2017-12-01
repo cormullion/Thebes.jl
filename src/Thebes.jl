@@ -1,12 +1,15 @@
 __precompile__(true)
 
+"""
+    throwaway experiments in 2.5D graphics
+"""
 module Thebes
 
 using Luxor
 # using StaticArrays, CoordinateTransformations
 
 export convertpoint,
-       Point3D, Model,
+       Point3D, Model, AxesWire,
        Cube, Tetrahedron, Pyramid, Carpet,
        make,
        rotateX, rotateY, rotateZ,
@@ -26,6 +29,27 @@ mutable struct Model
     vertices::Vector{Point3D}
     faces
     labels
+    name::String
+end
+
+"""
+    make(primitive, name="unnamed")
+
+`primitive` is a variable holding the two arrays.
+
+Eg
+
+    make(Cube, "cube")
+
+returns a Model object containing an array of vertices, and array of faces,
+and an array of labels.
+"""
+function make(vf, name="unnamed")
+    # don't redefine when passed an array
+    vertices = deepcopy(vf[1])
+    faces    = deepcopy(vf[2])
+    labels   = collect(1:length(faces))
+    return Model(vertices, faces, labels, name)
 end
 
 import Base: +, -, !=, <, >, ==, norm
@@ -50,7 +74,7 @@ Base.convert(::Type{Luxor.Point}, v::AbstractVector) = Luxor.Point(v[1], v[2])
 
 include("objects.jl")
 
-# don't load all these
+# don't load all these now!
 # include("moreobjects.jl")
 
 function convertpoint(pt3D::Point3D, camerapoint::Point3D)
@@ -96,7 +120,7 @@ end
 """
     sortfaces(m::Model)
 
-Find the averages of the z values of the faces in model, and sort the faces
+find the averages of the z values of the faces in model, and sort the faces
 of m so that the faces are in order of nearest (highest) z?.
 """
 function sortfaces!(m::Model)
@@ -113,25 +137,69 @@ function sortfaces!(m::Model)
     neworder = sortperm(avgs)
     m.faces = m.faces[neworder]
     m.labels = m.labels[neworder]
+    return m
 end
 
-function drawmodel(m::Model, camerapoint::Point3D, action=:stroke; cols=["black", "grey80"])
-    verts, faces = modeltopoly(m, camerapoint)
+function simplerender(vertices, faces, labels, cols)
     if !isempty(faces)
         @layer begin
             for (n, p) in enumerate(faces)
                 x = mod1(n, length(cols))
-                c = cols[mod1(m.labels[x], length(cols))]
+                c = cols[mod1(labels[x], length(cols))]
                 sethue(c)
-                poly(p, action, close=true)
+                poly(p, :fill, close=true)
             end
         end
     else
         @layer begin
             sethue(cols[1])
-            poly(verts, action, close=true)
+            poly(vertices, :stroke, close=true)
         end
     end
+end
+
+"""
+    drawmodel(object, Point3D(100, 100, 100),
+        :fill,
+        cols=["black", "white"],
+        renderfunc = arenderfunction)
+
+draw a model
+
+change default rendering function:
+
+```
+function myrenderfunction(vertices, faces, labels, cols, action=:fill)
+    if !isempty(faces)
+        @layer begin
+            for (n, p) in enumerate(faces)
+                x = mod1(n, length(cols))
+                c = cols[mod1(labels[x], length(cols))]
+                sethue(c)
+                poly(p, action)
+            end
+        end
+    end
+end
+
+o = :cube
+object = make(eval(o), string(o))
+changescale!(object, 15, 15, 15)
+rotateby!(object, object.vertices[1], rand(), rand(), rand())
+sortfaces!(object)
+drawmodel(object, Point3D(100, 100, 100),
+    :fill,
+    cols=[randomhue(), "azure"],
+    renderfunc = myrenderfunction)
+end
+```
+"""
+function drawmodel(m::Model, camerapoint::Point3D, action=:stroke;
+    cols=["black", "grey80"],
+    renderfunc = (v, f, l, c) -> simplerender(v, f, l, c))
+
+    vertices, faces = modeltopoly(m, camerapoint)
+    renderfunc(vertices, faces, m.labels, cols)
 end
 
 function changeposition!(m::Model, x, y, z)
@@ -166,7 +234,7 @@ end
 """
     rotate around x axis
 """
-function rotateX(pt3D, rad)
+function rotateX(pt3D::Point3D, rad)
     cosa = cos(rad)
     sina = sin(rad)
     y = pt3D.y * cosa - pt3D.z * sina
@@ -177,7 +245,7 @@ end
 """
     rotate around y axis
 """
-function rotateY(pt3D, rad)
+function rotateY(pt3D::Point3D, rad)
     cosa = cos(rad)
     sina = sin(rad)
     z = pt3D.z * cosa - pt3D.x * sina
@@ -188,7 +256,7 @@ end
 """
 rotate around z axis to an angle
 """
-function rotateZ(pt3D, rad)
+function rotateZ(pt3D::Point3D, rad)
     cosa = cos(rad)
     sina = sin(rad)
     x = pt3D.x * cosa - pt3D.y * sina
@@ -226,7 +294,7 @@ function rotateby!(m::Model, pt::Point3D, angleX, angleY, angleZ)
     return m
 end
 
-# rotate copy by an angle
+# rotate a copy by an angle
 function rotateby(m::Model, pt::Point3D, angleX, angleY, angleZ)
     mcopy = deepcopy(m)
     return rotateby!(mcopy, pt, angleX, angleY, angleZ)
