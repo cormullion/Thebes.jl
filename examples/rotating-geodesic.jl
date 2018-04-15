@@ -20,12 +20,16 @@ function myrenderfunction(vertices, faces, labels, cols, action=:fill)
 end
 
 function drawgeodesic(object, cpos, cscale, rotx, roty, rotz, cscheme, eased)
-    camerapoint = Point3D(300, 300, 100)
+    eyepoint    = Point3D(1200, 1200, 200)
+    centerpoint = Point3D(0, 0, 0)
+    uppoint     = Point3D(0, 0, 20) # relative to centerpoint
+    newproj     = newprojection(eyepoint, centerpoint, uppoint, 1)
+
     c = changescale!(object, cscale.x, cscale.y, cscale.z)
     changeposition!(c, cpos)
     theta = rescale(eased, 0, 1, 0, 2pi)
     rotateby!(c, Point3D(0, 0, 0), theta, theta, theta)
-    drawmodel(c, camerapoint, :fill, cols=cscheme, renderfunc = myrenderfunction)
+    drawmodel(c, newproj, :fill, cols=cscheme, renderfunc = myrenderfunction)
 end
 
 
@@ -45,9 +49,10 @@ end
 function frame1(scene, framenumber)
     sethue("black")
     setlinejoin("bevel")
-    setopacity(0.5)
+    setopacity(0.6)
     eased_n = scene.easingfunction(framenumber, 0, 1, scene.framerange.stop)
-    drawgeodesic(deepcopy(object), Point3D(0, 0, 0), Point3D(160, 160, 160), 0, 0, 0, cs, eased_n)
+    # object, position, scale, rotation
+    drawgeodesic(deepcopy(object), Point3D(0, 0, 0), Point3D(100, 100, 100), 0, 0, 0, cs, eased_n)
 end
 
 geodesicmovie = Movie(400, 400, "geodesic")

@@ -8,9 +8,10 @@ module Thebes
 using Luxor
 # using StaticArrays, CoordinateTransformations
 
-export convertpoint,
+export project, Projection, newprojection,
        Point3D, Model, AxesWire,
        Cube, Tetrahedron, Pyramid, Carpet,
+       drawcarpet,  drawunitbox, draw3daxes,
        make,
        rotateX, rotateY, rotateZ,
        rotateto!, rotateto,
@@ -19,11 +20,136 @@ export convertpoint,
        drawmodel, modeltopoly,
        changescale!, sortfaces!
 
-struct Point3D
-    x::Float64
-    y::Float64
-    z::Float64
+mutable struct Point3D
+   x::Float64
+   y::Float64
+   z::Float64
 end
+
+mutable struct Projection
+   U::Point3D     #
+   V::Point3D     #
+   W::Point3D     #
+   ue::Float64    #
+   ve::Float64    #
+   we::Float64    #
+   depth::Float64 #
+end
+
+"""
+   newprojection(ipos::Point3D, center::Point3D, up::Point3D, rinv=0.0)
+
+Make a new Projection:
+
+- ipos is the eye position
+- center is the 3D point to appear in the center of the 2D image
+- up is a point that is to appear vertically above the center
+
+The three vectors U, V, W, and the three scalar products, ue, ve, and we:
+
+- u is at right angles to line of sight w, and to t-e, so it corresponds to
+the x axis of the 2D image
+
+- v is at right angles to u and to the line of sight, so it's the y axis of the
+2D image
+
+- w is the line of sight
+
+- we is the projection of the eye position onto w
+
+- ue is the projection of the eye position onto that x-axis
+
+- ve is the projection of the eye position onto that y axis
+"""
+function newprojection(ipos::Point3D, center::Point3D, up::Point3D, depth=0.0)
+
+   # w is the line of sight
+   W = Point3D(center.x - ipos.x, center.y - ipos.y, center.z - ipos.z)
+
+   r = (W.x * W.x) + (W.y * W.y) + (W.z * W.z)
+
+   if r < eps()
+       # info("eye position and center are the same")
+   else
+       # normalise w to unit length
+       rinv = 1/sqrt(r)
+       W.x = W.x * rinv
+       W.y = W.y * rinv
+       W.z = W.z * rinv
+   end
+
+   we = W.x * ipos.x + W.y * ipos.y + W.z * ipos.z # project e on to w
+
+   U = Point3D(W.y * (up.z - ipos.z) - W.z * (up.y - ipos.y),      # u is at right angles to t - e
+               W.z * (up.x - ipos.x) - W.x * (up.z - ipos.z),      # and w ., its' the pictures x axis
+               W.x * (up.y - ipos.y) - W.y * (up.x - ipos.x))
+
+   r = (U.x * U.x) + (U.y * U.y) + (U.z * U.z)
+
+   if r < eps()
+       info("t coincides with e")
+       U = Point3D(0, 0, 0)
+   else
+       rinv = 1/sqrt(r) # normalise u
+       U.x = U.x * rinv
+       U.y = U.y * rinv
+       U.z = U.z * rinv
+   end
+
+   ue = U.x * ipos.x + U.y * ipos.y + U.z * ipos.z # project e onto u
+
+   V = Point3D(U.y * W.z - U.z * W.y, # v is at rightangles to u and w
+               U.z * W.x - U.x * W.z, # it's the pictures y axis
+               U.x * W.y - U.y * W.x)
+
+   ve = V.x * ipos.x + V.y * ipos.y + V.z * ipos.z # project e onto v
+
+   Projection(U, V, W, ue, ve, we, depth)
+end
+"""
+   project(P::Point3D, proj::Projection)
+
+Project a 3D point onto a 2D surface, as defined by the projection.
+
+Currently this returns 'nothing' if the point is behind the eyepoint. This makes
+handling the conversion a bit harder.
+
+```
+   eyepoint    = Point3D(250, 250, 200)
+   centerpoint = Point3D(0, 0, 0)
+   uppoint     = Point3D(0, 0, 1)
+   newproj     = newprojection(eyepoint, centerpoint, uppoint)
+   xaxis1 = project(Point3D(0,   0, 0), newproj)
+   xaxis2 = project(Point3D(100, 0, 0), newproj)
+   sethue("red")
+   arrow(xaxis1, xaxis2)
+   label("X", :N, xaxis2)
+   pt1 = project(randpoint3D, newproj)
+   if pt1 != nothing
+       circle(pt1, 5, :dot)
+   end
+```
+"""
+function project(P::Point3D, proj::Projection)
+   # use default value for perspectiveness if not specified
+   r = proj.W.x * P.x + proj.W.y * P.y + proj.W.z * P.z - proj.we
+   if r < eps()
+       # "point $P is behind eye"
+       result = nothing
+   else
+       if proj.depth ≈ 0.0
+           depth = 1
+       else
+           depth = proj.depth
+       end
+       uq = depth * (proj.U.x * P.x + proj.U.y * P.y + proj.U.z * P.z - proj.ue)
+       vq = depth * (proj.V.x * P.x + proj.V.y * P.y + proj.V.z * P.z - proj.ve)
+       result = Point(uq, -vq) # because Y is down the page in Luxor
+   end
+   return result
+end
+
+project(px, py, pz, proj::Projection) = project(Point3D(px, py, pz), proj)
 
 mutable struct Model
     vertices::Vector{Point3D}
@@ -43,6 +169,15 @@ Eg
 
 returns a Model object containing an array of vertices, and array of faces,
 and an array of labels.
+
+```
+tol = 0.001
+a = []
+for t in -2pi:tol:2pi
+    push!(a, Point3D((2 + cos(5t)) * cos(3t), (2 + cos(5t)) * sin(2t), sin(5t)))
+end
+Knot = make((a, []), "knot")
+```
 """
 function make(vf, name="unnamed")
     # don't redefine when passed an array
@@ -55,6 +190,9 @@ end
 import Base: +, -, !=, <, >, ==, norm
 import Base: size, getindex
 
+"""
+    norm(p1::Point3D, p2::Point3D)
+"""
 function norm(p1::Point3D, p2::Point3D)
     sqrt((p2.x - p1.x)^2 + (p2.y - p1.y)^2 + (p2.z - p1.z)^2)
 end
@@ -77,14 +215,6 @@ include("objects.jl")
 # don't load all these now!
 # include("moreobjects.jl")
 
-function convertpoint(pt3D::Point3D, camerapoint::Point3D)
-    focallength = norm(camerapoint, Point3D(0, 0, 0))
-    multiplier = focallength/(focallength + pt3D.z) # z co-ordinate
-    x = pt3D.x * multiplier # x co-ordinate
-    y = pt3D.y * multiplier # y co-ordinate
-    return Point(x, y)
-end
-
 function sphericaltocartesian(rho, theta, phi)
     x = rho * sin(phi) * cos(theta)
     y = rho * sin(phi) * sin(theta)
@@ -100,13 +230,18 @@ function cartesiantospherical(x, y, z)
 end
 
 """
-    modeltopoly(m::Model, camerapoint)
+    modeltopoly(m::Model, projection::Projection)
 
 """
-function modeltopoly(m::Model, camerapoint::Point3D)
+function modeltopoly(m::Model, projection::Projection)
     vertices2D = Point[]
     for v in m.vertices
-        push!(vertices2D, convertpoint(v, camerapoint))
+        r = project(v, projection)
+        if r != nothing
+            push!(vertices2D, r)
+        else
+            push!(vertices2D, Point(0, 0))
+        end
     end
     facepolys = []
     if length(m.faces) > 0
@@ -140,6 +275,9 @@ function sortfaces!(m::Model)
     return m
 end
 
+"""
+    simplerender(vertices, faces, labels, cols)
+"""
 function simplerender(vertices, faces, labels, cols)
     if !isempty(faces)
         @layer begin
@@ -159,7 +297,7 @@ function simplerender(vertices, faces, labels, cols)
 end
 
 """
-    drawmodel(object, Point3D(100, 100, 100),
+    drawmodel(object, projection,
         :fill,
         cols=["black", "white"],
         renderfunc = arenderfunction)
@@ -194,14 +332,17 @@ drawmodel(object, Point3D(100, 100, 100),
 end
 ```
 """
-function drawmodel(m::Model, camerapoint::Point3D, action=:stroke;
+function drawmodel(m::Model, projection::Projection, action=:stroke;
     cols=["black", "grey80"],
-    renderfunc = (v, f, l, c) -> simplerender(v, f, l, c))
 
-    vertices, faces = modeltopoly(m, camerapoint)
+    renderfunc = (v, f, l, c) -> simplerender(v, f, l, c))
+    vertices, faces = modeltopoly(m, projection)
     renderfunc(vertices, faces, m.labels, cols)
 end
 
+"""
+    changeposition!(m::Model, x, y, z)
+"""
 function changeposition!(m::Model, x, y, z)
     for n in 1:length(m.vertices)
         nv = m.vertices[n]
@@ -210,6 +351,9 @@ function changeposition!(m::Model, x, y, z)
     return m
 end
 
+"""
+    changeposition(m::Model, x, y, z)
+"""
 function changeposition(m::Model, x, y, z)
     mcopy = deepcopy(m)
     return changeposition!(mcopy, x, y, z)
@@ -220,7 +364,6 @@ changeposition!(m::Model, pt::Point3D) = changeposition!(m::Model, pt.x, pt.y, p
 
 """
     changescale!(m::Model, x, y, z)
-
 """
 function changescale!(m::Model, x, y, z)
     for n in 1:length(m.vertices)
@@ -232,7 +375,9 @@ end
 
 # rotations are anticlockwise when looking along axis from 0 to +axis
 """
-    rotate around x axis
+    rotateX(pt3D::Point3D, rad)
+
+rotate a point around x axis by an angle in radians
 """
 function rotateX(pt3D::Point3D, rad)
     cosa = cos(rad)
@@ -243,7 +388,9 @@ function rotateX(pt3D::Point3D, rad)
 end
 
 """
-    rotate around y axis
+    rotateY(pt3D::Point3D, rad)
+
+rotate a point around y axis by an angle in radians
 """
 function rotateY(pt3D::Point3D, rad)
     cosa = cos(rad)
@@ -254,7 +401,9 @@ function rotateY(pt3D::Point3D, rad)
 end
 
 """
-rotate around z axis to an angle
+    rotateZ(pt3D::Point3D, rad)
+
+rotate a point around z axis to an angle in radians
 """
 function rotateZ(pt3D::Point3D, rad)
     cosa = cos(rad)
@@ -264,7 +413,11 @@ function rotateZ(pt3D::Point3D, rad)
     return Point3D(x, y, pt3D.z)
 end
 
-# rotate model to an angle
+"""
+    rotateto!(m::Model, angleX, angleY, angleZ)
+
+rotate model to an angle by angleX, angleY, angleZ
+"""
 function rotateto!(m::Model, angleX, angleY, angleZ)
     for n in 1:length(m.vertices)
         v = m.vertices[n]
@@ -276,13 +429,21 @@ function rotateto!(m::Model, angleX, angleY, angleZ)
     return m
 end
 
-# make a rotated copy
+"""
+    rotateto(m::Model, angleX, angleY, angleZ)
+
+rotate a copy of the model to an angle by angleX, angleY, angleZ
+"""
 function rotateto(m::Model, angleX, angleY, angleZ)
     mcopy = deepcopy(m)
     return rotateto!(mcopy, angleX, angleY, angleZ)
 end
 
-# rotate model by an angle
+"""
+    rotateby!(m::Model, pt::Point3D, angleX, angleY, angleZ)
+
+rotate model by an angle
+"""
 function rotateby!(m::Model, pt::Point3D, angleX, angleY, angleZ)
     for n in 1:length(m.vertices)
         v = m.vertices[n] - pt
@@ -294,10 +455,107 @@ function rotateby!(m::Model, pt::Point3D, angleX, angleY, angleZ)
     return m
 end
 
-# rotate a copy by an angle
+"""
+    rotateby(m::Model, pt::Point3D, angleX, angleY, angleZ)
+
+rotate a copy of the model by an angle
+"""
 function rotateby(m::Model, pt::Point3D, angleX, angleY, angleZ)
     mcopy = deepcopy(m)
     return rotateby!(mcopy, pt, angleX, angleY, angleZ)
+end
+
+function draw3daxes(projection)
+    @layer begin
+    fontsize(16)
+    setline(2)
+    xaxis1 = project(Point3D(0.1,   0.1,  0.1), projection)
+    xaxis2 = project(Point3D(100,   0.1,  0.1), projection)
+    sethue("red")
+    if (xaxis1 != nothing) &&  (xaxis2 != nothing)
+        arrow(xaxis1, xaxis2)
+        label("X", :N, xaxis2)
+    end
+    yaxis1 = project(Point3D(0.1,   0.1,  0.1), projection)
+    yaxis2 = project(Point3D(0.1,   100,  0.1), projection)
+    sethue("green")
+
+    if (yaxis1 != nothing) &&  (yaxis2 != nothing)
+        arrow(yaxis1, yaxis2)
+        label("Y", :N, yaxis2)
+    end
+    zaxis1 = project(Point3D(0.1,   0.1,  0.1), projection)
+    zaxis2 = project(Point3D(0.1,   0.1,  100), projection)
+    sethue("blue")
+    if (zaxis1 != nothing) &&  (zaxis2 != nothing)
+        arrow(zaxis1, zaxis2)
+        label("Z", :N, zaxis2)
+    end
+    end
+end
+
+function drawunitbox(n, projection, action=:stroke)
+    @layer begin
+        setline(2)
+        fontsize(10)
+        setlinecap("butt")
+        setlinejoin("bevel")
+        p1 = project(Point3D(0,   0,  0), projection)
+        p2 = project(Point3D(n,  0,  0), projection)
+        p3 = project(Point3D(n, n,  0), projection)
+        p4 = project(Point3D(0,  n,  0), projection)
+        p5 = project(Point3D(0,   0,  n), projection)
+        p6 = project(Point3D(n,  0,  n), projection)
+        p7 = project(Point3D(n, n,  n), projection)
+        p8 = project(Point3D(0,  n,  n), projection)
+
+        if all(i -> i != nothing, [p1, p2, p3,  p4, p5, p6, p7, p8])
+            label("p1 Point3D(0,   0,  0)", :N, p1)
+            label("p2 Point3D($(string(n)),  0,  0)", :N, p2)
+            label("p3 Point3D($(string(n)), $(string(n)),  0)", :N, p3)
+            label("p4 Point3D(0,  $(string(n)),  0)", :N, p4)
+            label("p5 Point3D(0,   0, $(string(n)))", :S, p5)
+            label("p6 Point3D($(string(n)),  0, $(string(n)))", :S, p6)
+            label("p7 Point3D($(string(n)), $(string(n)), $(string(n)))", :S, p7)
+            label("p8 Point3D(0,  $(string(n)), $(string(n)))", :S, p8)
+
+            sethue("red")
+            prettypoly([p1, p2, p3, p4], action, close=true)
+
+            sethue("purple")
+            prettypoly([p1, p2, p6, p5], action, close=true)
+
+            sethue("magenta")
+            prettypoly([p3, p7, p8, p4], action, close=true)
+
+            sethue("green")
+            prettypoly([p5, p6, p7, p8], action, close=true)
+        end
+    end
+end
+
+function drawcarpet(n, projection; kind=:circular)
+    @layer begin
+        if kind != :circular
+            p1 = project(Point3D(-n/2, -n/2,  0), projection)
+            p2 = project(Point3D(n/2,  -n/2,  0), projection)
+            p3 = project(Point3D(n/2, n/2,  0), projection)
+            p4 = project(Point3D(-n/2,  n/2,  0), projection)
+            if all(i -> i != nothing, [p1, p2, p3,  p4])
+                poly([p1, p2, p3, p4], :fill, close=true)
+            end
+        else
+            shape3D = [Point3D(n * cos(theta), n * sin(theta), 0) for theta in 0:0.1:2pi]
+            shape2D = Point[]
+            for i in shape3D
+                pt = project(i, projection)
+                if pt != nothing
+                    push!(shape2D, pt)
+                end
+            end
+            poly(shape2D, :fill, close=true)
+        end
+    end
 end
 
 end
