@@ -29,7 +29,7 @@ function drawgeodesic(object, cpos, cscale, rotx, roty, rotz, cscheme, eased)
     changeposition!(c, cpos)
     theta = rescale(eased, 0, 1, 0, 2pi)
     rotateby!(c, Point3D(0, 0, 0), theta, theta, theta)
-    drawmodel(c, newproj, :fill, cols=cscheme, renderfunc = myrenderfunction)
+    drawmodel(c, newproj, cols=cscheme, renderfunc = myrenderfunction)
 end
 
 

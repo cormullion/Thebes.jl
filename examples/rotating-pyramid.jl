@@ -19,7 +19,7 @@ function frame(scene, framenumber)
     changescale!(object, 150, 150, 150)
     # sortfaces!(object)
     drawmodel(object, projection, :fill, cols=[cols[1], cols[2], cols[3]])
-    draw3daxes(projection)
+    draw3daxes(50, projection)
 
     # sethue("black")
     # info = String[]

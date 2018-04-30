@@ -8,6 +8,8 @@ module Thebes
 using Luxor
 # using StaticArrays, CoordinateTransformations
 
+include("Point3D.jl")
+
 export project, Projection, newprojection,
        Point3D, Model, AxesWire,
        Cube, Tetrahedron, Pyramid, Carpet,
@@ -20,12 +22,6 @@ export project, Projection, newprojection,
        drawmodel, modeltopoly,
        changescale!, sortfaces!
 
-mutable struct Point3D
-   x::Float64
-   y::Float64
-   z::Float64
-end
-
 mutable struct Projection
    U::Point3D     #
    V::Point3D     #
@@ -33,17 +29,20 @@ mutable struct Projection
    ue::Float64    #
    ve::Float64    #
    we::Float64    #
-   depth::Float64 #
+   perspective::Float64 #
 end
 
 """
-   newprojection(ipos::Point3D, center::Point3D, up::Point3D, rinv=0.0)
+   newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=1.0)
 
 Make a new Projection:
 
 - ipos is the eye position
 - center is the 3D point to appear in the center of the 2D image
 - up is a point that is to appear vertically above the center
+
+If `perspective` is 1.0, the default, the projection is parallel. Otherwise it's
+a vague magnification factor for perspective projections.
 
 The three vectors U, V, W, and the three scalar products, ue, ve, and we:
 
@@ -61,7 +60,7 @@ the x axis of the 2D image
 
 - ve is the projection of the eye position onto that y axis
 """
-function newprojection(ipos::Point3D, center::Point3D, up::Point3D, depth=0.0)
+function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=1.0)
 
    # w is the line of sight
    W = Point3D(center.x - ipos.x, center.y - ipos.y, center.z - ipos.z)
@@ -104,15 +103,16 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, depth=0.0)
 
    ve = V.x * ipos.x + V.y * ipos.y + V.z * ipos.z # project e onto v
 
-   Projection(U, V, W, ue, ve, we, depth)
+   Projection(U, V, W, ue, ve, we, perspective)
 end
 """
    project(P::Point3D, proj::Projection)
 
-Project a 3D point onto a 2D surface, as defined by the projection.
+Project a 3D point onto a 2D surface, as defined by the projection in `proj`.
 
-Currently this returns 'nothing' if the point is behind the eyepoint. This makes
-handling the conversion a bit harder.
+TODO Currently this returns 'nothing' if the point is behind the eyepoint. This
+makes handling the conversion a bit harder, though, since the function now
+returns either a 2D Luxor point or `nothing`. This will probably change.
 
 ```
    eyepoint    = Point3D(250, 250, 200)
@@ -137,10 +137,10 @@ function project(P::Point3D, proj::Projection)
        # "point $P is behind eye"
        result = nothing
    else
-       if proj.depth ≈ 0.0
+       if proj.perspective == 1.0
            depth = 1
        else
-           depth = proj.depth
+           depth = proj.perspective * (1/r)
        end
        uq = depth * (proj.U.x * P.x + proj.U.y * P.y + proj.U.z * P.z - proj.ue)
        vq = depth * (proj.V.x * P.x + proj.V.y * P.y + proj.V.z * P.z - proj.ve)
@@ -161,9 +161,12 @@ end
 """
     make(primitive, name="unnamed")
 
-`primitive` is a variable holding the two arrays.
+`primitive` contains two arrays, an array of 3D points, and an array of faces,
+where each face is a list of vertex numbers.
 
-Eg
+Returns a model.
+
+Example
 
     make(Cube, "cube")
 
@@ -187,28 +190,6 @@ function make(vf, name="unnamed")
     return Model(vertices, faces, labels, name)
 end
 
-import Base: +, -, !=, <, >, ==, norm
-import Base: size, getindex
-
-"""
-    norm(p1::Point3D, p2::Point3D)
-"""
-function norm(p1::Point3D, p2::Point3D)
-    sqrt((p2.x - p1.x)^2 + (p2.y - p1.y)^2 + (p2.z - p1.z)^2)
-end
-
-function -(p1::Point3D, p2::Point3D)
-    Point3D((p2.x - p1.x), (p2.y - p1.y), (p2.z - p1.z))
-end
-
-function +(p1::Point3D, p2::Point3D)
-    Point3D((p2.x + p1.x), (p2.y + p1.y), (p2.z + p1.z))
-end
-
-# for broadcasting
-Base.size(::Point3D) = 3
-Base.getindex(p::Thebes.Point3D, i::Int64) = [p.x, p.y, p.z][i]
-Base.convert(::Type{Luxor.Point}, v::AbstractVector) = Luxor.Point(v[1], v[2])
 
 include("objects.jl")
 
@@ -232,6 +213,10 @@ end
 """
     modeltopoly(m::Model, projection::Projection)
 
+Return a list of 2D points representing the 3D model in `m` projected using the
+projection in `projection`.
+
+TODO I don't this works at the moment.
 """
 function modeltopoly(m::Model, projection::Projection)
     vertices2D = Point[]
@@ -240,7 +225,7 @@ function modeltopoly(m::Model, projection::Projection)
         if r != nothing
             push!(vertices2D, r)
         else
-            push!(vertices2D, Point(0, 0))
+            push!(vertices2D, Point(NaN, NaN))
         end
     end
     facepolys = []
@@ -249,6 +234,7 @@ function modeltopoly(m::Model, projection::Projection)
             push!(facepolys, vertices2D[f])
         end
     end
+    filter!(f -> !isnan(f.x) && !isnan(f.y), vertices2D)
     return (vertices2D, facepolys)
 end
 
@@ -276,66 +262,81 @@ function sortfaces!(m::Model)
 end
 
 """
-    simplerender(vertices, faces, labels, cols)
+    simplerender(vertices, faces, labels, cols; action=:stroke)
+
+In the Luxor drawing, draw the 2D vertices and faces, using colors in the `cols` array.
 """
-function simplerender(vertices, faces, labels, cols)
+function simplerender(vertices, faces, labels, cols; action=:stroke)
+    setlinejoin("bevel")
     if !isempty(faces)
         @layer begin
             for (n, p) in enumerate(faces)
                 x = mod1(n, length(cols))
                 c = cols[mod1(labels[x], length(cols))]
                 sethue(c)
-                poly(p, :fill, close=true)
+                poly(p, action, close=true)
             end
         end
     else
         @layer begin
             sethue(cols[1])
-            poly(vertices, :stroke, close=true)
+            poly(vertices, action, close=true)
         end
     end
 end
 
 """
-    drawmodel(object, projection,
-        :fill,
-        cols=["black", "white"],
-        renderfunc = arenderfunction)
+    drawmodel(m::Model, projection::Projection;
+        cols=["black", "grey80"],
+        renderfunc = (v, f, l, c; kwargs... ) -> simplerender(v, f, l, c; kwargs...))
 
-draw a model
+Draw a model. Calls a rendering function, the default is `simplerender()`.
 
-change default rendering function:
+To define and change the default rendering function:
 
 ```
-function myrenderfunction(vertices, faces, labels, cols, action=:fill)
+function myrenderfunction(vertices, faces, labels, cols; action=:fill)
     if !isempty(faces)
         @layer begin
             for (n, p) in enumerate(faces)
                 x = mod1(n, length(cols))
                 c = cols[mod1(labels[x], length(cols))]
-                sethue(c)
-                poly(p, action)
+
+                @layer begin
+                    setopacity(0.5)
+                    sethue(c)
+                    poly(p, action)
+                end
+
+                sethue("black")
+                setline(0.5)
+                poly(p, :stroke, close=true)
+
             end
         end
     end
 end
 
-o = :cube
+@svg begin
+    eyepoint    = Point3D(60, 60, 60)
+    centerpoint = Point3D(0, 0, 1)
+    uppoint     = Point3D(0, 0, 2) # relative to centerpoint
+    projection  = newprojection(eyepoint, centerpoint, uppoint, 500)
+
+o = :Cube
 object = make(eval(o), string(o))
 changescale!(object, 15, 15, 15)
 rotateby!(object, object.vertices[1], rand(), rand(), rand())
 sortfaces!(object)
-drawmodel(object, Point3D(100, 100, 100),
-    :fill,
-    cols=[randomhue(), "azure"],
+drawmodel(object, projection,
+    cols=["magenta", "green", "red", "blue", "yellow", "orange"],
     renderfunc = myrenderfunction)
 end
 ```
 """
-function drawmodel(m::Model, projection::Projection, action=:stroke;
+function drawmodel(m::Model, projection::Projection;
     cols=["black", "grey80"],
-
-    renderfunc = (v, f, l, c) -> simplerender(v, f, l, c))
+    renderfunc = (v, f, l, c; kwargs... ) -> simplerender(v, f, l, c; kwargs...))
     vertices, faces = modeltopoly(m, projection)
     renderfunc(vertices, faces, m.labels, cols)
 end
@@ -465,19 +466,23 @@ function rotateby(m::Model, pt::Point3D, angleX, angleY, angleZ)
     return rotateby!(mcopy, pt, angleX, angleY, angleZ)
 end
 
-function draw3daxes(projection)
+"""
+    draw3daxes(n, projection)
+
+"""
+function draw3daxes(n, projection)
     @layer begin
     fontsize(16)
     setline(2)
     xaxis1 = project(Point3D(0.1,   0.1,  0.1), projection)
-    xaxis2 = project(Point3D(100,   0.1,  0.1), projection)
+    xaxis2 = project(Point3D(n,   0.1,  0.1), projection)
     sethue("red")
     if (xaxis1 != nothing) &&  (xaxis2 != nothing)
         arrow(xaxis1, xaxis2)
         label("X", :N, xaxis2)
     end
     yaxis1 = project(Point3D(0.1,   0.1,  0.1), projection)
-    yaxis2 = project(Point3D(0.1,   100,  0.1), projection)
+    yaxis2 = project(Point3D(0.1,   n,  0.1), projection)
     sethue("green")
 
     if (yaxis1 != nothing) &&  (yaxis2 != nothing)
@@ -485,7 +490,7 @@ function draw3daxes(projection)
         label("Y", :N, yaxis2)
     end
     zaxis1 = project(Point3D(0.1,   0.1,  0.1), projection)
-    zaxis2 = project(Point3D(0.1,   0.1,  100), projection)
+    zaxis2 = project(Point3D(0.1,   0.1,  n), projection)
     sethue("blue")
     if (zaxis1 != nothing) &&  (zaxis2 != nothing)
         arrow(zaxis1, zaxis2)
@@ -494,6 +499,9 @@ function draw3daxes(projection)
     end
 end
 
+"""
+    drawunitbox(n, projection, action=:stroke)
+"""
 function drawunitbox(n, projection, action=:stroke)
     @layer begin
         setline(2)
@@ -534,6 +542,11 @@ function drawunitbox(n, projection, action=:stroke)
     end
 end
 
+"""
+    drawcarpet(n, projection; kind=:circular)
+
+Draw a carpet centered at the origin, using current Luxor parameters.
+"""
 function drawcarpet(n, projection; kind=:circular)
     @layer begin
         if kind != :circular
