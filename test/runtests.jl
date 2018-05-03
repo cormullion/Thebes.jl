@@ -7,6 +7,7 @@ m = make(Cube)
 m = make(Cube, "this is a cube")
 @test length(m.vertices) == 8
 
+include("point3d-arithmetic.jl")
 include("test-1.jl")
 include("test-2.jl")
 include("test-3.jl")

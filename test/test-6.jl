@@ -8,8 +8,6 @@ rhombicuboctahedron, rhombitruncated_cubeoctahedron, rhombitruncated_icosidodeca
 snub_cube, snub_dodecahedron, sphere2, tet3d, tetrahedron, triangle, truncated_cube,
 truncated_dodecahedron, truncated_icosahedron, truncated_octahedron, truncated_tetrahedron]
 
-println("\n\n\n")
-
 function myrenderfunction(vertices, faces, labels, cols, action=:fill)
     if !isempty(faces)
         @layer begin
@@ -45,7 +43,7 @@ Drawing(800, 800, "/tmp/moreobjects.svg")
             changescale!(object, 10, 10, 10)
             rotateto!(object, 0.1, 0.1,  0.1)
             sortfaces!(object)
-            drawmodel(object, projection, :fill, cols=[Luxor.lighter_blue],
+            drawmodel(object, projection, cols=[Luxor.lighter_blue],
                 renderfunc = myrenderfunction)
         end
     end

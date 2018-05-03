@@ -1,9 +1,8 @@
 # Thebes
 
-![image](test-2.png)
+![image](test-image.png)
 
-Nothing to see here...
-
+Nothing to see here... :)
 
 [![Build Status](https://travis-ci.org/cormullion/Thebes.jl.svg?branch=master)](https://travis-ci.org/cormullion/Thebes.jl)
 

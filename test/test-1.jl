@@ -10,7 +10,7 @@ myrenderfunction(vertices, faces, labels, cols) =
 Drawing(800, 800, "/tmp/test1.svg")
 origin()
 background("grey95")
-setopacity(0.9)
+setopacity(0.7)
 eyepoint    = Point3D(500, 500, 100)
 centerpoint = Point3D(0, 0, 10)
 uppoint     = Point3D(0, 0, 20) # relative to centerpoint
@@ -20,7 +20,7 @@ for (pos, n) in tiles
     @layer begin
         translate(pos)
         draw3daxes(50, projection)
-        object = make(Pyramid)
+        object = make(Cube)
         changescale!(object, 25, 25, 25)
         changeposition!(object, 0, 0, 0)
         rotateto!(object, 0, n/5, 0)
@@ -31,4 +31,3 @@ for (pos, n) in tiles
     end
 end
 finish()
-preview()

@@ -1,17 +1,17 @@
 __precompile__(true)
 
 """
-    throwaway experiments in 2.5D graphics
+    throwaway experiments in faux-3D or 2.15D graphics
 """
 module Thebes
 
 using Luxor
-# using StaticArrays, CoordinateTransformations
 
 include("Point3D.jl")
 
 export project, Projection, newprojection,
-       Point3D, Model, AxesWire,
+       Point3D, between,
+       Model, AxesWire,
        Cube, Tetrahedron, Pyramid, Carpet,
        drawcarpet,  drawunitbox, draw3daxes,
        make,
@@ -41,7 +41,7 @@ Make a new Projection:
 - center is the 3D point to appear in the center of the 2D image
 - up is a point that is to appear vertically above the center
 
-If `perspective` is 1.0, the default, the projection is parallel. Otherwise it's
+If `perspective` is 1.0 (the default) the projection is parallel. Otherwise it's
 a vague magnification factor for perspective projections.
 
 The three vectors U, V, W, and the three scalar products, ue, ve, and we:
@@ -61,12 +61,9 @@ the x axis of the 2D image
 - ve is the projection of the eye position onto that y axis
 """
 function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=1.0)
-
    # w is the line of sight
    W = Point3D(center.x - ipos.x, center.y - ipos.y, center.z - ipos.z)
-
    r = (W.x * W.x) + (W.y * W.y) + (W.z * W.z)
-
    if r < eps()
        # info("eye position and center are the same")
    else
@@ -78,11 +75,9 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
    end
 
    we = W.x * ipos.x + W.y * ipos.y + W.z * ipos.z # project e on to w
-
    U = Point3D(W.y * (up.z - ipos.z) - W.z * (up.y - ipos.y),      # u is at right angles to t - e
                W.z * (up.x - ipos.x) - W.x * (up.z - ipos.z),      # and w ., its' the pictures x axis
                W.x * (up.y - ipos.y) - W.y * (up.x - ipos.x))
-
    r = (U.x * U.x) + (U.y * U.y) + (U.z * U.z)
 
    if r < eps()
@@ -94,15 +89,11 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
        U.y = U.y * rinv
        U.z = U.z * rinv
    end
-
    ue = U.x * ipos.x + U.y * ipos.y + U.z * ipos.z # project e onto u
-
    V = Point3D(U.y * W.z - U.z * W.y, # v is at rightangles to u and w
                U.z * W.x - U.x * W.z, # it's the pictures y axis
                U.x * W.y - U.y * W.x)
-
    ve = V.x * ipos.x + V.y * ipos.y + V.z * ipos.z # project e onto v
-
    Projection(U, V, W, ue, ve, we, perspective)
 end
 """
@@ -115,19 +106,26 @@ makes handling the conversion a bit harder, though, since the function now
 returns either a 2D Luxor point or `nothing`. This will probably change.
 
 ```
-   eyepoint    = Point3D(250, 250, 200)
-   centerpoint = Point3D(0, 0, 0)
-   uppoint     = Point3D(0, 0, 1)
-   newproj     = newprojection(eyepoint, centerpoint, uppoint)
-   xaxis1 = project(Point3D(0,   0, 0), newproj)
-   xaxis2 = project(Point3D(100, 0, 0), newproj)
-   sethue("red")
-   arrow(xaxis1, xaxis2)
-   label("X", :N, xaxis2)
-   pt1 = project(randpoint3D, newproj)
-   if pt1 != nothing
-       circle(pt1, 5, :dot)
-   end
+using Thebes
+
+@svg begin
+    eyepoint    = Point3D(250, 250, 100)
+    centerpoint = Point3D(0, 0, 0)
+    uppoint     = Point3D(0, 0, 1)
+    newproj     = newprojection(eyepoint, centerpoint, uppoint)
+    sethue("grey50")
+    drawcarpet(300, newproj)
+    draw3daxes(100, newproj)
+    sethue("red")
+    for i in 1:30
+        randpoint3D = Point3D(rand(0.0:150, 3)...)
+        sethue("red")
+        pt1 = project(randpoint3D, newproj)
+        if pt1 != nothing
+            circle(pt1, 5, :fill)
+        end
+    end
+end
 ```
 """
 function project(P::Point3D, proj::Projection)
@@ -242,7 +240,9 @@ end
     sortfaces(m::Model)
 
 find the averages of the z values of the faces in model, and sort the faces
-of m so that the faces are in order of nearest (highest) z?.
+of m so that the faces are in order of nearest (highest) z?. No use, really,
+unless you're looking straight down. You really want to sort faces depending
+on distance from eyepoint...
 """
 function sortfaces!(m::Model)
     avgs = Float64[]

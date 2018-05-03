@@ -49,7 +49,6 @@ Drawing(800, 800, "/tmp/test-4.svg")
         rotateto!(object, #= object.vertices[1],=# 2pi * rand(), 2pi * rand(), 2pi * rand())
         sortfaces!(object)
         drawmodel(object, projection,
-            :fill,
             cols=[randomhue(), "azure", randomhue()],
             renderfunc = anotherrenderfunction)
         end

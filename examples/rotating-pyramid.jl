@@ -18,13 +18,9 @@ function frame(scene, framenumber)
     object  = make(Pyramid)
     changescale!(object, 150, 150, 150)
     # sortfaces!(object)
-    drawmodel(object, projection, :fill, cols=[cols[1], cols[2], cols[3]])
+    drawmodel(object, projection, cols=[cols[1], cols[2], cols[3]])
     draw3daxes(50, projection)
 
-    # sethue("black")
-    # info = String[]
-    # foreach(n -> push!(info, string(n, ": ", getfield(projection, n))), fieldnames(projection))
-    # textbox(info, BoundingBox()[1])
 end
 
 width, height = (800, 800)
