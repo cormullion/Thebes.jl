@@ -237,23 +237,24 @@ function modeltopoly(m::Model, projection::Projection)
 end
 
 """
-    sortfaces(m::Model)
+    sortfaces(m::Model; eyepoint::Point3D)
 
 find the averages of the z values of the faces in model, and sort the faces
 of m so that the faces are in order of nearest (highest) z?. No use, really,
 unless you're looking straight down. You really want to sort faces depending
 on distance from eyepoint...
 """
-function sortfaces!(m::Model)
+function sortfaces!(m::Model;
+        eyepoint::Point3D=Point3D(0, 0, 0))
     avgs = Float64[]
     for f in m.faces
         vs = m.vertices[f]
         s = 0.0
         for v in vs
-            s += v.z
+            s += norm(v, eyepoint)
         end
-        avgz = s/length(vs)
-        push!(avgs, avgz)
+        avg = s/length(vs)
+        push!(avgs, avg)
     end
     neworder = sortperm(avgs)
     m.faces = m.faces[neworder]
