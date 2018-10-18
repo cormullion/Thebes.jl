@@ -1,6 +1,6 @@
 using Thebes
 
-include(Pkg.dir() * "/Thebes/src/moreobjects.jl")
+include(string(@__FILE__, "../../../src/moreobjects.jl"))
 
 moreobjects = [boxcube, boxtorus, concave, cone, crossshape, cube, cuboctahedron, dodecahedron , geodesic, helix2,
 icosahedron, icosidodecahedron, octahedron, octtorus, rhombicosidodecahedron,
@@ -44,8 +44,8 @@ Drawing(800, 800, "/tmp/moreobjects.svg")
             rotateto!(object, 0.1, 0.1,  0.1)
             sortfaces!(object)
             drawmodel(object, projection, cols=[Luxor.lighter_blue],
-                renderfunc = myrenderfunction)
+                renderfunction= myrenderfunction)
         end
     end
 finish()
-preview()
+

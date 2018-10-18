@@ -1,5 +1,4 @@
-using Thebes
-using Base.Test
+using Thebes, Test, ColorSchemes
 
 m = make(Cube)
 @test length(m.vertices) == 8

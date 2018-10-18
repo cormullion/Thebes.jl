@@ -2,9 +2,9 @@ using Thebes, Luxor
 
 using ColorSchemes
 
-cols = shuffle!(eval(ColorSchemes, schemes[rand(1:end)]))
+cols = shuffle!(Base.eval(ColorSchemes, schemes[rand(1:end)]))
 
-include(Pkg.dir() * "/Thebes/src/moreobjects.jl")
+include(dirname(pathof(Thebes)) * "/../src/moreobjects.jl")
 
 function myrenderfunction(vertices, faces, labels, cols, action=:fill)
     if !isempty(faces)
@@ -29,7 +29,7 @@ function drawgeodesic(object, cpos, cscale, rotx, roty, rotz, cscheme, eased)
     changeposition!(c, cpos)
     theta = rescale(eased, 0, 1, 0, 2pi)
     rotateby!(c, Point3D(0, 0, 0), theta, theta, theta)
-    drawmodel(c, newproj, cols=cscheme, renderfunc = myrenderfunction)
+    drawmodel(c, newproj, cols=cscheme, renderfunction= myrenderfunction)
 end
 
 

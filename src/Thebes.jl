@@ -1,5 +1,3 @@
-__precompile__(true)
-
 """
     throwaway experiments in faux-3D or 2.15D graphics
 """
@@ -14,7 +12,7 @@ export project, Projection, newprojection,
        Model, AxesWire,
        Cube, Tetrahedron, Pyramid, Carpet,
        drawcarpet,  drawunitbox, draw3daxes,
-       make,
+       make, distance,
        rotateX, rotateY, rotateZ,
        rotateto!, rotateto,
        rotateby!, rotateby,
@@ -31,6 +29,27 @@ mutable struct Projection
    we::Float64    #
    perspective::Float64 #
 end
+
+Base.broadcastable(p::Projection) = Ref(p)
+
+mutable struct Model
+    vertices::Vector{Point3D}
+    faces::Array{Array{Int64,1},1}
+    labels::Array{Int64,1}
+    name::String
+end
+
+function Base.size(m::Model)
+       length(m.vertices)
+end
+
+function Base.length(m::Model)
+       length(m.vertices)
+end
+
+Base.lastindex(m::Model) = length(m)
+
+Base.broadcastable(m::Model) = Ref(m)
 
 """
    newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=1.0)
@@ -67,7 +86,7 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
    if r < eps()
        # info("eye position and center are the same")
    else
-       # normalise w to unit length
+       # distancealise w to unit length
        rinv = 1/sqrt(r)
        W.x = W.x * rinv
        W.y = W.y * rinv
@@ -84,7 +103,7 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
        info("t coincides with e")
        U = Point3D(0, 0, 0)
    else
-       rinv = 1/sqrt(r) # normalise u
+       rinv = 1/sqrt(r) # distancealise u
        U.x = U.x * rinv
        U.y = U.y * rinv
        U.z = U.z * rinv
@@ -149,12 +168,6 @@ end
 
 project(px, py, pz, proj::Projection) = project(Point3D(px, py, pz), proj)
 
-mutable struct Model
-    vertices::Vector{Point3D}
-    faces
-    labels
-    name::String
-end
 
 """
     make(primitive, name="unnamed")
@@ -240,9 +253,9 @@ end
     sortfaces(m::Model; eyepoint::Point3D)
 
 find the averages of the z values of the faces in model, and sort the faces
-of m so that the faces are in order of nearest (highest) z?. No use, really,
-unless you're looking straight down. You really want to sort faces depending
-on distance from eyepoint...
+of m so that the faces are in order of nearest (highest) z
+
+or something like that ?.
 """
 function sortfaces!(m::Model;
         eyepoint::Point3D=Point3D(0, 0, 0))
@@ -251,16 +264,19 @@ function sortfaces!(m::Model;
         vs = m.vertices[f]
         s = 0.0
         for v in vs
-            s += norm(v, eyepoint)
+            s += distance(v, eyepoint)
         end
-        avg = s/length(vs)
+        avg = s/length(unique(vs))
         push!(avgs, avg)
     end
-    neworder = sortperm(avgs)
+    neworder = reverse(sortperm(avgs))
     m.faces = m.faces[neworder]
     m.labels = m.labels[neworder]
     return m
 end
+
+sortfaces!(m::Array{Model, 1}; kwargs...) =
+   map(sortfaces!, m)
 
 """
     simplerender(vertices, faces, labels, cols; action=:stroke)
@@ -289,7 +305,7 @@ end
 """
     drawmodel(m::Model, projection::Projection;
         cols=["black", "grey80"],
-        renderfunc = (v, f, l, c; kwargs... ) -> simplerender(v, f, l, c; kwargs...))
+        renderfunction = (v, f, l, c; kwargs... ) -> simplerender(v, f, l, c; kwargs...))
 
 Draw a model. Calls a rendering function, the default is `simplerender()`.
 
@@ -323,23 +339,28 @@ end
     centerpoint = Point3D(0, 0, 1)
     uppoint     = Point3D(0, 0, 2) # relative to centerpoint
     projection  = newprojection(eyepoint, centerpoint, uppoint, 500)
-
-o = :Cube
-object = make(eval(o), string(o))
-changescale!(object, 15, 15, 15)
-rotateby!(object, object.vertices[1], rand(), rand(), rand())
-sortfaces!(object)
-drawmodel(object, projection,
+    object = make(Cube)
+    changescale!(object, 15, 15, 15)
+    rotateby!(object, object.vertices[1], rand(), rand(), rand())
+    sortfaces!(object)
+    drawmodel(object, projection,
     cols=["magenta", "green", "red", "blue", "yellow", "orange"],
-    renderfunc = myrenderfunction)
+    renderfunction = myrenderfunction)
 end
 ```
 """
 function drawmodel(m::Model, projection::Projection;
-    cols=["black", "grey80"],
-    renderfunc = (v, f, l, c; kwargs... ) -> simplerender(v, f, l, c; kwargs...))
+       cols=["black", "grey80"],
+       renderfunction = (v, f, l, c; kwargs... ) -> simplerender(v, f, l, c; kwargs...))
     vertices, faces = modeltopoly(m, projection)
-    renderfunc(vertices, faces, m.labels, cols)
+    renderfunction(vertices, faces, m.labels, cols)
+end
+
+function drawmodel(m::Array{Model, 1}, projection::Projection;
+       cols=["black", "grey80"],
+       renderfunction = (v, f, l, c; kwargs... ) -> simplerender(v, f, l, c; kwargs...))
+    vertices, faces = modeltopoly.(m, projection)
+    renderfunction.(vertices, faces, m.labels, cols)
 end
 
 """

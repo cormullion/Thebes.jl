@@ -12,7 +12,7 @@ origin()
 background("lightblue1")
 setopacity(1)
 
-eyepoint    = Point3D(160, 160, 20)
+eyepoint    = Point3D(160, 160, 40)
 centerpoint = Point3D(0, 0, 10)
 uppoint     = Point3D(0, 0, 20) # relative to centerpoint
 projection  = newprojection(eyepoint, centerpoint, uppoint, 500)
@@ -25,5 +25,6 @@ changescale!.(objects, 10, 10, 15)
 changeposition!.(objects, [-25, 0, 35], 0, 0)
 
 # needs depth sorting of faces
-drawmodel.(objects, projection, cols=cols, renderfunc=myrenderfunction)
+sortfaces!.(objects, eyepoint=eyepoint)
+drawmodel.(objects, projection, cols=cols, renderfunction=myrenderfunction)
 finish()

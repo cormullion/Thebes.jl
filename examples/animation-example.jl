@@ -2,10 +2,10 @@ using Thebes, Luxor
 
 using ColorSchemes
 
-include(Pkg.dir() * "/Thebes/src/moreobjects.jl")
+include(dirname(pathof(Thebes)) * "/../src/moreobjects.jl")
 
-cols = shuffle!(eval(ColorSchemes, schemes[rand(1:end)]))
-cols = shuffle!(eval(ColorSchemes, schemes[1]))
+cols = shuffle!(Base.eval(ColorSchemes, schemes[rand(1:end)]))
+cols = shuffle!(Base.eval(ColorSchemes, schemes[1]))
 
 myrenderfunction(vertices, faces, labels, cols) =
     Thebes.simplerender(vertices, faces, labels, cols, action=:fill)
@@ -32,11 +32,11 @@ function frame(scene, framenumber)
       object = make(tetrahedron)
       changescale!(object, 20, 20, 20)
       changeposition!(object, x * 25, y * 25, z * 25)
-      d = norm(object.vertices[end], Point3D(0, 0, 0))
+      d = distance(object.vertices[end], Point3D(0, 0, 0))
       if d < 800
           drawmodel(object, projection,
             cols=[get(ColorSchemes.rainbow, rescale(x, -2, 2, 0, 1))],
-            renderfunc=myrenderfunction)
+            renderfunction=myrenderfunction)
       end
     end
     sethue("black")

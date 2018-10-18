@@ -2,7 +2,7 @@ using Thebes, Luxor, ColorSchemes
 
 
 function frame(scene, framenumber)
-    cols = shuffle!(eval(ColorSchemes, schemes[rand(1:end)]))
+    cols = shuffle!(Base.eval(ColorSchemes, schemes[rand(1:end)]))
 
     cols = ColorSchemes.sandyterrain
     background("lightblue1")

@@ -1,8 +1,6 @@
-using Thebes, Luxor
+using Thebes, Luxor, Random, ColorSchemes
 
-using ColorSchemes
-
-cols = shuffle!(eval(ColorSchemes, schemes[rand(1:end)]))
+cols = shuffle!(Base.eval(ColorSchemes, schemes[rand(1:end)]))
 
 myrenderfunction(vertices, faces, labels, cols) =
     Thebes.simplerender(vertices, faces, labels, cols, action=:fill)
@@ -25,9 +23,9 @@ for (pos, n) in tiles
         changeposition!(object, 0, 0, 0)
         rotateto!(object, 0, n/5, 0)
         sortfaces!(object)
-        drawmodel(object, projection, cols=cols, renderfunc=myrenderfunction)
+        drawmodel(object, projection, cols=cols, renderfunction=myrenderfunction)
         sethue("black")
-        text(string(round(n/5, 1)))
+        text(string(round(n/5, digits = 1)))
     end
 end
 finish()

@@ -1,6 +1,6 @@
 using Luxor, Thebes
 
-include(Pkg.dir() * "/Thebes/src/moreobjects.jl")
+include(string(@__FILE__, "../../../src/moreobjects.jl"))
 
 moreobjects = [boxcube, boxtorus, concave, cone, crossshape, cube,
 cuboctahedron, dodecahedron , geodesic, # helix2, icosahedron,
@@ -47,4 +47,4 @@ Drawing(800, 800.0, "/tmp/test-5.svg")
     end
 end
 finish()
-preview()
+

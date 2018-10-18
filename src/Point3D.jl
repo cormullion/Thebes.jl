@@ -4,18 +4,18 @@ mutable struct Point3D
    z::Float64
 end
 
-import Base: +, -, ==, norm, *, ^, <, >, /, !=
+import Base: +, -, ==, *, ^, <, >, /, !=
 import Base: size, getindex, isnan, isapprox, isequal, isless
-
+import Luxor: between, distance
 """
-    norm(p1::Point3D, p2::Point3D)
+    distance(p1::Point3D, p2::Point3D)
 """
 
 function +(p1::Point3D, p2::Point3D)
     Point3D((p2.x + p1.x), (p2.y + p1.y), (p2.z + p1.z))
 end
 +(p1::Point3D, k::Number)              = Point3D(p1.x + k, p1.y + k, p1.z + k)
-+(p1::Point3D, p2::Point3D)            = Point3D(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z)
++(k::Number, p2::Point3D)              = +(p1::Point3D, k::Number)
 
 function -(p1::Point3D, p2::Point3D)
     Point3D((p1.x - p2.x), (p1.y - p2.y), (p1.z - p2.z))
@@ -28,11 +28,7 @@ end
 *(p2::Point3D, k::Number)              = Point3D(k * p2.x, k * p2.y, k * p2.z)
 *(p1::Point3D, p2::Point3D)            = Point3D(p1.x * p2.x, p1.y * p2.y, p1.z * p2.z)
 
-function ==(p1::Point3D, p2::Point3D)
-    p1.x == p2.x && p1.y == p2.y && p1.z == p2.z
-end
-
-function norm(p1::Point3D, p2::Point3D)
+function distance(p1::Point3D, p2::Point3D)
     sqrt((p2.x - p1.x)^2 + (p2.y - p1.y)^2 + (p2.z - p1.z)^2)
 end
 

@@ -27,8 +27,7 @@ end
     centerpoint = Point3D(0, 0, 1)
     uppoint     = Point3D(0, 0, 2) # relative to centerpoint
     projection  = newprojection(eyepoint, centerpoint, uppoint, 800)
-    o = :Cube
-    object = make(eval(o), string(o))
+    object = make(Cube, "Cube")
     changescale!(object, 15, 15, 15)
     rotateby!(object, Point3D(0, 0, 0), 0, 0, rand())
     sortfaces!(object)
@@ -36,6 +35,6 @@ end
     drawcarpet(20, projection)
     drawmodel(object, projection,
         cols=["magenta", "green", "red", "blue", "yellow", "orange"],
-        renderfunc = myrenderfunction)
+        renderfunction= myrenderfunction)
     draw3daxes(20, projection)
 end
