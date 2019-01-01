@@ -1,5 +1,5 @@
 """
-    throwaway experiments in faux-3D or 2.15D graphics
+    throwaway experiments in faux-3D or 2¼-D graphics
 """
 module Thebes
 
@@ -84,7 +84,7 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
    W = Point3D(center.x - ipos.x, center.y - ipos.y, center.z - ipos.z)
    r = (W.x * W.x) + (W.y * W.y) + (W.z * W.z)
    if r < eps()
-       # info("eye position and center are the same")
+       # @info("eye position and center are the same")
    else
        # distancealise w to unit length
        rinv = 1/sqrt(r)
@@ -100,7 +100,7 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
    r = (U.x * U.x) + (U.y * U.y) + (U.z * U.z)
 
    if r < eps()
-       info("t coincides with e")
+       @info("t coincides with e")
        U = Point3D(0, 0, 0)
    else
        rinv = 1/sqrt(r) # distancealise u
@@ -250,12 +250,13 @@ function modeltopoly(m::Model, projection::Projection)
 end
 
 """
-    sortfaces(m::Model; eyepoint::Point3D)
+    sortfaces!(m::Model;
+        eyepoint::Point3D=Point3D(0, 0, 0))
 
-find the averages of the z values of the faces in model, and sort the faces
-of m so that the faces are in order of nearest (highest) z
+Find the averages of the z values of the faces in model, and sort the faces
+of m so that the faces are in order of nearest (highest) z relative to eyepoint...
 
-or something like that ?.
+or something like that ? not sure how this works
 """
 function sortfaces!(m::Model;
         eyepoint::Point3D=Point3D(0, 0, 0))
@@ -282,6 +283,8 @@ sortfaces!(m::Array{Model, 1}; kwargs...) =
     simplerender(vertices, faces, labels, cols; action=:stroke)
 
 In the Luxor drawing, draw the 2D vertices and faces, using colors in the `cols` array.
+
+ATM rendering is pretty hacked-together, I don't know how it really works...
 """
 function simplerender(vertices, faces, labels, cols; action=:stroke)
     setlinejoin("bevel")
@@ -396,11 +399,12 @@ function changescale!(m::Model, x, y, z)
     return m
 end
 
-# rotations are anticlockwise when looking along axis from 0 to +axis
 """
     rotateX(pt3D::Point3D, rad)
 
 rotate a point around x axis by an angle in radians
+
+# rotations are anticlockwise when looking along axis from 0 to +axis??
 """
 function rotateX(pt3D::Point3D, rad)
     cosa = cos(rad)
