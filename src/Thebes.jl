@@ -18,7 +18,8 @@ export project, Projection, newprojection,
        rotateby!, rotateby,
        changeposition!, changeposition,
        drawmodel, modeltopoly,
-       changescale!, sortfaces!
+       changescale!, sortfaces!,
+       sphericaltocartesian, cartesiantospherical
 
 mutable struct Projection
    U::Point3D     #
@@ -54,7 +55,7 @@ Base.broadcastable(m::Model) = Ref(m)
 """
    newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=1.0)
 
-Make a new Projection:
+Define a new Projection:
 
 - ipos is the eye position
 - center is the 3D point to appear in the center of the 2D image
