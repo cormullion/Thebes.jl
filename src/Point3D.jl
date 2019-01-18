@@ -1,4 +1,4 @@
-mutable struct Point3D
+struct Point3D
    x::Float64
    y::Float64
    z::Float64
@@ -69,3 +69,18 @@ isless(p1::Point3D, p2::Point3D)          = (p1.x < p2.x) && (p1.y < p2.y) && (p
 <(p1::Point3D, p2::Point3D)               = isless(p1,p2)
 >(p1::Point3D, p2::Point3D)               = p2 < p1
 ==(p1::Point3D, p2::Point3D)              = isequal(p1, p2)
+
+function dotproduct3D(a::Point3D, b::Point3D)
+    # calculates dot product of a and b
+    return a.x * b.x + a.y * b.y + a.z * b.z
+end
+
+function magnitude(a::Point3D)
+    # calculates magnitude of a
+    return sqrt(a.x * a.x + a.y * a.y + a.z * a.z)
+end
+
+function anglebetweenvectors(v1::Point3D, v2::Point3D)
+    intermediate = dotproduct3D(v1, v2)/(magnitude(v1) * magnitude(v2))
+    return acos(min(max(-1, intermediate), 1))
+end

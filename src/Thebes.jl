@@ -19,7 +19,9 @@ export project, Projection, newprojection,
        changeposition!, changeposition,
        drawmodel, modeltopoly,
        changescale!, sortfaces!,
-       sphericaltocartesian, cartesiantospherical
+       sphericaltocartesian, cartesiantospherical,
+       dotproduct3D, magnitude, anglebetweenvectors,
+       surfacenormal, face
 
 mutable struct Projection
    U::Point3D     #
@@ -89,11 +91,8 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
    else
        # distancealise w to unit length
        rinv = 1/sqrt(r)
-       W.x = W.x * rinv
-       W.y = W.y * rinv
-       W.z = W.z * rinv
+       W = Point3D(W.x * rinv, W.y * rinv, W.z * rinv)
    end
-
    we = W.x * ipos.x + W.y * ipos.y + W.z * ipos.z # project e on to w
    U = Point3D(W.y * (up.z - ipos.z) - W.z * (up.y - ipos.y),      # u is at right angles to t - e
                W.z * (up.x - ipos.x) - W.x * (up.z - ipos.z),      # and w ., its' the pictures x axis
@@ -105,9 +104,7 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
        U = Point3D(0, 0, 0)
    else
        rinv = 1/sqrt(r) # distancealise u
-       U.x = U.x * rinv
-       U.y = U.y * rinv
-       U.z = U.z * rinv
+       U = Point3D(U.x * rinv, U.y * rinv, U.z * rinv)
    end
    ue = U.x * ipos.x + U.y * ipos.y + U.z * ipos.z # project e onto u
    V = Point3D(U.y * W.z - U.z * W.y, # v is at rightangles to u and w
@@ -227,11 +224,10 @@ end
 
 Return a list of 2D points representing the 3D model in `m` projected using the
 projection in `projection`.
-
-TODO I don't this works at the moment.
 """
 function modeltopoly(m::Model, projection::Projection)
     vertices2D = Point[]
+
     for v in m.vertices
         r = project(v, projection)
         if r != nothing
@@ -240,12 +236,18 @@ function modeltopoly(m::Model, projection::Projection)
             push!(vertices2D, Point(NaN, NaN))
         end
     end
-    facepolys = []
+    facepolys = Array[]
     if length(m.faces) > 0
-        for f in m.faces
-            push!(facepolys, vertices2D[f])
+        for n in 1:length(m.faces)
+            f = face(m, n)
+            sn = surfacenormal(f)
+            a = anglebetweenvectors(sn, Point3D(100, 100, 100))
+            if a > π/2
+                push!(facepolys, vertices2D[m.faces[n]])
+            end
         end
     end
+    @show facepolys
     filter!(f -> !isnan(f.x) && !isnan(f.y), vertices2D)
     return (vertices2D, facepolys)
 end
@@ -596,6 +598,32 @@ function drawcarpet(n, projection; kind=:circular)
             poly(shape2D, :fill, close=true)
         end
     end
+end
+
+function surfacenormal(ptlist)
+   normal = Point3D(0, 0, 0)
+   for i in 1:length(ptlist)
+      vertexCurrent = ptlist[i]
+      vertexNext    = ptlist[mod1(i + 1, end)]
+      @show vertexCurrent, vertexNext
+      x = normal.x + ( (vertexCurrent.y - vertexNext.y) * (vertexCurrent.z + vertexNext.z))
+      y = normal.y + ( (vertexCurrent.z - vertexNext.z) * (vertexCurrent.x + vertexNext.x))
+      z = normal.z + ( (vertexCurrent.x - vertexNext.x) * (vertexCurrent.y + vertexNext.y))
+      normal = Point3D(x, y, z)
+   end
+   l = magnitude(normal)
+   # return normalize(normal)
+   return Point3D(normal.x/l, normal.y/l, normal.z/l) / l
+end
+
+function face(m::Model, n)
+    facepoints = Point3D[]
+    if length(m.faces) > 0
+        for i in m.faces[n]
+            push!(facepoints, m.vertices[i])
+        end
+    end
+    return facepoints
 end
 
 end
