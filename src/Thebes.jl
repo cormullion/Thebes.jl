@@ -239,15 +239,14 @@ function modeltopoly(m::Model, projection::Projection)
     facepolys = Array[]
     if length(m.faces) > 0
         for n in 1:length(m.faces)
-            f = face(m, n)
-            sn = surfacenormal(f)
-            a = anglebetweenvectors(sn, Point3D(100, 100, 100))
-            if a > π/2
+            # f = face(m, n)
+            # sn = surfacenormal(f)
+            #a = anglebetweenvectors(sn, Point3D(100, 100, 100))
+            #if a > π/2
                 push!(facepolys, vertices2D[m.faces[n]])
-            end
+            #end
         end
     end
-    @show facepolys
     filter!(f -> !isnan(f.x) && !isnan(f.y), vertices2D)
     return (vertices2D, facepolys)
 end
@@ -605,7 +604,6 @@ function surfacenormal(ptlist)
    for i in 1:length(ptlist)
       vertexCurrent = ptlist[i]
       vertexNext    = ptlist[mod1(i + 1, end)]
-      @show vertexCurrent, vertexNext
       x = normal.x + ( (vertexCurrent.y - vertexNext.y) * (vertexCurrent.z + vertexNext.z))
       y = normal.y + ( (vertexCurrent.z - vertexNext.z) * (vertexCurrent.x + vertexNext.x))
       z = normal.z + ( (vertexCurrent.x - vertexNext.x) * (vertexCurrent.y + vertexNext.y))
