@@ -12,7 +12,7 @@ uppoint     = Point3D(0, 0, 20) # relative to centerpoint
 projection  = newprojection(eyepoint, centerpoint, uppoint)
 sethue("pink")
 drawcarpet(400, projection)
-colors = Random.shuffle!(Base.eval(ColorSchemes, schemes[rand(1:end)]))
+colors = colorschemes[first(Random.shuffle!(collect(keys(colorschemes))))]
 setline(0.2)
 
 myrenderfunction(vertices, faces, labels, cols) =

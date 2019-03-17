@@ -2,7 +2,7 @@ using Thebes, Luxor
 
 using ColorSchemes
 
-cols = shuffle!(Base.eval(ColorSchemes, schemes[rand(1:end)]))
+cols = colorschemes[first(Random.shuffle!(collect(keys(colorschemes))))]
 
 include(dirname(pathof(Thebes)) * "/../src/moreobjects.jl")
 

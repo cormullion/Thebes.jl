@@ -4,8 +4,7 @@ using ColorSchemes
 
 include(dirname(pathof(Thebes)) * "/../src/moreobjects.jl")
 
-cols = shuffle!(Base.eval(ColorSchemes, schemes[rand(1:end)]))
-cols = shuffle!(Base.eval(ColorSchemes, schemes[1]))
+cols = colorschemes[first(Random.shuffle!(collect(keys(colorschemes))))]
 
 Drawing(800, 800, "/tmp/test1.png")
 origin()

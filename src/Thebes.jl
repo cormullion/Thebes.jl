@@ -199,12 +199,15 @@ function make(vf, name="unnamed")
     return Model(vertices, faces, labels, name)
 end
 
-
 include("objects.jl")
 
 # don't load all these now!
 # include("moreobjects.jl")
+"""
+    sphericaltocartesian(rho, theta, phi)
 
+Return Point3D(x, y, z) of (rho, theta, phi).
+"""
 function sphericaltocartesian(rho, theta, phi)
     x = rho * sin(phi) * cos(theta)
     y = rho * sin(phi) * sin(theta)
@@ -212,8 +215,13 @@ function sphericaltocartesian(rho, theta, phi)
     return Point3D(x, y, z)
 end
 
+"""
+    cartesiantospherical(x, y, z)
+
+Return (phi, rho, theta) of (x, y, z).
+"""
 function cartesiantospherical(x, y, z)
-    phi = atan2(y, x)
+    phi = atan(y, x)
     rho = sqrt(x^2 + y^2 + z^2)
     theta = acos(z/rho)
     return (phi, rho, theta)
@@ -598,7 +606,9 @@ function drawcarpet(n, projection; kind=:circular)
         end
     end
 end
-
+"""
+?
+"""
 function surfacenormal(ptlist)
    normal = Point3D(0, 0, 0)
    for i in 1:length(ptlist)
@@ -614,6 +624,9 @@ function surfacenormal(ptlist)
    return Point3D(normal.x/l, normal.y/l, normal.z/l) / l
 end
 
+"""
+?
+"""
 function face(m::Model, n)
     facepoints = Point3D[]
     if length(m.faces) > 0

@@ -4,8 +4,7 @@ using ColorSchemes
 
 include(dirname(pathof(Thebes)) * "/../src/moreobjects.jl")
 
-cols = shuffle!(Base.eval(ColorSchemes, schemes[rand(1:end)]))
-cols = shuffle!(Base.eval(ColorSchemes, schemes[1]))
+cols = colorschemes[first(Random.shuffle!(collect(keys(colorschemes))))]
 
 myrenderfunction(vertices, faces, labels, cols) =
     Thebes.simplerender(vertices, faces, labels, cols, action=:fill)

@@ -1,6 +1,6 @@
 using Thebes, Luxor, Random, ColorSchemes
 
-cols = shuffle!(Base.eval(ColorSchemes, schemes[rand(1:end)]))
+cols = colorschemes[first(Random.shuffle!(collect(keys(colorschemes))))]
 
 myrenderfunction(vertices, faces, labels, cols) =
     Thebes.simplerender(vertices, faces, labels, cols, action=:fill)
