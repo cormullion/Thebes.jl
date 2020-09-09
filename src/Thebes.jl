@@ -19,6 +19,7 @@ export project, Projection, newprojection,
        changeposition!, changeposition,
        drawmodel, modeltopoly,
        changescale!, sortfaces!,
+       midpoint,
        sphericaltocartesian, cartesiantospherical,
        dotproduct3D, magnitude, anglebetweenvectors,
        surfacenormal, face
@@ -500,6 +501,39 @@ rotate a copy of the model by an angle
 function rotateby(m::Model, pt::Point3D, angleX, angleY, angleZ)
     mcopy = deepcopy(m)
     return rotateby!(mcopy, pt, angleX, angleY, angleZ)
+end
+
+# rotate pts
+
+"""
+    rotateto(pt::Point3D, angleX, angleY, angleZ)
+
+rotate a point to an angle by angleX, angleY, angleZ
+"""
+function rotateto(pt::Point3D, angleX, angleY, angleZ)
+    return rotateto!(mcopy, angleX, angleY, angleZ)
+end
+
+"""
+    rotateby!(pt::Point3D, pt::Point3D, angleX, angleY, angleZ)
+
+rotate point by angleX, angleY, angleZ
+"""
+function rotateby!(tpt::Point3D, pt::Point3D, angleX, angleY, angleZ)
+        v = tpt - pt
+        v = rotateX(v, angleX)
+        v = rotateY(v, angleY)
+        v = rotateZ(v, angleZ)
+        return v + pt
+end
+
+"""
+    rotateby(tpt::Point3D, pt::Point3D, angleX, angleY, angleZ)
+
+rotate point by angleX, angleY, angleZ
+"""
+function rotateby(tpt::Point3D, pt::Point3D, angleX, angleY, angleZ)
+    return rotateby!(tpt, pt, angleX, angleY, angleZ)
 end
 
 """
