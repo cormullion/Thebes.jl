@@ -153,39 +153,69 @@ And there are enough converging parallel lines there to give an ancient Egyptian
 To fly around the scene, you can just move the eyepoint around:
 
 ```
-using Thebes, Luxor, Colors
-
+using Thebes, Luxor
 function frame(scene, framenumber, object)
-    background("antiquewhite")
+    background("skyblue")
     setlinejoin("bevel")
-    sethue("grey70")
-    carpet(150)
-    setline(1.0)
-    setopacity(0.7)
 
+    setline(3.0)
+    sethue("grey30")
+    carpet(500)
     eased_n = rescale(scene.easingfunction(framenumber, 0, 1,
         scene.framerange.stop), 0, 1, 0, 2π)
 
-    eyepoint(150cos(eased_n), 150sin(eased_n), 30)
-    pin(object)
+    sethue("white")
+    perspective(200)
+    eyepoint(200cos(eased_n), 200sin(eased_n), 40)
+    pts = pin(50object)
+
+    sethue("orange")
+    setline(0.5)
+    for pair in ((1, 2), (2, 3), (3, 4), (4, 1))
+        rule(pts[first(pair)], slope(pts[first(pair)], pts[last(pair)]))
+    end
+
     axes3D()
 end
 
-w = h = 400
-movie1 = Movie(w, h, "3D movie")
+function makecube()
+    cube = [
+        Point3D(1,   1, -1),
+        Point3D(1,  -1, -1),
+        Point3D(-1, -1, -1),
+        Point3D(-1,  1, -1),
+        Point3D(1,   1,  1),
+        Point3D(1,  -1,  1),
+        Point3D(-1, -1,  1),
+        Point3D(-1,  1,  1)]
+    r = Point3D[]
+
+    for e in (
+        [1, 2, 3, 4, 1],
+        [5, 6, 7, 8, 5],
+        [5, 1, 2, 6, 7],
+        [7, 3, 4, 8, 5])
+        append!(r, cube[e])        
+    end
+    return r
+end
+
 
 function main()
-    include("data/moreobjects.jl")
-    object = make(cuboctahedron)
-    setscale!(object, 60, 60, 60)
-    animate(movie1,
-        Scene(movie1, (s, f)  -> frame(s, f, object),
-        1:150,
-        easingfunction=easeinoutsine),
-        pathname="animation.gif")
+    w = 600
+    h = 400
+    movie1 = Movie(w, h, "3D movie")
+    cube = makecube()
+    d = animate(movie1,
+            Scene(movie1, (s, f)  -> frame(s, f, cube),
+                    1:150, easingfunction=easeinoutsine),
+        creategif=true,
+        framerate=20,
+        pathname="/tmp/orbiting-a-cube.gif")
+    return d
 end
 
 main()
 ```
 
-![animation](assets/figures/animation.gif)
+![animation](assets/figures/orbiting-a-cube.gif)

@@ -8,92 +8,84 @@ DocTestSetup = quote
 
 There are few useful tools that might help you explore.
 
-## Sorting faces
+## Getting your hands dirty
 
-Because Thebes isn't really for modelling solid objects, you'll find that drawing them with `poly(... :fill)` won't give good results.
+Because Thebes isn't really for modelling solid objects, so you might have to dig a bit deeper to get the results you want.
 
-Here, the faces of the `cuboctahedron` weren't defined in the correct order:
+For example, suppose you want to remove the front-facing faces of an object, in order to see inside. That's possible, but a bit of code is needed.
 
 ```@example
-
 using Thebes, Luxor, Colors # hide
-Drawing(600, 500, "assets/figures/sortingfaces.svg") # hide
+Drawing(600, 500, "assets/figures/cullingfaces.svg") # hide
 background("white") # hide
 origin() # hide
-sethue("blue") # hide
 helloworld() # hide
 eyepoint(200, 200, 200)
+axes3D(300)
+setlinejoin("bevel")
 
 include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
 
-object = make(cuboctahedron, "solid")
+objectfull = make(cuboctahedron, "solid")
+objectcut  = make(cuboctahedron, "solid")
 
-pin(setscale!(object, 100, 100, 100), gfunction = (args...) -> begin
+map(o -> setscale!(o, 60, 60, 60), (objectfull, objectcut))
+
+function cullfrontfaces!(m::Object, angle;
+        eyepoint::Point3D=eyepoint())
+    avgs = Float64[]
+    for f in m.faces
+        vs = m.vertices[f]
+        s = 0.0
+        for v in vs
+            s += distance(v, eyepoint)
+        end
+        avg = s/length(unique(vs))
+
+        θ = surfacenormal(vs)
+        if anglebetweenvectors(θ, eyepoint) > angle
+            push!(avgs, avg)
+        end
+    end
+    neworder = reverse(sortperm(avgs))
+    m.faces = m.faces[neworder]
+    m.labels = m.labels[neworder]
+    return m
+end
+
+function drawobject(object)
+    pin(object, gfunction = (args...) -> begin
     vertices, faces, labels = args
-    setlinejoin("bevel")
     setopacity(0.8)
+    sethue("grey80")
     if !isempty(faces)
         @layer begin
             for (n, p) in enumerate(faces)
-                sethue([Luxor.julia_green, Luxor.julia_red,
-                    Luxor.julia_purple, Luxor.julia_blue][mod1(n, end)])
                 poly(p, :fillpreserve, close=true)
-                sethue("grey20")
-                strokepath()
+                @layer begin
+                    sethue("grey20")
+                    strokepath()
+                end
             end
         end
     end
 end)
+end
 
+sortfaces!.((objectcut, objectfull))
+cullfrontfaces!(objectcut, π/3)
+
+translate(-200, 0)
+drawobject(objectcut)
+
+translate(400, 0)
+drawobject(objectfull)
 
 finish() # hide
 nothing # hide
 ```
 
-![sorting faces](assets/figures/sortingfaces.svg)
-
-Use `sortfaces!()` to modify the object such that the faces are sorted according to their distance from the eyepoint (by default).
-
-
-```@example
-
-using Thebes, Luxor, Colors # hide
-Drawing(600, 500, "assets/figures/sortingfaces1.svg") # hide
-background("white") # hide
-origin() # hide
-sethue("blue") # hide
-helloworld() # hide
-eyepoint(200, 200, 200)
-
-include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
-
-object = make(cuboctahedron, "solid")
-
-sortfaces!(object)
-
-pin(setscale!(object, 100, 100, 100), gfunction = (args...) -> begin
-    vertices, faces, labels = args
-    setlinejoin("bevel")
-    setopacity(0.8)
-    if !isempty(faces)
-        @layer begin
-            for (n, p) in enumerate(faces)
-                sethue([Luxor.julia_green, Luxor.julia_red,
-                    Luxor.julia_purple, Luxor.julia_blue][mod1(n, end)])
-                poly(p, :fillpreserve, close=true)
-                sethue("grey20")
-                strokepath()
-            end
-        end
-    end
-end)
-
-
-finish() # hide
-nothing # hide
-```
-
-![sorting faces](assets/figures/sortingfaces1.svg)
+![culling faces](assets/figures/cullingfaces.svg)
 
 # Geometry
 

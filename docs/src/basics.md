@@ -251,10 +251,9 @@ The default gfunction's arguments consist of two pairs of points (a pair of 3D p
 
 # When things go wrong
 
-In 2D graphics, there can occasionally be a few problems caused when values get close to zero or infinity. The same thing is true for 3D too, when the coordinates start stressing out the projecting equations. Really good 3D software will prevent this happening. In Thebes, though, you may occasionally see glitches. You're only seeing half the "world" that's in front of you  - there's nearly a whole half-world falling being the eye-position, and this means that some points don't get succesfully drawn.
+In 2D graphics, there can occasionally be a few problems caused when values get close to zero or infinity. The same thing is true for 3D too, when the coordinates start stressing out the projecting equations. Really good 3D software will prevent this happening. In Thebes, though, you may occasionally see glitches. You're only seeing half the "world" that's in front of you  - there's nearly a whole half-world falling behind the eye-position, and this means that some points don't get drawn succesfully.
 
 In general, if the `pin()` function can't display a point, it will probably just drop it and carry on, rather than attempt to draw things in impossible locations or straight lines that curve in space. So if you notice parts of your drawing missing, the easiest thing to do is to move the eyepoint further away, and hope that any lines don't end up too close to it.
-
 
 ## Conversions
 
