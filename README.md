@@ -15,7 +15,7 @@ Thebes.jl is a little extension for Luxor.jl that provides some rudimentary wire
 
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
-[docs-latest-url]: http://cormullion.github.io/Thebes.jl/latest/
+[docs-latest-url]: http://cormullion.github.io/Thebes.jl/dev/
 
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]: http://cormullion.github.io/Thebes.jl/stable/
