@@ -8,17 +8,17 @@
 
 # Thebes
 
-Thebes.jl is a little extension for Thebes.jl that provides some rudimentary wireframe functionality.
+Thebes.jl is a little extension for Luxor.jl that provides some rudimentary wireframe functionality.
 
 ![mobius](docs/src/assets/figures/mobiusmovie.png)
 
 
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
-[docs-latest-url]: http://juliagraphics.github.io/Thebes.jl/latest/
+[docs-latest-url]: http://cormullion.github.io/Thebes.jl/latest/
 
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
-[docs-stable-url]: http://juliagraphics.github.io/Thebes.jl/stable/
+[docs-stable-url]: http://cormullion.github.io/Thebes.jl/stable/
 
 [pkgeval-link]: http://pkg.julialang.org/?pkg=Thebes
 
@@ -35,7 +35,7 @@ Thebes.jl is a little extension for Thebes.jl that provides some rudimentary wir
 [travis-url]: https://travis-ci.org/cormullion/Thebes.jl
 
 [appvey-img]: https://ci.appveyor.com/api/projects/status/jfa9e54lv92rqd3m?svg=true
-[appvey-url]: https://ci.appveyor.com/project/cormullion/luxor-jl/branch/master
+[appvey-url]: https://ci.appveyor.com/project/cormullion/thebes-jl/branch/master
 
 [codecov-img]: https://codecov.io/gh/cormullion/Thebes.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/cormullion/Thebes.jl
