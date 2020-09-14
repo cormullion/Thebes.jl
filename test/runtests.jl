@@ -1,4 +1,4 @@
-using Thebes, Test, ColorSchemes
+using Thebes, Test
 
 m = make(Cube)
 @test length(m.vertices) == 8
@@ -28,3 +28,5 @@ include("test-6.jl")
 
 @info "... running test-7"
 include("test-7.jl")
+
+@info "Write more tests...!"

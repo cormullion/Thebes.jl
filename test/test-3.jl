@@ -1,7 +1,5 @@
 using Thebes, Luxor, Random
 
-using ColorSchemes
-
 function main()
     Drawing(800, 800, "/tmp/test3.png")
     background("azure")
@@ -27,9 +25,9 @@ function main()
             setposition!.(objects, rescale(k, 1, 20, 50, 400), 1, 0)
             a = rescale(i, 1, 20, 0, 2pi)
             rotateby!.(objects, 0, 0, a)
-            sortfaces!(objects, eyepoint=eyepoint)
+            sortfaces!(objects, eyepoint = eyepoint)
             # default is stroke at the moment
-            pin.(objects, gfunction=mygfunction)
+            pin.(objects, gfunction = mygfunction)
         end
     end
     finish()
