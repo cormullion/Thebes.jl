@@ -10,7 +10,7 @@
 
 Thebes.jl is a little extension for Luxor.jl that provides some rudimentary wireframe functionality.
 
-![mobius](docs/src/assets/figures/mobiusmovie.png)
+![mobius](docs/src/assets/figures/mobiusmovie.gif)
 
 
 
