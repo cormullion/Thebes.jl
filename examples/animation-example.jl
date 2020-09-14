@@ -13,7 +13,7 @@ function frame(scene, framenumber)
 
     sethue("white")
     carpet(1000)
-    drawunitbox(250)
+    drawcube(250)
     axes3D(250)
 
     setline(.5)

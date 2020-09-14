@@ -6,9 +6,9 @@ DocTestSetup = quote
 
 # Polygons and planes
 
-The `pin()` function accepts an array of 3D points as well. In this case, the default graphical treatment is to apply the `Luxor.poly(... :stroke)` function to the 2D points.
+The `pin()` function accepts an array of 3D points as well as singletons and pairs. In this case, the default graphical treatment is to apply the `Luxor.poly(... :stroke)` function to the array of projected 2D points.
 
-This of course isn't always going to work very well, if the 3D points don't lie in a plane, for example, or if you decide to use filling rather than stroking actions.
+This isn't always going to work perfectly - if the 3D points don't lie in a plane, for example, or if you decide to use `fill` rather than `stroke` actions.
 
 ## Möbius
 
@@ -32,7 +32,7 @@ function makemobius()
             push!(result, [p1, p2, p3, p4])
         end
     end
-    return result
+    return result # as an array of 3D polygons
 end
 
 # ... in a drawing
@@ -45,8 +45,8 @@ perspective(1200)
 mb = makemobius()
 setopacity(1)
 sethue("white")
-for p in mb
-    pin(100p, gfunction  = (p3l, p2l) -> begin
+for pgon in mb
+    pin(100pgon, gfunction  = (p3l, p2l) -> begin
         poly(p2l, :stroke, close=true)
     end)
 end
@@ -59,7 +59,7 @@ nothing # hide
 
 ## Chessboard
 
-You can probably risk filling a set of 3D points if they lie in the same plane.
+You can probably risk filling a set of projected 3D points if they lie in the same 3D plane.
 
 Here's a simple example. The gfunction here:
 
@@ -72,7 +72,7 @@ pin(plist,
     end)
 ```
 
-simply fills the polygon with the current color, then outlines it in black.
+fills the polygon with the current color, then outlines it in black.
 
 ```@example
 using Thebes, Luxor # hide
@@ -110,11 +110,11 @@ nothing # hide
 
 ![chess board example](assets/figures/chessboard.svg)
 
-The polygon is constructed in `plist` and then `pin()` applies its gfunction on it.
+The polygon is constructed in `plist` and then `pin()` applies its custom gfunction to it.
 
 ## Surfaces
 
-A surface plot like the following also works quite well. It's just that each new polygon hides the ones behind it.
+A surface plot like the following also works quite well, mainly because each new polygon hides the ones behind it.
 
 ```@example
 using Thebes, Luxor, Colors # hide
@@ -159,3 +159,7 @@ nothing # hide
 ```
 
 ![surface plot example](assets/figures/surfaceplot.svg)
+
+!!! note
+
+    Don't forget to check out Makie.jl for genuine 3D plotting...

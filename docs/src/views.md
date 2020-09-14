@@ -8,7 +8,7 @@ DocTestSetup = quote
 
 ## Eyepoint, centerpoint...
 
-Thebes has a simple view of the world. There's a global "world", which is created when you start using it. It's a good idea to check and/or set the viewing parameters when you start a new Luxor document, in case you're inheriting anything odd from a previous run.
+Thebes takes a simple view of life. There's a global "world", which is created when you start using it. It's a good idea to check and/or set the viewing parameters when you start a new Luxor document, in case you're inheriting anything odd from a previous run.
 
 Here are the functions that control your view of the 3D scene:
 
@@ -25,9 +25,11 @@ So, to see the side view of the helix, continued from the previous chapter, we c
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/helix5.svg") # hide
+Drawing(600, 200, "assets/figures/helix5.svg") # hide
 background("white") # hide
 origin() # hide
+uppoint(0, 0, 100) # hide
+centerpoint(0, 0, 50) # hide
 
 helix = [Point3D(150cos(θ), 150sin(θ), 5θ) for θ in 0:π/48:4π]
 

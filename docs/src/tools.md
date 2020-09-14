@@ -10,7 +10,7 @@ There are few useful tools that might help you explore.
 
 ## Getting your hands dirty
 
-Because Thebes isn't really for modelling solid objects, so you might have to dig a bit deeper to get the results you want.
+Thebes isn't really designed for serious use, or for modelling solid objects, so you might have to dig a bit deeper to get the results you want.
 
 For example, suppose you want to remove the front-facing faces of an object, in order to see inside. That's possible, but a bit of code is needed.
 
@@ -81,15 +81,20 @@ drawobject(objectcut)
 translate(400, 0)
 drawobject(objectfull)
 
+@show length(objectcut.faces)
+@show length(objectfull.faces)
+
 finish() # hide
 nothing # hide
 ```
+
+The object on the left has had its four frontfacing faces removed. The one on the right is intact.
 
 ![culling faces](assets/figures/cullingfaces.svg)
 
 # Geometry
 
-There are some geometry routines - some of them are extensions to the Luxor 2D versions.
+There are a few useful geometry functions - some of them are extensions to the Luxor 2D versions.
 
 ## Distances
 

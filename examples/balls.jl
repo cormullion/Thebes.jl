@@ -11,7 +11,7 @@ eyepoint(Point3D(800 ,600, 500))
 
 sethue("grey90")
 carpet(600)
-drawunitbox(500)
+drawcube(500)
 
 setline(.5)
 setopacity(1)

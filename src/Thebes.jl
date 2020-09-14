@@ -1,6 +1,3 @@
-"""
-    throwaway experiments in faux-3D or 2¼-D graphics
-"""
 module Thebes
 
 using Luxor
@@ -22,18 +19,17 @@ export project, Projection, newprojection,
 
        simplegfunction,
 
-       Object, AxesWire,
-       Cube, Tetrahedron, Pyramid, Carpet,
-       carpet, drawunitbox, axes3D,
-       between,
-       make, distance,
-       rotateX, rotateY, rotateZ,
-      
-       rotateby!, rotateby,
+       Object, Teapot, Cube, Tetrahedron, Pyramid, 
+
+       carpet, drawcube, axes3D,
+       between, make, distance, midpoint,
+
+       rotateX, rotateY, rotateZ, rotateby!, rotateby,
+
        setposition!, setposition,
+
        objecttopoly,
        setscale!, sortfaces!,
-       midpoint,
        sphericaltocartesian, cartesiantospherical,
        dotproduct3D, magnitude, anglebetweenvectors,
        surfacenormal, face,

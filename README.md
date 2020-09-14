@@ -8,7 +8,7 @@
 
 # Thebes
 
-Thebes.jl is a little extension for Luxor.jl that provides some rudimentary wireframe functionality.
+Thebes.jl is a little extension package for Luxor.jl that provides some rudimentary 3D (or perhaps 2.5D) wireframe functionality.
 
 ![mobius](docs/src/assets/figures/mobiusmovie.gif)
 
@@ -18,7 +18,7 @@ Thebes.jl is a little extension for Luxor.jl that provides some rudimentary wire
 [docs-latest-url]: http://cormullion.github.io/Thebes.jl/dev/
 
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
-[docs-stable-url]: http://cormullion.github.io/Thebes.jl/stable/
+[docs-stable-url]: http://cormullion.github.io/Thebes.jl/dev/
 
 [pkgeval-link]: http://pkg.julialang.org/?pkg=Thebes
 

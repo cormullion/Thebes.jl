@@ -14,10 +14,10 @@ You make an 3D object using `make()`, and then use `pin()` to throw it at the 2D
 
 `make()` expects an array of 3D points, an (optional) array of face definitions, and an (optional) array of labels, plus an (optional) name. These arrays let you link faces with vertices. It returns an Object.
 
-So after:
+A Cube object is already defined in Thebes (we needn't have made one, really). So after:
 
 ```
-make(Cube, "cube")
+cube = make(Cube, "cube")
 ```
 
 you'll get:
@@ -47,7 +47,7 @@ Object(
      "cube")
 ```
 
-The default rendering uses shades of grey.
+The default rendering applied by `pin()` uses less than fifty shades of grey.
 
 ```@example
 using Thebes, Luxor # hide
@@ -67,8 +67,7 @@ nothing # hide
 
 ![simple cube object](assets/figures/simplecubeobject.svg)
 
-Here's a very simple example of how you might make an object.
-
+Here's a very simple example of how you might make your own object from scratch.
 
 ```@example
 using Thebes, Luxor # hide
@@ -95,13 +94,17 @@ nothing # hide
 
 The gfunction here receives the `vertices`, `faces`, and `labels`, but the faces and labels are empty, so this simple `pin` only needs to draw a polygon through the vertices.
 
-It's obviously not something you'd want to do "by hand" very often. Fortunately there are plenty of people who are prepared to make 3D objects and distribute them in standard file formats, via the internet. Thebes knows about one of these formats, the .OFF file format. So there are a few objects already available for you to use directly.
+
+
+## OFF the shelf objects
+
+Obviously this isn't something you'd want to do "by hand" very often. Fortunately there are plenty of people who are prepared to make 3D objects and distribute them in standard file formats, via the internet. Thebes knows about one of these formats, the .OFF file format. So there are a few objects already available for you to use directly.
 
 ## Using objects
 
 The following objects have already been loaded (from `data/objects.jl`) when Thebes starts:
 
-Cube, Tetrahedron, Pyramid, AxesWire, Carpet
+- Cube, Tetrahedron, Pyramid, Teapot
 
 ```@example
 using Thebes, Luxor # hide
@@ -111,12 +114,12 @@ origin() # hide
 sethue("blue") # hide
 helloworld() # hide
 
-t = Tiler(600, 300, 1, 5)
-for (n, o) in enumerate([Cube, Tetrahedron, Pyramid, AxesWire, Carpet])
+t = Tiler(600, 300, 2, 2)
+for (n, o) in enumerate([Cube, Tetrahedron, Pyramid, Teapot])
     @layer begin
         translate(first.(t)[n])
         object = make(o, string(o))
-        setscale!(object, 10, 10, 10)
+        setscale!(object, 50, 50, 50)
         pin(object)
     end
 end
@@ -125,8 +128,9 @@ finish() # hide
 nothing # hide
 ```
 
-![more objects](assets/figures/moreobjects.svg)
+`carpet(n)` is a customizable circular carpet.
 
+![more objects](assets/figures/moreobjects.svg)
 
 You can load a few more objects by including the `moreobjects.jl` file:
 
@@ -134,7 +138,13 @@ You can load a few more objects by including the `moreobjects.jl` file:
 include("data/moreobjects.jl")
 ```
 
-I quite like the occasional geodesic:
+which brings these objects into play:
+
+`boxcube` `boxtorus` `concave` `cone` `crossshape` `cube` `cuboctahedron` `dodecahedron` `geodesic` `helix2` `icosahedron` `icosidodecahedron` `octahedron` `octtorus` `rhombicosidodecahedron` `rhombicuboctahedron` `rhombitruncated_cubeoctahedron` `rhombitruncated_icosidodecahedron` `snub_cube` `snub_dodecahedron` `sphere2` `tet3d` `tetrahedron` `triangle` `truncated_cube` `truncated_dodecahedron` `truncated_icosahedron` `truncated_octahedron` `truncated_tetrahedron`
+
+## Rendering objects
+
+To render an object, there are many choices you can make about how to draw the faces and the vertices. You do this with a gfunction. For objects, the gfunction is more complex than for points and lines. It takes lists of vertices, faces, and labels.
 
 ```@example
 using Thebes, Luxor # hide
@@ -146,24 +156,36 @@ background("white") # hide
 origin() # hide
 sethue("blue") # hide
 helloworld() # hide
+setlinejoin("bevel")
 eyepoint(150, 150, 150)
 
-setopacity(0.7)
-object = make(geodesic, "geodesic")
-pin(setscale!(object, 200, 200, 200), gfunction = (args...) -> begin
-    vertices, faces, labels = args
-    setlinejoin("bevel")
+function mygfunction(vertices, faces, labels; action=:fill)
+    cols = [Luxor.julia_green, Luxor.julia_red, Luxor.julia_purple, Luxor.julia_blue]
+
     if !isempty(faces)
         @layer begin
-            for (n, p) in enumerate(faces)
-                randomhue()
-                poly(p, :fillpreserve, close=true)
-                sethue("grey20")
-                strokepath()
+        for (n, p) in enumerate(faces)
+
+            @layer begin
+                sethue(cols[mod1(n, end)])
+                poly(p, close = true, action)
+            end
+
+            sethue("white")
+            setline(0.5)
+            poly(p, :stroke, close=true)
+
             end
         end
     end
-end)
+    setcolor("gold")
+    circle.(vertices, 2, :fill)
+end
+
+setopacity(0.7)
+object = make(geodesic, "geodesic")
+sortfaces!(object)
+pin(setscale!(object, 200, 200, 200), gfunction = mygfunction)
 
 finish() # hide
 nothing # hide
@@ -171,63 +193,15 @@ nothing # hide
 
 ![geodesic](assets/figures/geodesic.svg)
 
-
-## Rendering objects
-
-To render an object, there are many choices you can make about how to draw the faces and the vertices. Again, you do this with a gfunction. For objects, the gfunction will be more complex than for points and lines. It takes lists of vertices, faces, labels, and colors. Here's a generic example:
-
-```@example
-using Thebes, Luxor # hide
-Drawing(600, 500, "assets/figures/object2.svg") # hide
-
-function mygfunction(vertices, faces, labels; action=:fill)
-    cols = [Luxor.julia_green, Luxor.julia_red, Luxor.julia_purple, Luxor.julia_blue]
-    if !isempty(faces)
-        @layer begin
-            for (n, p) in enumerate(faces)
-
-                @layer begin
-                    setopacity(0.1)
-                    sethue(cols[mod1(n, end)])
-                    poly(p, close = true, action)
-                end
-
-                sethue("white")
-                setline(0.5)
-                poly(p, :stroke, close=true)
-
-            end
-        end
-    end
-end
-
-background("black")
-origin()
-setlinejoin("bevel")
-eyepoint(Point3D(150, 150, 20))
-axes3D(20)
-
-object = make(Pyramid, "Pyramid")
-
-setscale!(object, 100, 100, 100)
-
-pin(object, gfunction = mygfunction)
-
-finish() # hide
-nothing # hide
-```
-
-![object](assets/figures/object2.svg)
-
 ## Faces
 
-The faces are drawn in the order in which they were defined. But to be a realistic 3D drawing, the faces should be drawn so that the ones nearest the viewer are drawn last, hiding the ones that can't be seen.
+The faces are drawn in the order in which they were defined. But to be a realistic 3D drawing, the faces should be drawn so that the ones nearest the viewer are drawn last, or better still, not drawing the ones that can't be seen at all.
 
 !!! note
 
     This is why Thebes is more of a wireframe tool than any kind of genuine 3D application. Use Makie.jl. Or program Blender with Julia.
 
-In theory it's possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The `sortfaces!()` function tries to do that. For simple objects you could probably get by.
+In theory it's possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The `sortfaces!()` function tries to do that. For simple objects you could probably get by with this.
 
 ```@example
 using Thebes, Luxor # hide

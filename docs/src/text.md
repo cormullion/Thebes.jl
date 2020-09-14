@@ -6,7 +6,9 @@ DocTestSetup = quote
 
 # Text
 
-Displaying text is often difficult for applications, since it depends on font technology, which can be awkward and platform-dependent. For more information about using fonts, you should refer to the chapter in the Luxor documentation. Thebes provides a `text3D()` function that draws text in a 3D environment.
+Displaying text is often difficult for applications, since it depends on font technology, which can be awkward and platform-dependent. For more information about using fonts, you could refer to the chapter in the Luxor documentation.
+
+Thebes provides a `text3D()` function that draws text in a 3D environment.
 
 Specify the location of the text, and optionally supply rotation (a tuple of three angles for x, y, and z) and alignment. By default the text in Thebes (as in Luxor) runs along the x-axis, and it lies in the x plane.
 

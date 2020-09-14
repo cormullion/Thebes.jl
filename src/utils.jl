@@ -35,10 +35,12 @@ function axes3D(n=100)
 end
 
 """
-    drawunitbox(n=100, action=:stroke)
+    drawcube(n=10, action=:stroke)
+
+Draw a cube.
 """
-function drawunitbox(n=100, action=:stroke)
-    projection = CURRENTPROJECTION[1]
+function drawcube(n=10, action=:stroke)
+    projection = Thebes.CURRENTPROJECTION[1]
     @layer begin
         setline(2)
         fontsize(10)
@@ -50,33 +52,39 @@ function drawunitbox(n=100, action=:stroke)
         p4 = project(Point3D(0,  n,  0))
         p5 = project(Point3D(0,   0,  n))
         p6 = project(Point3D(n,  0,  n))
-        p7 = project(Point3D(n, n,  n))
+        p7 = project(Point3D(n,  n,  n))
         p8 = project(Point3D(0,  n,  n))
 
-        if all(i -> i != nothing, [p1, p2, p3,  p4, p5, p6, p7, p8])
-            label("p1 Point3D(0,   0,  0)", :N, p1)
-            label("p2 Point3D($(string(n)),  0,  0)", :N, p2)
-            label("p3 Point3D($(string(n)), $(string(n)),  0)", :N, p3)
-            label("p4 Point3D(0,  $(string(n)),  0)", :N, p4)
-            label("p5 Point3D(0,   0, $(string(n)))", :S, p5)
-            label("p6 Point3D($(string(n)),  0, $(string(n)))", :S, p6)
-            label("p7 Point3D($(string(n)), $(string(n)), $(string(n)))", :S, p7)
-            label("p8 Point3D(0,  $(string(n)), $(string(n)))", :S, p8)
-
+        if all(i -> i != nothing, [p1, p2, p3, p4]) # , p5, p6, p7, p8])
             sethue("red")
-            prettypoly([p1, p2, p3, p4], action, close=true)
+            prettypoly([p1, p2, p3, p4], action, close=true, () -> begin
+                circle(O, n/100)
+            end)
+        end
 
+        if all(i -> i != nothing, [p1, p2, p6, p5])
             sethue("purple")
-            prettypoly([p1, p2, p6, p5], action, close=true)
+            prettypoly([p1, p2, p6, p5], action, close=true, () -> begin
+                circle(O, n/100)
+            end)
+        end
 
+        if all(i -> i != nothing, [p3, p7, p8, p4])
             sethue("magenta")
-            prettypoly([p3, p7, p8, p4], action, close=true)
+            prettypoly([p3, p7, p8, p4], action, close=true, () -> begin
+                circle(O, n/100)
+            end)
+        end
 
+        if all(i -> i != nothing, [p5, p6, p7, p8])
             sethue("green")
-            prettypoly([p5, p6, p7, p8], action, close=true)
+            prettypoly([p5, p6, p7, p8], action, close=true, () -> begin
+                circle(O, n/100)
+            end)
         end
     end
 end
+
 
 """
     carpet(n; kind=:circular)
