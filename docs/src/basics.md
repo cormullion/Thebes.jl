@@ -39,7 +39,7 @@ There are two main things you have to know in order to draw in 3D:
 
 !!! note
 
-    `pin()` can perhaps be thought of as "pinning" a 3D coordinate onto the 2D flat drawing surface. If I think of a better name for this function, I'll change it, but I wanted to avoid everything obvious, like "draw", "render", "display", etc.
+    `pin()` can perhaps be thought of as "pinning" a 3D coordinate onto the 2D flat drawing surface. If I think of a better name for this function, I might change it, but I wanted to avoid everything obvious, like "draw", "render", "display", etc.
 
 ## A simple example
 
@@ -213,7 +213,7 @@ origin()
             gfunction = (p3, p2) -> circle(p2, 2, :fill))
     end
 finish() # hide
-none # hide
+nothing # hide
 ```
 
 ![point example 2](assets/figures/points-shadows.svg)
@@ -261,7 +261,7 @@ In general, if the `pin()` function can't display a point, it will probably just
 The `convert()` function provides a useful way to convert 2D coordinates to 3D. If you can generate your points in 2D, then you can convert them to 3D, and then  use `pin()` to project them back into two dimensions. This example shows how to draw the Julia logo dots. We can't use proper circles (because there are no Bezier paths in Thebes yet), so we use `ngon()` with enough points.
 
 ```@example
-using  Thebes, Luxor # hide
+using Thebes, Luxor # hide
 
 function juliadots3D(origin::Point3D, rotation=(0, 0, 0);
     radius=100)
@@ -308,7 +308,7 @@ function juliaroom()
 end
 
 juliaroom()
-none # hide
+nothing # hide
 
 ```
 

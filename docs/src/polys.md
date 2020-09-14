@@ -51,7 +51,7 @@ for p in mb
     end)
 end
 finish() # hide
-none # hide
+nothing # hide
 ```
 
 ![mobius band](assets/figures/mobiusband.svg)
