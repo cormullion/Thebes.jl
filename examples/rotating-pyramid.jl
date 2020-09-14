@@ -1,25 +1,19 @@
-using Thebes, Luxor, ColorSchemes
+using Thebes, Luxor
 
 
 function frame(scene, framenumber)
-    cols = colorschemes[first(Random.shuffle!(collect(keys(colorschemes))))]
-
-    cols = ColorSchemes.sandyterrain
     background("lightblue1")
     setopacity(0.5)
 
     theta = rescale(framenumber, 1, scene.framerange.stop, 0, 2pi)
+    perspective(500)
 
-    eyepoint    = Point3D(300cos(theta), 300sin(theta), 50 + 10sin(theta))
-    centerpoint = Point3D(0, 0, 0)
-    uppoint     = Point3D(0, 0, 1) # relative to centerpoint
-    projection  = newprojection(eyepoint, centerpoint, uppoint, 1)
+    eyepoint(Point3D(300cos(theta), 300sin(theta), 50 + 10sin(theta)))
 
     object  = make(Pyramid)
-    changescale!(object, 150, 150, 150)
-    # sortfaces!(object)
-    drawmodel(object, projection, cols=[cols[1], cols[2], cols[3]])
-    draw3daxes(50, projection)
+    setscale!(object, 150, 150, 150)
+    pin(object)
+    axes3D(50)
 
 end
 
