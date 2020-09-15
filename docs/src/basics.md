@@ -14,28 +14,23 @@ Thebes.jl is a small package that adds some simple 3D features to Luxor.jl.
 
 The 3D world of Thebes is superimposed on the 2D world of Luxor:
 
-```@example
-using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/threed.svg") # hide
-background("white") # hide
-origin() # hide
-sethue("blue") # hide
-helloworld() # hide
-rulers() # a Luxor fuction
-axes3D() # a Thebes function
+```
+using Thebes, Luxor
 
-finish() # hide
-nothing # hide
+@draw begin
+    rulers() # a Luxor function
+    axes3D() # a Thebes function
+end
 ```
 
-![point example](assets/figures/threed.svg)
+![the two worlds](assets/figures/threed.svg)
 
 
 There are two main things you have to know in order to draw in 3D:
 
 - the `Point3D` type specifies the x, y, and z coordinates of a point in 3D space.
 
-- there's a function called `pin()` that places the 3D points on the Luxor drawing surface.
+- there's a function called `pin()` that draws 2D graphics on the Luxor drawing at the position corresponding to the 3D point.
 
 !!! note
 
@@ -61,12 +56,11 @@ loc = pin(p1)            # Thebes
 label("there it is!", :e, loc + (5, 0), offset=10, leader=true)  # Luxor
 
 finish()                 # Luxor
-nothing # hide         
+
+nothing # hide
 ```
 
 ![point example](assets/figures/simpleexample.svg)
-
-Behind the scenes, there's a current viewing projection, but you don't need to worry about it yet.
 
 !!! tip
 
@@ -78,15 +72,14 @@ We can do lots of points - here's half a million or so.
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/pointcloud.png") #hide
+Drawing(600, 450, "assets/figures/pointcloud.png") #hide
+helloworld() # hide
 origin() # hide
 background("black")
 setopacity(0.5)
 sethue("gold")
 c = pin.([Point3D(randn() * 50, randn() * 50, randn() * 50)
-    for x in 1:75, y in 1:75, z in 1:75], gfunction = (pt3, pt2) -> begin
-        circle(pt2, 1, :fill)
-        end)
+    for x in 1:75, y in 1:75, z in 1:75])
 axes3D()
 finish() # hide
 nothing # hide
@@ -104,6 +97,7 @@ using Thebes, Luxor # hide
 Drawing(600, 300, "assets/figures/helix1.svg") #hide
 background("white") # hide
 origin() # hide
+helloworld() # hide
 axes3D()
 
 helix = [Point3D(100cos(θ), 100sin(θ), 10θ) for θ in 0:π/24:4π]
@@ -118,9 +112,9 @@ nothing # hide
 
 ## gfunctions
 
-The default graphical rendition of a 3D point is pretty basic. But you can modify the graphics drawn at each location by passing a function to the `pin()` function's optional keyword argument, `gfunction` .
+The default graphical rendition of a 3D point is pretty basic: a circle. But you can modify the graphics drawn at each location by passing a function to the `pin()` function's optional keyword argument, `gfunction` .
 
-Suppose you want to draw a randomly colored circle at the location, with radius 5 units.
+Suppose you want to draw a randomly colored circle at the location of each 3D point, with radius 5 units.
 
 ```@example
 using Thebes, Luxor # hide
@@ -144,7 +138,7 @@ nothing # hide
 
 The anonymous function passed to `gfunction` expects two arguments: the first contains the 3D point, the second contains the 2D point. The function then has the responsibility to draw the 2D graphics for that 2D point, with the possibility of using anything or nothing about the original 3D coordinates. This gives us more control over the rendering of the points.
 
-If you just want simple Luxor stars, you use the second (2D) argument - you don't need the first (3D) one, and we can use `_` to show that.
+If you just want simple Luxor stars, you use the second (2D) argument - you don't need the first (3D) one, and we can use the convention of having `_` to signify that.
 
 ```@example
 using Thebes, Luxor # hide
@@ -166,8 +160,7 @@ nothing # hide
 
 ![point stars example](assets/figures/helix2stars.svg)
 
-
-Next, the gfunction calculates the distance of the 3D point from the 3D origin, and then draws the 2D circle with a 2D radius that reflects the distance. The function therefore requires both the original 3D point (in the first argument `p3`) and the second argument (in `p2`), its 2D projection.
+In this next example, the gfunction calculates the distance of the 3D point from the 3D origin, and then draws the 2D circle with a 2D radius that reflects the distance. The function therefore requires both the original 3D point (in the first argument `p3`) and the second argument (in `p2`), its 2D projection.
 
 ```@example
 using Thebes, Luxor # hide
@@ -192,7 +185,7 @@ nothing # hide
 
 !!! note
 
-    Notice that all the graphics drawn are 2D graphics. This isn't real 3D, remember! The human brain is quite adaptable, though.
+    Remember that all the graphics drawn are 2D graphics. This isn't real 3D, remember! The human brain is quite adaptable, though.
 
 In the next example, each random 3D point is drawn twice, the second time with a zero z coordinate, to make shadows.
 
@@ -249,7 +242,9 @@ nothing # hide
 
 ![line example](assets/figures/helix4.svg)
 
-The default gfunction's arguments consist of two pairs of points (a pair of 3D points, and a pair of 2D points), not just two of each. Luxor's trusty old `line()` function, the default gfunction, connects the 2D pair. Or we could draw multicoloured arrows instead:
+The default gfunction's arguments consist of two pairs of points (a pair of 3D points, and a pair of 2D points), not just two of each, and Luxor's trusty old `line()` function is the default action, connecting the 2D pair.
+
+Or we could provide a custom gfunction to draw multicoloured arrows instead:
 
 ```@example
 using Thebes, Luxor # hide
@@ -293,17 +288,17 @@ using Thebes, Luxor # hide
 
 function juliadots3D(origin::Point3D, rotation=(0, 0, 0);
         radius=100)
-    dots = Array{Point3D, 1}[]
+    threedots = Array{Point3D, 1}[]
     points = ngon(O, radius, 3, -π/3, vertices=true) #
     @layer begin
         for (n, p) in enumerate(points)
             # zcoordinate defaults to 0 in convert()
-            push!(dots, origin .+ convert.(Point3D, ngon(p, 0.75 * radius, 60)))
+            push!(threedots, origin .+ convert.(Point3D, ngon(p, 0.75 * radius, 60)))
         end
-        for (n, d) in enumerate(dots)
+        for (n, dot) in enumerate(threedots)
             sethue([Luxor.julia_purple, Luxor.julia_green, Luxor.julia_red][mod1(n, end)])
             # rotate about an arbitrary point (first pt of green dot will do for now)
-            d1 = rotateby.(d, dots[2][1], rotation...)
+            d1 = rotateby.(dot, threedots[2][1], rotation...)
             pin(d1, gfunction = (_, pts) -> poly(pts, close=true, :fill))
         end
     end
