@@ -1,31 +1,30 @@
-
-
 """
     axes3D(n=100)
 
+Draw labelled 3D axes at `(0, 0, 0)` with length `n`.
 """
 function axes3D(n=100)
     projection = CURRENTPROJECTION[1]
     @layer begin
         fontsize(16)
         setline(2)
-        xaxis1 = project(Point3D(0.1,   0.1,  0.1))
-        xaxis2 = project(Point3D(n,   0.1,  0.1))
+        xaxis1 = project(Point3D(0.1,  0.1,  0.1))
+        xaxis2 = project(Point3D(n,    0.1,  0.1))
         sethue("red")
         if (xaxis1 != nothing) && (xaxis2 != nothing) && !isapprox(xaxis1, xaxis2)
             arrow(xaxis1, xaxis2)
             label("X", :N, xaxis2)
         end
-        yaxis1 = project(Point3D(0.1,   0.1,  0.1))
-        yaxis2 = project(Point3D(0.1,   n,  0.1))
+        yaxis1 = project(Point3D(0.1,  0.1,  0.1))
+        yaxis2 = project(Point3D(0.1,  n,  0.1))
         sethue("green")
 
         if (yaxis1 != nothing) &&  (yaxis2 != nothing) && !isapprox(yaxis1, yaxis2)
             arrow(yaxis1, yaxis2)
             label("Y", :N, yaxis2)
         end
-        zaxis1 = project(Point3D(0.1,   0.1,  0.1))
-        zaxis2 = project(Point3D(0.1,   0.1,  n))
+        zaxis1 = project(Point3D(0.1,  0.1,  0.1))
+        zaxis2 = project(Point3D(0.1,  0.1,  n))
         sethue("blue")
         if (zaxis1 != nothing) &&  (zaxis2 != nothing) && !isapprox(zaxis1, zaxis2)
             arrow(zaxis1, zaxis2)
@@ -89,7 +88,11 @@ end
 """
     carpet(n; kind=:circular)
 
-Draw a carpet centered at the origin, using current Luxor parameters.
+Draw a circular carpet centered at the origin, using current Luxor parameters.
+
+If `kind` is not `:circular`, the carpet will be a square.
+
+Points that can't be rendered are not included in the final shape.
 """
 function carpet(n=100; kind=:circular)
     projection = CURRENTPROJECTION[1]

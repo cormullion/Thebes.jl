@@ -10,17 +10,17 @@ So far we've been drawing individual points and lines. This gets tiresome when y
 
 ## Making objects
 
-You make an 3D object using `make()`, and then use `pin()` to throw it at the 2D canvas.
+You make a 3D object using `make()`, and then use `pin()` to throw it onto the 2D drawing.
 
 `make()` expects an array of 3D points, an (optional) array of face definitions, and an (optional) array of labels, plus an (optional) name. These arrays let you link faces with vertices. It returns an Object.
 
-A Cube object is already defined in Thebes (we needn't have made one, really). So after:
+A Cube object is already defined in Thebes (we needn't have made one earlier, really). So after:
 
 ```
 cube = make(Cube, "cube")
 ```
 
-you'll get:
+the `cube` variable contains:
 
 ```
 Object(
@@ -47,7 +47,7 @@ Object(
      "cube")
 ```
 
-The default rendering applied by `pin()` uses less than fifty shades of grey.
+The default rendering applied by `pin()` uses less than fifty shades of grey to draw it.
 
 ```@example
 using Thebes, Luxor # hide
@@ -92,19 +92,24 @@ nothing # hide
 
 ![point example](assets/figures/object1.svg)
 
-The gfunction here receives the `vertices`, `faces`, and `labels`, but the faces and labels are empty, so this simple `pin` only needs to draw a polygon through the vertices.
+The gfunction here receives the `vertices`, `faces`, and `labels` in `args`, but the faces and labels are empty, so this simple use of `pin` only needs to draw a polygon through the vertices.
 
+!!! warning
 
+    The gfunction used by `pin()` for objects doesn't give you access to the 3D points, unlike the versions used for points.
 
 ## OFF the shelf objects
 
-Obviously this isn't something you'd want to do "by hand" very often. Fortunately there are plenty of people who are prepared to make 3D objects and distribute them in standard file formats, via the internet. Thebes knows about one of these formats, the .OFF file format. So there are a few objects already available for you to use directly.
+Obviously this isn't something you'd want to do "by hand" very often. Fortunately there are plenty of people who are prepared to make 3D objects and distribute them in standard file formats, via the internet. Thebes.jl knows about one of these formats, the [Object File Format (.OFF)](https://en.wikipedia.org/wiki/OFF_(file_format)). So there are a few objects already available for you to use directly.
 
 ## Using objects
 
-The following objects have already been loaded (from `data/objects.jl`) when Thebes starts:
+The following objects are preloaded (from `data/objects.jl`) when Thebes.jl starts:
 
-- Cube, Tetrahedron, Pyramid, Teapot
+- Cube
+- Tetrahedron
+- Pyramid
+- Teapot
 
 ```@example
 using Thebes, Luxor # hide
@@ -128,9 +133,22 @@ finish() # hide
 nothing # hide
 ```
 
-`carpet(n)` is a customizable circular carpet.
-
 ![more objects](assets/figures/moreobjects.svg)
+
+```
+@svg begin
+    helloworld()
+    perspective(1600)
+    axes3D()
+    teapot = make(Teapot)
+    sortfaces!(teapot)
+    setscale!(teapot, 15, 15, 15)
+    setopacity(0.5)
+    pin(teapot)
+end
+```
+
+![teapot](assets/figures/teapot.svg)
 
 You can load a few more objects by including the `moreobjects.jl` file:
 
@@ -144,7 +162,7 @@ which brings these objects into play:
 
 ## Rendering objects
 
-To render an object, there are many choices you can make about how to draw the faces and the vertices. You do this with a gfunction. For objects, the gfunction is more complex than for points and lines. It takes lists of vertices, faces, and labels.
+To render objects, there are many choices you can make about how to draw the faces and the vertices. You do this with a gfunction. For objects, the gfunction is more complex than for points and lines. It takes lists of vertices, faces, and labels.
 
 ```@example
 using Thebes, Luxor # hide
@@ -195,13 +213,13 @@ nothing # hide
 
 ## Faces
 
-The faces are drawn in the order in which they were defined. But to be a realistic 3D drawing, the faces should be drawn so that the ones nearest the viewer are drawn last, or better still, not drawing the ones that can't be seen at all.
+The faces are drawn in the order in which they were defined. But to be a more realistic 3D drawing, the faces should be drawn so that the ones nearest the viewer are drawn last, or better still, so that the ones that can't be seen aren't drawn at all.
 
 !!! note
 
     This is why Thebes is more of a wireframe tool than any kind of genuine 3D application. Use Makie.jl. Or program Blender with Julia.
 
-In theory it's possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The `sortfaces!()` function tries to do that. For simple objects you could probably get by with this.
+In theory it's possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The `sortfaces!()` function tries to do that. For simple objects this may be sufficient.
 
 ```@example
 using Thebes, Luxor # hide
@@ -234,15 +252,14 @@ eyepoint(Point3D(150, 150, 150))
 perspective(0)
 axes3D(20)
 
-t = Tiler(600, 600, 1, 2)
-
 object = make(Cube, "cube")
-
 setscale!(object, 100, 100, 100)
-setposition!(object, Point3D(0, -200, 0))
 
+# draw as is
+setposition!(object, Point3D(0, -200, 0))
 pin(object, gfunction = mygfunction)
 
+# draw with sorted faces
 setposition!(object, Point3D(0, 400, 0))
 sortfaces!(object, eyepoint=eyepoint())
 pin(object, gfunction = mygfunction)

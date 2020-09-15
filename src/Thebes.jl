@@ -19,7 +19,7 @@ export project, Projection, newprojection,
 
        simplegfunction,
 
-       Object, Teapot, Cube, Tetrahedron, Pyramid, 
+       Object, Teapot, Cube, Tetrahedron, Pyramid,
 
        carpet, drawcube, axes3D,
        between, make, distance, midpoint,

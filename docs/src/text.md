@@ -6,11 +6,11 @@ DocTestSetup = quote
 
 # Text
 
-Displaying text is often difficult for applications, since it depends on font technology, which can be awkward and platform-dependent. For more information about using fonts, you could refer to the chapter in the Luxor documentation.
+For more information about using fonts, refer to the chapter in the Luxor documentation.
 
 Thebes provides a `text3D()` function that draws text in a 3D environment.
 
-Specify the location of the text, and optionally supply rotation (a tuple of three angles for x, y, and z) and alignment. By default the text in Thebes (as in Luxor) runs along the x-axis, and it lies in the x plane.
+You specify the location of the text, and optionally supply rotation (a tuple of three angles for x, y, and z) and text alignment. By default the text in Thebes (as in Luxor) runs along the x-axis, and it lies in the x plane.
 
 ```@example
 using Thebes, Luxor # hide
@@ -39,17 +39,13 @@ nothing # hide
 
 ![text ](assets/figures/text1.svg)
 
-!!! note
-
-    There are some infelicities in this part of the Thebes source code. My brain struggles with too many 3D rotations- perhaps you can help improve the code!
-
-You can also use Luxor's tools for text placement, such as `textextents()`, which helps you get the (2D) dimensions of text.
+You can also use some of Luxor's tools for text placement, such as `textextents()`, which helps you get the (2D) dimensions of text.
 
 ```@example
 using Thebes, Luxor, Colors # hide
 Drawing(600, 500, "assets/figures/text2.svg") # hide
-background("black")
-origin()
+background("black") # hide
+origin() # hide
 eyepoint(Point3D(250, 250, 550))
 perspective(500)
 

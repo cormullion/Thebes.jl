@@ -8,7 +8,6 @@ DocTestSetup = quote
 
 The `pin()` function accepts an array of 3D points as well as singletons and pairs. In this case, the default graphical treatment is to apply the `Luxor.poly(... :stroke)` function to the array of projected 2D points.
 
-This isn't always going to work perfectly - if the 3D points don't lie in a plane, for example, or if you decide to use `fill` rather than `stroke` actions.
 
 ## Möbius
 
@@ -38,7 +37,7 @@ end
 # ... in a drawing
 Drawing(600, 600, "assets/figures/mobiusband.svg") # hide
 origin() # hide
-background("black") # hide
+background("black")
 setline(0.5) # hide
 eyepoint(300, 300, 300)
 perspective(1200)
@@ -46,9 +45,7 @@ mb = makemobius()
 setopacity(1)
 sethue("white")
 for pgon in mb
-    pin(100pgon, gfunction  = (p3l, p2l) -> begin
-        poly(p2l, :stroke, close=true)
-    end)
+    pin(100pgon)
 end
 finish() # hide
 nothing # hide
@@ -56,10 +53,11 @@ nothing # hide
 
 ![mobius band](assets/figures/mobiusband.svg)
 
+This isn't always going to work perfectly - if the 3D points don't lie in a plane, for example, or if you decide to use `fill` rather than `stroke` actions.
 
 ## Chessboard
 
-You can probably risk filling a set of projected 3D points if they lie in the same 3D plane.
+You can probably risk 2D-filling a set of projected 3D points if they lie in the same 3D plane.
 
 Here's a simple example. The gfunction here:
 
@@ -96,7 +94,7 @@ for x in 1:8
             Point3D(k * x + w, k * y + h,  z),
             Point3D(k * x,     k * y + h,  z)
             ]
-        pts = pin(plist, gfunction = (p3, p2) -> begin
+        pts = pin(plist, gfunction = (_, p2) -> begin
                 poly(p2, close=true, :fillpreserve)
                 sethue("black")
                 strokepath()
@@ -110,7 +108,7 @@ nothing # hide
 
 ![chess board example](assets/figures/chessboard.svg)
 
-The polygon is constructed in `plist` and then `pin()` applies its custom gfunction to it.
+Each square is constructed in a `plist` and then `pin()` applies its custom gfunction to it.
 
 ## Surfaces
 

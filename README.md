@@ -8,11 +8,14 @@
 
 # Thebes
 
-Thebes.jl is a little extension package for Luxor.jl that provides some rudimentary 3D (or perhaps 2.5D) wireframe functionality.
+Thebes.jl is a little extension package for [Luxor.jl](https://github.com/JuliaGraphics/Luxor.jl) that provides some rudimentary 3D (2.5D?) wireframe functionality.
 
 ![mobius](docs/src/assets/figures/mobiusmovie.gif)
 
 
+#### ‘Thebes’?
+
+Luxor.jl is built on [Cairo.jl](https://github.com/JuliaGraphics/Cairo.jl), and Thebes.jl provides a 3D context for Luxor.jl. Luxor, the modern city about 675km south of Cairo, is built on the site of Thebes, the ancient capital city of Egypt, which flourished 5000 years ago.
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
 [docs-latest-url]: http://cormullion.github.io/Thebes.jl/dev/

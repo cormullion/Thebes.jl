@@ -8,7 +8,6 @@ import Base: +, -, ==, *, ^, <, >, /, !=
 import Base: size, getindex, isnan, isapprox, isequal, isless
 import Luxor: between, distance, midpoint
 
-
 function +(p1::Point3D, p2::Point3D)
     Point3D((p2.x + p1.x), (p2.y + p1.y), (p2.z + p1.z))
 end
@@ -89,7 +88,6 @@ isless(p1::Point3D, p2::Point3D)          = (p1.x < p2.x) && (p1.y < p2.y) && (p
 >(p1::Point3D, p2::Point3D)               = p2 < p1
 ==(p1::Point3D, p2::Point3D)              = isequal(p1, p2)
 
-
 """
     dotproduct3D(a::Point3D, b::Point3D)
 
@@ -153,10 +151,9 @@ function cartesiantospherical(x, y, z)
     return (phi, rho, theta)
 end
 
-# rotating points
+# rotations
 
-### TODO I haven't got this sorted yet
-
+### TODO 3D rotations hurt my brain, so this is a good hunting ground for bugs...
 """
     rotateX(pt3D::Point3D, rad)
 
@@ -224,7 +221,6 @@ function rotateby(newpt::Point3D, existingpt::Point3D, angleX, angleY, angleZ)
     return v + existingpt
 end
 
-
 """
     setposition!(ptlist::Point3D, pt::Point3D)
 
@@ -235,11 +231,10 @@ function setposition!(ptlist::Array{Point3D, 1}, pt::Point3D)
     return (+).(ptlist, pt)
 end
 
-
 """
     surfacenormal(ptlist)
 
-
+Finds one of these.
 """
 function surfacenormal(ptlist)
    normal = Point3D(0, 0, 0)

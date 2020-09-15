@@ -13,7 +13,6 @@ end
 
 Base.broadcastable(p::Projection) = Ref(p)
 
-
 """
    newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=0.0)
 
@@ -80,7 +79,7 @@ Project a 3D point onto a 2D surface, as defined by the current projection.
 
 TODO Currently this returns 'nothing' if the point is behind the eyepoint. This
 makes handling the conversion a bit harder, though, since the function now
-returns either a 2D Luxor point or `nothing`. This will probably change.
+returns either a 2D Luxor point or `nothing`.
 
 ```
 using Thebes, Luxor

@@ -10,9 +10,7 @@ There are few useful tools that might help you explore.
 
 ## Getting your hands dirty
 
-Thebes isn't really designed for serious use, or for modelling solid objects, so you might have to dig a bit deeper to get the results you want.
-
-For example, suppose you want to remove the front-facing faces of an object, in order to see inside. That's possible, but a bit of code is needed.
+Suppose you want to remove the front-facing faces of an object, in order to see inside. That's possible, but a bit of code is needed.
 
 ```@example
 using Thebes, Luxor, Colors # hide
@@ -26,8 +24,8 @@ setlinejoin("bevel")
 
 include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
 
-objectfull = make(cuboctahedron, "solid")
-objectcut  = make(cuboctahedron, "solid")
+objectfull = make(cuboctahedron, "the full object")
+objectcut  = make(cuboctahedron, "the cut-open object")
 
 map(o -> setscale!(o, 60, 60, 60), (objectfull, objectcut))
 
@@ -55,21 +53,21 @@ end
 
 function drawobject(object)
     pin(object, gfunction = (args...) -> begin
-    vertices, faces, labels = args
-    setopacity(0.8)
-    sethue("grey80")
-    if !isempty(faces)
-        @layer begin
-            for (n, p) in enumerate(faces)
-                poly(p, :fillpreserve, close=true)
-                @layer begin
-                    sethue("grey20")
-                    strokepath()
+        vertices, faces, labels = args
+        setopacity(0.8)
+        sethue("grey80")
+        if !isempty(faces)
+            @layer begin
+                for (n, p) in enumerate(faces)
+                    poly(p, :fillpreserve, close=true)
+                    @layer begin
+                        sethue("grey20")
+                        strokepath()
+                    end
                 end
             end
         end
-    end
-end)
+    end)
 end
 
 sortfaces!.((objectcut, objectfull))
@@ -94,7 +92,15 @@ The object on the left has had its four frontfacing faces removed. The one on th
 
 # Geometry
 
-There are a few useful geometry functions - some of them are extensions to the Luxor 2D versions.
+There are some basic geometry utility functions - some of them are analogous to their Luxor 2D counterparts.
+
+## General
+
+```@docs
+axes3D
+carpet
+drawcube
+```
 
 ## Distances
 
@@ -106,6 +112,7 @@ midpoint
 
 ## Rotations
 
+Work in progress:
 
 ```@docs
 rotateX
@@ -117,7 +124,7 @@ rotateby
 
 ## Position and scale
 
-You can change the position or position of objects:
+You can change the position and scale of things:
 
 ```@docs
 setposition!
@@ -126,8 +133,6 @@ setscale!
 ```
 
 ## Coordinates
-
-Here are some of the less frequently used functions.
 
 ```@docs
 sphericaltocartesian

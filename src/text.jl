@@ -4,7 +4,11 @@
         valign=:baseline,
         rotation = (0, 0, 0)))
 
-Draw text in 3D.
+Draw text at point `pt`, lying in the plane of the x axis.
+Angles in `rotation` can rotate the text away from the x
+plane around the x, y, and z axes.
+
+Uses current `fontface()` and `fontsize()` settings.
 """
 function text3D(str, origin::Point3D;
         halign=:left,
