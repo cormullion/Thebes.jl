@@ -162,7 +162,7 @@ which brings these objects into play:
 
 ## Rendering objects
 
-To render objects, there are many choices you can make about how to draw the faces and the vertices. You do this with a gfunction. For objects, the gfunction is more complex than for points and lines. It takes lists of vertices, faces, and labels.
+To render objects, there are many choices you can make about how to draw the faces and the vertices. You do this with a gfunction. For objects, the gfunction is more complex than for points and lines. It takes lists of vertices, faces, and labels. Here's a simple example:
 
 ```@example
 using Thebes, Luxor # hide
@@ -219,7 +219,7 @@ The faces are drawn in the order in which they were defined. But to be a more re
 
     This is why Thebes is more of a wireframe tool than any kind of genuine 3D application. Use Makie.jl. Or program Blender with Julia.
 
-In theory it's possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The `sortfaces!()` function tries to do that. For simple objects this may be sufficient.
+In theory it's possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The `sortfaces!()` function can do this for simple objects - it may be sufficient.
 
 ```@example
 using Thebes, Luxor # hide

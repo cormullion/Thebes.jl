@@ -8,10 +8,9 @@
 
 # Thebes
 
-Thebes.jl is a little extension package for [Luxor.jl](https://github.com/JuliaGraphics/Luxor.jl) that provides some rudimentary 3D (2.5D?) wireframe functionality.
+Thebes.jl is a little extension package for vector-graphics package [Luxor.jl](https://github.com/JuliaGraphics/Luxor.jl) that provides some rudimentary 3D (2.5D?) wireframe functionality.
 
 ![mobius](docs/src/assets/figures/mobiusmovie.gif)
-
 
 #### ‘Thebes’?
 

@@ -7,19 +7,19 @@ DocTestSetup = quote
 # Views and perspective
 
 ## Eyepoint and centerpoint
-
-Thebes takes a simple view of life. There's a global Thebes realm which is created when you start `using` it. It's a good idea to check and/or set the currentbviewing parameters when you start a new Luxor document, in case you're inheriting anything from a previous run.
+Thebes takes a simple view of life. There’s a global Thebes ‘realm’ which is created when you start `using` it. It’s a good idea to check and/or set the current viewing parameters when you start a new Luxor document, in case you’re inheriting anything from a previous run.
 
 Here are the functions that control your view of the 3D scene:
 
 - `helloworld()`  
 - `eyepoint()`  
 - `centerpoint()`
+- `uppoint()`
 - `perspective()`
 
-The first one is a useful one to remember: it simply resets all the viewing parameters to the defaults.
+The first one is a useful one to remember: it simply resets all the viewing parameters to the default settings.
 
-The `eyepoint()` function moves the `eyepoint`, and `centerpoint()` changes the location that is the center of your view. There's also an `uppoint()` function, usually sitting above `centerpoint`, which determines which way is up.
+The `eyepoint()` function moves the `eyepoint`, and `centerpoint()` changes the location that is the center of your view. The `uppoint()` function specifies a point relative to `centerpoint`. A line running from centerpoint to the up point defines the “up” direction.
 
 So, to see the side view of the helix, continued from the previous chapter, we can just lower our viewpoint a bit, from the default 100 in z down to 50:
 
@@ -95,7 +95,7 @@ This animation views the cube and changes the perspective slowly, starting at 0,
 
 ![perspective cube example](assets/figures/perspectivemovie-animation.gif)
 
-As the value of `perspective` increases, the apparent magnification increases, and parallel lines start to converge. The next example tries to show the converging parallel lines.
+As the value of `perspective` increases, the apparent magnification increases, and parallel lines start to converge. The next example shows the converging parallel lines.
 
 ```@example
 using Thebes, Luxor # hide
@@ -152,7 +152,7 @@ There are enough converging parallel lines there to give an ancient Egyptian arc
 
 ## Orbits
 
-To fly around the scene, you can move the eyepoint around, while looking at the center.
+To fly around the scene, move the eyepoint around, while looking at the center.
 
 ```
 using Thebes, Luxor

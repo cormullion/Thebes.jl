@@ -6,7 +6,7 @@ DocTestSetup = quote
 
 # The basics
 
-Thebes.jl is a small package that adds some simple 3D features to Luxor.jl.
+Thebes.jl is a small package that adds some simple 3D features to Luxor.jl, a vector-graphics package for graphics workers who like to automate their work with Julia.
 
 !!! warning
 
@@ -242,9 +242,9 @@ nothing # hide
 
 ![line example](assets/figures/helix4.svg)
 
-The default gfunction's arguments consist of two pairs of points (a pair of 3D points, and a pair of 2D points), not just two of each, and Luxor's trusty old `line()` function is the default action, connecting the 2D pair.
+The default gfunction's arguments consist of two pairs of points (a pair of 3D points, and a pair of 2D points), not just two of each, and Luxor's trusty `line()` function is the default action, connecting the 2D pair.
 
-Or we could provide a custom gfunction to draw multicoloured arrows instead:
+Or you could provide a custom gfunction to draw multicoloured arrows instead:
 
 ```@example
 using Thebes, Luxor # hide

@@ -66,8 +66,8 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
        U = Point3D(U.x * rinv, U.y * rinv, U.z * rinv)
    end
    ue = U.x * ipos.x + U.y * ipos.y + U.z * ipos.z # project e onto u
-   V = Point3D(U.y * W.z - U.z * W.y, # v is at rightangles to u and w
-               U.z * W.x - U.x * W.z, # it's the pictures y axis
+   V = Point3D(U.y * W.z - U.z * W.y, # v is at right angles to u and w
+               U.z * W.x - U.x * W.z, # it's the world's y axis
                U.x * W.y - U.y * W.x)
    ve = V.x * ipos.x + V.y * ipos.y + V.z * ipos.z # project e onto v
    Projection(U, V, W, ue, ve, we, ipos, center, up, perspective)
@@ -87,7 +87,7 @@ using Thebes, Luxor
 @svg begin
     eyepoint(Point3D(250, 250, 100))
     centerpoint(Point3D(0, 0, 0))
-    uppoint(Point3D(0, 0, 1))
+    uppoint(Point3D(0, 0, 10))
     sethue("grey50")
     carpet(300)
     axes3D(100)
@@ -125,8 +125,8 @@ end
 
 project(px, py, pz, proj::Projection) = project(Point3D(px, py, pz), proj)
 
+# functions to update the projection
 
-#  functions to update the projection
 function eyepoint()
     CURRENTPROJECTION[1].eyepoint
 end
@@ -148,10 +148,22 @@ function eyepoint(pt::Point3D)
 end
 
 function centerpoint(pt::Point3D)
+    if isapprox(pt, uppoint())
+        throw(error("if the uppoint is the centerpoint, which way is up?"))
+    end
     CURRENTPROJECTION[1] = newprojection(eyepoint(), pt, uppoint(), perspective())
 end
 
+"""
+    uppoint(pt::Point3D)
+
+Specify the "up" direction for the world: a line from the
+centerpoint to the uppoint defines the up direction.
+"""
 function uppoint(pt::Point3D)
+    if isapprox(pt, centerpoint())
+        throw(error("if the uppoint is the centerpoint, which way is up?"))
+    end
     CURRENTPROJECTION[1] = newprojection(eyepoint(), centerpoint(), pt, perspective())
 end
 

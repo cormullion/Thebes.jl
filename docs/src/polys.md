@@ -8,7 +8,6 @@ DocTestSetup = quote
 
 The `pin()` function accepts an array of 3D points as well as singletons and pairs. In this case, the default graphical treatment is to apply the `Luxor.poly(... :stroke)` function to the array of projected 2D points.
 
-
 ## Möbius
 
 ```@example
@@ -70,7 +69,7 @@ pin(plist,
     end)
 ```
 
-fills the polygon with the current color, then outlines it in black.
+fills the polygon with the current colour, then outlines it in black.
 
 ```@example
 using Thebes, Luxor # hide
