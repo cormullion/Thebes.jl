@@ -1,6 +1,6 @@
 using Thebes, Luxor
 
-include(string(@__FILE__, "../../../data/moreobjects.jl"))
+include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
 
 platonics = [:boxtorus, :concave, :cone, :crossshape, :cube, :cuboctahedron, :dodecahedron , :geodesic, :helix2,
 :icosahedron, :icosidodecahedron, :octahedron, :octtorus, :rhombicosidodecahedron,
@@ -35,12 +35,12 @@ function main()
         for y in -100:50:100
             object = make(moreobjects[2])
             setscale!(object, 10, 10, 10)
-            setposition!(object, x, y, 50rand())
+            moveby!(object, x, y, 50rand())
             rotateby!(object, object.vertices[1], rand(), rand(), rand())
             pin(object, gfunction = anothergfunction)
 
             # dark version
-            setposition!(object, 0, 0, -object.vertices[1].z)
+            moveby!(object, 0, 0, -object.vertices[1].z)
             setscale!(object, 1, 1, 0)
             pin(object, gfunction = anothergfunction)
         end

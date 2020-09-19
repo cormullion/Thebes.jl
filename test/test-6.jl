@@ -1,6 +1,6 @@
 using Thebes
 
-include(string(@__FILE__, "../../../data/moreobjects.jl"))
+include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
 
 moreobjects = [boxcube, boxtorus, concave, cone, crossshape, cube, cuboctahedron, dodecahedron , geodesic, helix2,
 icosahedron, icosidodecahedron, octahedron, octtorus, rhombicosidodecahedron,

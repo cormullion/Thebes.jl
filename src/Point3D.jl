@@ -195,10 +195,13 @@ function rotateZ(pt3D::Point3D, rad)
     return Point3D(x, y, pt3D.z)
 end
 
+# rotate around axes
+
 """
     rotateby(pt::Point3D, angleX, angleY, angleZ)
+    rotateby(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
 
-Return a new point resulting from rotating the specified point
+Return a new point/list of points resulting from rotating
 around the x, y, and z axes by angleX, angleY, angleZ.
 """
 function rotateby(pt::Point3D, angleX, angleY, angleZ)
@@ -208,10 +211,30 @@ function rotateby(pt::Point3D, angleX, angleY, angleZ)
     return v
 end
 
+function rotateby(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
+    return rotateby.(ptlist, angleX, angleY, angleZ)
+end
+
+"""
+    rotateby!(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
+
+Return the list of points with each one rotated
+around the x, y, and z axes by angleX, angleY, angleZ.
+"""
+function rotateby!(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
+    for i in eachindex(ptlist)
+        ptlist[i] = rotateby(ptlist[i], angleX, angleY, angleZ)
+    end
+    return ptlist
+end
+
+# rotate around point
+
 """
     rotateby(newpt::Point3D, existingpt::Point3D, angleX, angleY, angleZ)
 
-Return a new point resulting from rotating the point by angleX, angleY, angleZ around another point.
+Return a new point/list resulting from rotating each point
+by angleX, angleY, angleZ around another point.
 """
 function rotateby(newpt::Point3D, existingpt::Point3D, angleX, angleY, angleZ)
     v = newpt - existingpt
@@ -222,14 +245,28 @@ function rotateby(newpt::Point3D, existingpt::Point3D, angleX, angleY, angleZ)
 end
 
 """
-    setposition!(ptlist::Point3D, pt::Point3D)
+    rotateby!(ptlist::Point3D, existingpt::Point3D, angleX, angleY, angleZ)
 
-Move points by a vector..
+Rotate each point in the list by angleX, angleY, angleZ around another point.
+"""
+function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, angleX, angleY, angleZ)
+    for i in eachindex(ptlist)
+        ptlist[i] = rotateby(ptlist[i], existingpt, angleX, angleY, angleZ)
+    end
+    return ptlist
+end
 
 """
-function setposition!(ptlist::Array{Point3D, 1}, pt::Point3D)
-    return (+).(ptlist, pt)
+    moveby!(ptlist::Point3D, x, y, z)
+    moveby!(ptlist::Point3D, pt::Point3D)
+
+Move all points in the list by a vector.
+"""
+function moveby!(ptlist::Array{Point3D, 1}, pt::Point3D)
+    return ptlist .+= pt
 end
+
+moveby!(ptlist::Array{Point3D, 1}, x, y, z) = moveby!(ptlist, Point3D(x, y, z))
 
 """
     surfacenormal(ptlist)

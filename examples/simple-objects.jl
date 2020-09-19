@@ -4,12 +4,9 @@ function mygfunction(vertices, faces, labels; action=:fill)
     if !isempty(faces)
         @layer begin
             for (n, p) in enumerate(faces)
-                x = mod1(n, length(cols))
-                c = cols[mod1(labels[x], length(cols))]
-
                 @layer begin
                     setopacity(0.5)
-                    sethue(c)
+                    randomhue()
                     poly(p, action)
                 end
 
@@ -32,8 +29,6 @@ end
 
     #object = make(Cube, "Cube")
     #object = make(Tetrahedron, "Tetrahedron")
-    #object = make(AxesWire, "AxesWire")
-    #object = make(Carpet, "Carpet")
     object = make(Pyramid, "Pyramid")
 
     setscale!(object, 100, 100, 100)

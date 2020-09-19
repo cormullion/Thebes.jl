@@ -22,7 +22,7 @@ function main()
             objects = [object]
             s = rescale(k, 5, 20, 10, 20)
             setscale!.(objects, s, s, s)
-            setposition!.(objects, rescale(k, 1, 20, 50, 400), 1, 0)
+            moveby!.(objects, rescale(k, 1, 20, 50, 400), 1, 0)
             a = rescale(i, 1, 20, 0, 2pi)
             rotateby!.(objects, 0, 0, a)
             sortfaces!(objects, eyepoint = eyepoint)

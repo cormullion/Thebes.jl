@@ -75,7 +75,7 @@ end
     for x in -200:40:200
         for y in -200:40:200
             randomhue()
-            pin(setposition!(15makecube(), Point3D(x, y, 0)))
+            pin(moveby!(15makecube(), Point3D(x, y, 0)))
         end
     end
 

@@ -191,12 +191,12 @@ function pin(m::Array{Object, 1};
 end
 
 """
-    setposition!(m::Object, x, y, z)
-    setposition!(m::Object, pt::Point3D)
+    moveby!(m::Object, x, y, z)
+    moveby!(m::Object, pt::Point3D)
 
 Set the position of object to Point3D(x, y, z).
 """
-function setposition!(m::Object, x, y, z)
+function moveby!(m::Object, x, y, z)
    for n in 1:length(m.vertices)
        nv = m.vertices[n]
        m.vertices[n] = Point3D(nv.x + x, nv.y + y, nv.z + z)
@@ -205,18 +205,18 @@ function setposition!(m::Object, x, y, z)
 end
 
 """
-    setposition(m::Object, x, y, z)
-    setposition(m::Object, pt::Point3D)
+    moveby(m::Object, x, y, z)
+    moveby(m::Object, pt::Point3D)
 
 Set the position of a copy of the object to Point3D(x, y, z).
 """
-function setposition(m::Object, x, y, z)
+function moveby(m::Object, x, y, z)
    mcopy = deepcopy(m)
-   return setposition!(mcopy, x, y, z)
+   return moveby!(mcopy, x, y, z)
 end
 
-setposition(m::Object, pt::Point3D) = setposition(m::Object, pt.x, pt.y, pt.z)
-setposition!(m::Object, pt::Point3D) = setposition!(m::Object, pt.x, pt.y, pt.z)
+moveby(m::Object, pt::Point3D) = moveby(m::Object, pt.x, pt.y, pt.z)
+moveby!(m::Object, pt::Point3D) = moveby!(m::Object, pt.x, pt.y, pt.z)
 
 """
    setscale!(m::Object, x, y, z)

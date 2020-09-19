@@ -26,7 +26,7 @@ export project, Projection, newprojection,
 
        rotateX, rotateY, rotateZ, rotateby!, rotateby,
 
-       setposition!, setposition,
+       moveby!, moveby,
 
        objecttopoly,
        setscale!, sortfaces!,

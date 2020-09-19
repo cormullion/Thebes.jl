@@ -47,9 +47,9 @@ function main()
     setscale!(khafre,  21.6/2, 21.6/2, 14.3)
     setscale!(menkaure, 10.9/2, 10.9/2, 6.6)
 
-    setposition!(khufu,     30, 30, 0)
-    setposition!(khafre,   -0, -0, 0)
-    setposition!(menkaure, -30, -30, 0)
+    moveby!(khufu,     30, 30, 0)
+    moveby!(khafre,   -0, -0, 0)
+    moveby!(menkaure, -30, -30, 0)
 
     # needs depth sorting of faces
     sortfaces!.(pyramids, eyepoint=eyepoint())

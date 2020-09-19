@@ -127,8 +127,8 @@ rotateby
 You can change the position and scale of things:
 
 ```@docs
-setposition!
-setposition
+moveby!
+moveby
 setscale!
 ```
 

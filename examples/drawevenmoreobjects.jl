@@ -40,7 +40,7 @@ function main()
             scalefactor = distance(extrema(object.vertices)...)
 
             loc = Point3D(x, y, 0)
-            setposition!(object, loc)
+            moveby!(object, loc)
 
             setscale!(object, 1/scalefactor * K, 1/scalefactor * K, 1/scalefactor * K)
             randomhue()

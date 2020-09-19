@@ -1,6 +1,6 @@
 using Thebes, Luxor
 
-include(string(@__FILE__, "../../../data/moreobjects.jl"))
+include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
 
 moreobjects = [boxcube, boxtorus, concave, cone, crossshape, cube,
 cuboctahedron, dodecahedron , geodesic, # helix2, icosahedron,
@@ -40,7 +40,7 @@ function main()
             object = make(moreobjects[rand(1:length(moreobjects))])
 
             setscale!(object, 30, 30, 30)
-            setposition!(object, 1 * rand(), 1 * rand(), 10 * rand())
+            moveby!(object, 1 * rand(), 1 * rand(), 10 * rand())
             rotateby!(object, #= object.vertices[1],=# 2pi * rand(), 2pi * rand(), 2pi * rand())
             sortfaces!(object)
             pin(object, gfunction= anothergfunction)

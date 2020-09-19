@@ -256,11 +256,11 @@ object = make(Cube, "cube")
 setscale!(object, 100, 100, 100)
 
 # draw as is
-setposition!(object, Point3D(0, -200, 0))
+moveby!(object, Point3D(0, -200, 0))
 pin(object, gfunction = mygfunction)
 
 # draw with sorted faces
-setposition!(object, Point3D(0, 400, 0))
+moveby!(object, Point3D(0, 400, 0))
 sortfaces!(object, eyepoint=eyepoint())
 pin(object, gfunction = mygfunction)
 
