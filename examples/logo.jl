@@ -14,7 +14,7 @@ function main()
     circle(O + (0, 850), 800, :fill)
 
     object = make(rhombitruncated_icosidodecahedron, "solid")
-    setscale!(object, 180, 180, 180)
+    scaleby!(object, 180, 180, 180)
     rotateby!(object, π/3, 0, 0)
     sortfaces!(object, eyepoint=eyepoint())
     pin(object, gfunction = (args...) -> begin

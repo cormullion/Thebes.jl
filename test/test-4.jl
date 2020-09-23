@@ -39,7 +39,7 @@ function main()
             translate(pos)
             object = make(moreobjects[rand(1:length(moreobjects))])
 
-            setscale!(object, 30, 30, 30)
+            scaleby!(object, 30, 30, 30)
             moveby!(object, 1 * rand(), 1 * rand(), 10 * rand())
             rotateby!(object, #= object.vertices[1],=# 2pi * rand(), 2pi * rand(), 2pi * rand())
             sortfaces!(object)

@@ -31,7 +31,7 @@ end
     #object = make(Tetrahedron, "Tetrahedron")
     object = make(Pyramid, "Pyramid")
 
-    setscale!(object, 100, 100, 100)
+    scaleby!(object, 100, 100, 100)
     rotateby!(object, Point3D(0, 0, 0), 0, 0, rand())
     sortfaces!(object)
     sethue("orange")

@@ -34,14 +34,14 @@ function main()
     for x in -100:50:100
         for y in -100:50:100
             object = make(moreobjects[2])
-            setscale!(object, 10, 10, 10)
+            scaleby!(object, 10, 10, 10)
             moveby!(object, x, y, 50rand())
             rotateby!(object, object.vertices[1], rand(), rand(), rand())
             pin(object, gfunction = anothergfunction)
 
             # dark version
             moveby!(object, 0, 0, -object.vertices[1].z)
-            setscale!(object, 1, 1, 0)
+            scaleby!(object, 1, 1, 0)
             pin(object, gfunction = anothergfunction)
         end
     end

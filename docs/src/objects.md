@@ -124,7 +124,7 @@ for (n, o) in enumerate([Cube, Tetrahedron, Pyramid, Teapot])
     @layer begin
         translate(first.(t)[n])
         object = make(o, string(o))
-        setscale!(object, 50, 50, 50)
+        scaleby!(object, 50, 50, 50)
         pin(object)
     end
 end
@@ -142,7 +142,7 @@ nothing # hide
     axes3D()
     teapot = make(Teapot)
     sortfaces!(teapot)
-    setscale!(teapot, 15, 15, 15)
+    scaleby!(teapot, 15, 15, 15)
     setopacity(0.5)
     pin(teapot)
 end
@@ -203,7 +203,7 @@ end
 setopacity(0.7)
 object = make(geodesic, "geodesic")
 sortfaces!(object)
-pin(setscale!(object, 200, 200, 200), gfunction = mygfunction)
+pin(scaleby!(object, 200, 200, 200), gfunction = mygfunction)
 
 finish() # hide
 nothing # hide
@@ -253,7 +253,7 @@ perspective(0)
 axes3D(20)
 
 object = make(Cube, "cube")
-setscale!(object, 100, 100, 100)
+scaleby!(object, 100, 100, 100)
 
 # draw as is
 moveby!(object, Point3D(0, -200, 0))

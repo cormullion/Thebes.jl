@@ -27,7 +27,7 @@ include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
 objectfull = make(cuboctahedron, "the full object")
 objectcut  = make(cuboctahedron, "the cut-open object")
 
-map(o -> setscale!(o, 60, 60, 60), (objectfull, objectcut))
+map(o -> scaleby!(o, 60, 60, 60), (objectfull, objectcut))
 
 function cullfrontfaces!(m::Object, angle;
         eyepoint::Point3D=eyepoint())
@@ -129,7 +129,7 @@ You can change the position and scale of things:
 ```@docs
 moveby!
 moveby
-setscale!
+scaleby!
 ```
 
 ## Coordinates

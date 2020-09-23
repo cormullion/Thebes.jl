@@ -16,7 +16,7 @@ end
 function drawgeodesic(object, cpos, cscale, rotx, roty, rotz, eased)
     eyepoint(Point3D(1200, 1200, 200))
 
-    c = setscale!(object, cscale.x, cscale.y, cscale.z)
+    c = scaleby!(object, cscale.x, cscale.y, cscale.z)
     moveby!(c, cpos)
     theta = rescale(eased, 0, 1, 0, 2pi)
     rotateby!(c, Point3D(0, 0, 0), theta, theta, theta)

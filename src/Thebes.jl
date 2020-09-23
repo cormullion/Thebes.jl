@@ -29,7 +29,7 @@ export project, Projection, newprojection,
        moveby!, moveby,
 
        objecttopoly,
-       setscale!, sortfaces!,
+       scaleby!, sortfaces!,
        sphericaltocartesian, cartesiantospherical,
        dotproduct3D, magnitude, anglebetweenvectors,
        surfacenormal, face,

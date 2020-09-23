@@ -43,9 +43,9 @@ function main()
 
     pyramids = [menkaure, khafre, khufu]
 
-    setscale!(khufu,   23.0/2, 23.0/2, 14.7)
-    setscale!(khafre,  21.6/2, 21.6/2, 14.3)
-    setscale!(menkaure, 10.9/2, 10.9/2, 6.6)
+    scaleby!(khufu,   23.0/2, 23.0/2, 14.7)
+    scaleby!(khafre,  21.6/2, 21.6/2, 14.3)
+    scaleby!(menkaure, 10.9/2, 10.9/2, 6.6)
 
     moveby!(khufu,     30, 30, 0)
     moveby!(khafre,   -0, -0, 0)

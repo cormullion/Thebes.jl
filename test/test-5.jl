@@ -56,7 +56,7 @@ function main()
         @layer begin
             translate(pos)
             object = make(moreobjects[n])
-            setscale!(object, 15, 15, 15)
+            scaleby!(object, 15, 15, 15)
             rotateby!(object, 0, 0, 0)
             #sortfaces!(object)
             pin(object, gfunction = mygfunction)

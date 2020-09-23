@@ -22,7 +22,7 @@ function frame(scene, framenumber)
     for x in st, y in st, z in st
       n = x * y * z
       object = make(tetrahedron)
-      setscale!(object, 10, 10, 10)
+      scaleby!(object, 10, 10, 10)
       moveby!(object, x * 25, y * 25, z * 25)
       d = distance(object.vertices[end], Point3D(0, 0, 0))
       if d < 1200

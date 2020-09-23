@@ -171,7 +171,7 @@ end
 @svg begin
     helloworld()
     object = make(Cube)
-    setscale!(object, 100, 100, 100)
+    scaleby!(object, 100, 100, 100)
     rotateby!(object, object.vertices[1], rand(), rand(), rand())
     sortfaces!(object)
     pin(object, gfunction = mygfunction)
@@ -219,9 +219,11 @@ moveby(m::Object, pt::Point3D) = moveby(m::Object, pt.x, pt.y, pt.z)
 moveby!(m::Object, pt::Point3D) = moveby!(m::Object, pt.x, pt.y, pt.z)
 
 """
-   setscale!(m::Object, x, y, z)
+   scaleby!(m::Object, x, y, z)
+
+Scale object by x in x, y in y, and z in z.
 """
-function setscale!(m::Object, x, y, z)
+function scaleby!(m::Object, x, y, z)
    for n in 1:length(m.vertices)
        nv = m.vertices[n]
        m.vertices[n] = Point3D(nv.x * x, nv.y * y, nv.z * z)

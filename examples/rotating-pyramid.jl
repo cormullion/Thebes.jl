@@ -11,7 +11,7 @@ function frame(scene, framenumber)
     eyepoint(Point3D(300cos(theta), 300sin(theta), 50 + 10sin(theta)))
 
     object  = make(Pyramid)
-    setscale!(object, 150, 150, 150)
+    scaleby!(object, 150, 150, 150)
     pin(object)
     axes3D(50)
 

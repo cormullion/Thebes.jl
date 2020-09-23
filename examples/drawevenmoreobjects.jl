@@ -42,7 +42,7 @@ function main()
             loc = Point3D(x, y, 0)
             moveby!(object, loc)
 
-            setscale!(object, 1/scalefactor * K, 1/scalefactor * K, 1/scalefactor * K)
+            scaleby!(object, 1/scalefactor * K, 1/scalefactor * K, 1/scalefactor * K)
             randomhue()
             setopacity(0.5)
             pin(object, gfunction= anothergfunction)
