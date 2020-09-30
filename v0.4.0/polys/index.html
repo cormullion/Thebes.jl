@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Polygons and planes · Thebes</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="Thebes logo"/></a><div class="docs-package-name"><span class="docs-autofit">Thebes</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction to Thebes</a></li><li><a class="tocitem" href="../basics/">The basics</a></li><li><a class="tocitem" href="../views/">Views</a></li><li class="is-active"><a class="tocitem" href>Polygons and planes</a><ul class="internal"><li><a class="tocitem" href="#Mobius"><span>Möbius</span></a></li><li><a class="tocitem" href="#Chessboard"><span>Chessboard</span></a></li><li><a class="tocitem" href="#Surfaces"><span>Surfaces</span></a></li></ul></li><li><a class="tocitem" href="../objects/">Objects</a></li><li><a class="tocitem" href="../text/">Text</a></li><li><a class="tocitem" href="../tools/">Tools</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Polygons and planes</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Polygons and planes</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/cormullion/Thebes.jl/blob/master/docs/src/polys.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Polygons-and-planes"><a class="docs-heading-anchor" href="#Polygons-and-planes">Polygons and planes</a><a id="Polygons-and-planes-1"></a><a class="docs-heading-anchor-permalink" href="#Polygons-and-planes" title="Permalink"></a></h1><p>The <code>pin()</code> function accepts an array of 3D points as well as singletons and pairs. In this case, the default graphical treatment is to apply the <code>Luxor.poly(... :stroke)</code> function to the array of projected 2D points.</p><h2 id="Mobius"><a class="docs-heading-anchor" href="#Mobius">Möbius</a><a id="Mobius-1"></a><a class="docs-heading-anchor-permalink" href="#Mobius" title="Permalink"></a></h2><pre><code class="language-julia">function makemobius()
+    x(u, v) = (1 + (v/2 * cos(u/2))) * cos(u)
+    y(u, v) = (1 + (v/2 * cos(u/2))) * sin(u)
+    z(u, v) = v/2 * sin(u/2)
+    w = .5
+    st = 2π/200
+    Δ = .05
+    result = Array{Point3D, 1}[]
+    for u in 0:st:2π-st
+        for v in -w:Δ:w
+            p1 = Point3D(x(u,      v + Δ),   y(u,      v + Δ),     z(u,       v + Δ))
+            p2 = Point3D(x(u + st, v + Δ),   y(u + st, v + Δ),     z(u  + st, v + Δ))
+            p3 = Point3D(x(u + st, v),       y(u + st, v),         z(u + st,  v))
+            p4 = Point3D(x(u,      v),       y(u,      v),         z(u,       v))
+            push!(result, [p1, p2, p3, p4])
+        end
+    end
+    return result # as an array of 3D polygons
+end
+
+# ... in a drawing
+background(&quot;black&quot;)
+eyepoint(300, 300, 300)
+perspective(1200)
+mb = makemobius()
+setopacity(1)
+sethue(&quot;white&quot;)
+for pgon in mb
+    pin(100pgon)
+end</code></pre><p><img src="../assets/figures/mobiusband.svg" alt="mobius band"/></p><p>This isn&#39;t always going to work perfectly - if the 3D points don&#39;t lie in a plane, for example, or if you decide to use <code>fill</code> rather than <code>stroke</code> actions.</p><h2 id="Chessboard"><a class="docs-heading-anchor" href="#Chessboard">Chessboard</a><a id="Chessboard-1"></a><a class="docs-heading-anchor-permalink" href="#Chessboard" title="Permalink"></a></h2><p>You can probably risk 2D-filling a set of projected 3D points if they lie in the same 3D plane.</p><p>Here&#39;s a simple example. The gfunction here:</p><pre><code class="language-none">pin(plist,
+    gfunction = (p3, p2) -&gt; begin
+        poly(p2, close=true, :fillpreserve)
+        sethue(&quot;black&quot;)
+        strokepath()
+    end)</code></pre><p>fills the polygon with the current colour, then outlines it in black.</p><pre><code class="language-julia">perspective(1200)
+eyepoint(500, 500, 150)
+k = 20
+w, h = 20, 20
+for x in 1:8
+    for y in 1:8
+        iseven(x + y) ? sethue(&quot;grey90&quot;) : sethue(&quot;grey10&quot;)
+        z = 0
+        plist = [
+            Point3D(k * x,     k * y,      z),
+            Point3D(k * x + w, k * y,      z),
+            Point3D(k * x + w, k * y + h,  z),
+            Point3D(k * x,     k * y + h,  z)
+            ]
+        pts = pin(plist, gfunction = (_, p2) -&gt; begin
+                poly(p2, close=true, :fillpreserve)
+                sethue(&quot;black&quot;)
+                strokepath()
+            end)
+    end
+end</code></pre><p><img src="../assets/figures/chessboard.svg" alt="chess board example"/></p><p>Each square is constructed in a <code>plist</code> and then <code>pin()</code> applies its custom gfunction to it.</p><h2 id="Surfaces"><a class="docs-heading-anchor" href="#Surfaces">Surfaces</a><a id="Surfaces-1"></a><a class="docs-heading-anchor-permalink" href="#Surfaces" title="Permalink"></a></h2><p>A surface plot like the following also works quite well, mainly because each new polygon hides the ones behind it.</p><pre><code class="language-julia">perspective(600)
+eyepoint(500, 500, 500)
+
+k = 20
+xmax = 4π
+ymax = 4π
+st = 0.5
+
+f(x, y) = 2(sin(x) * cos(y)) + (cos(x) * sin(y))
+
+setline(.5)
+
+for x in -xmax:st:xmax
+    for y in -ymax:st:ymax
+        sethue(HSB(360rescale(x, -xmax, xmax), .8, .8))
+
+        p1 = Point3D(k * x,         k * y,        k * f(x,      y))
+        p2 = Point3D(k * x,         k * (y + st), k * f(x,      y +st))
+        p3 = Point3D(k * (x + st),  k * (y + st), k * f(x + st, y + st))
+        p4 = Point3D(k * (x + st),  k * y,        k * f(x + st, y))
+        pin([p1, p2, p3, p4], gfunction = (p3s, p2s) -&gt; begin
+            poly(p2s, close=true, :fill)
+            sethue(&quot;white&quot;)
+            poly(p2s, close=true, :stroke)
+        end)
+    end
+end
+
+axes3D(200)</code></pre><p><img src="../assets/figures/surfaceplot.svg" alt="surface plot example"/></p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>Don&#39;t forget to check out Makie.jl for genuine 3D plotting...</p></div></div></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../views/">« Views</a><a class="docs-footer-nextpage" href="../objects/">Objects »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 30 September 2020 13:24">Wednesday 30 September 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
