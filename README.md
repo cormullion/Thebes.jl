@@ -33,8 +33,8 @@ Luxor.jl is built on [Cairo.jl](https://github.com/JuliaGraphics/Cairo.jl), and 
 [pkg-0.7-img]: http://pkg.julialang.org/badges/Thebes_0.7.svg
 [pkg-0.7-url]: http://pkg.julialang.org/?pkg=Thebes&ver=0.7
 
-[travis-img]: https://travis-ci.org/cormullion/Thebes.jl.svg?branch=master
-[travis-url]: https://travis-ci.org/cormullion/Thebes.jl
+[travis-img]: https://travis-ci.com/cormullion/Thebes.jl.svg?branch=master
+[travis-url]: https://travis-ci.com/cormullion/Thebes.jl
 
 [appvey-img]: https://ci.appveyor.com/api/projects/status/jfa9e54lv92rqd3m?svg=true
 [appvey-url]: https://ci.appveyor.com/project/cormullion/thebes-jl/branch/master

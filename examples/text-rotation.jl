@@ -1,7 +1,5 @@
 using Thebes, Luxor, Colors
 
-
-
 function frame(scene, fn)
     background("black")
     eased_n = scene.easingfunction(fn, 0, 1, scene.framerange.stop)

@@ -28,7 +28,7 @@ fontsize(40)
 fontface("Georgia-Italic")
 
 text3D("the x-axis", Point3D(50, 0, 0))
-text3D("the y-axis", Point3D(0, 50, 0), rotation=(0, 0, π/2))
+text3D("the y-axis", Point3D(0, 50, 0), center=Point3D(0, 50, 0), rotation=(π/2, 0, π/2))
 text3D("the z-axis", Point3D(0, 0, 0), rotation=(0, π/2, 0), halign=:right)
 
 finish() # hide
@@ -41,7 +41,7 @@ You can also use some of Luxor's text functions, such as `textextents()`, which 
 
 ```@example
 using Thebes, Luxor, Colors # hide
-Drawing(600, 500, "assets/figures/text2.svg") # hide
+Drawing(800, 600, "assets/figures/text2.svg") # hide
 background("black") # hide
 origin() # hide
 eyepoint(Point3D(250, 250, 550))
@@ -52,11 +52,11 @@ fontsize(50)
 te = textextents("Julia")
 
 for y in -1200:te[3]:1200
-    for x in -1200:te[4]:1200
-            sethue(HSB(mod(x*y, 360), .8, .8))
-            text3D("Julia", Point3D(x, y, 0), rotation=(0, 0, π/2))
+        for x in -1200:te[4]:1200
+            sethue(HSB(mod(x*y, 360), .6, .9))
+        text3D("Julia", Point3D(x, y, 0), center=Point3D(x, y, 0), rotation=(0,0,π/2))
+        end
     end
-end
 finish() # hide
 nothing # hide
 ```
