@@ -1,6 +1,6 @@
 ```@meta
 DocTestSetup = quote
-    using Thebes, Luxor, Colors
+    using Thebes, Luxor, Colors, Rotations
     end
 ```
 
@@ -25,7 +25,6 @@ end
 
 ![the two worlds](assets/figures/threed.svg)
 
-
 There are two main things you have to know in order to draw in 3D:
 
 - the `Point3D` type specifies the x, y, and z coordinates of a point in 3D space.
@@ -35,7 +34,6 @@ There are two main things you have to know in order to draw in 3D:
 !!! note
 
     The `pin()` function sort of “pins” a 3D coordinate onto the 2D flat drawing surface. If I think of a better name for this function, I might change it, but I wanted to avoid everything obvious, like “draw”, “render”, “display”, “plot”, and have something short and easy to type.
-
 
 ## A simple example
 
@@ -284,22 +282,23 @@ The `convert()` function provides a useful way to convert 2D coordinates to 3D. 
 This example shows how to draw the familiar Julia coloured circles. We can't use real circles (because there are no Bézier paths in Thebes yet), so we use `ngon()` with plenty of sides - 60 is probably good enough if your output is high-quality SVG.
 
 ```@example
-using Thebes, Luxor # hide
+using Thebes, Luxor, Rotations # hide
 
-function juliadots3D(origin::Point3D, rotation=(0, 0, 0);
+function juliadots3D(origin::Point3D, rotation::Rotation=RotXYZ(0, 0, 0);
         radius=100)
     threedots = Array{Point3D, 1}[]
     points = ngon(O, radius, 3, -π/3, vertices=true) #
     @layer begin
         for (n, p) in enumerate(points)
             # zcoordinate defaults to 0 in convert()
+            # TODO broadcasting needs a look
             push!(threedots, origin .+ convert.(Point3D, ngon(p, 0.75 * radius, 60)))
         end
         for (n, dot) in enumerate(threedots)
             sethue([Luxor.julia_purple, Luxor.julia_green, Luxor.julia_red][mod1(n, end)])
             # rotate about an arbitrary point (first pt of green dot will do for now)
-            d1 = rotateby.(dot, threedots[2][1], rotation...)
-            pin(d1, gfunction = (_, pts) -> poly(pts, close=true, :fill))
+            rotateby!(dot, threedots[2][1], rotation)
+            pin(dot, gfunction = (_, pts) -> poly(pts, close=true, :fill))
         end
     end
 end
@@ -310,20 +309,20 @@ function juliaroom()
     background("black")
     helloworld()
     eyepoint(1200, 1200, 1200)
-    perspective(800)
-    for x in 30:50:500
-        for y in 30:50:500
-                juliadots3D(Point3D(x, y, 0), (0, 0, 0), radius=12)
+    perspective(1200)
+    for x in 30:30:500
+        for y in 30:30:500
+            juliadots3D(Point3D(x, y, 0), RotXYZ(0, 0, 0), radius=8)
         end
     end
-    for x in 30:50:500
-        for z in 30:50:500
-                juliadots3D(Point3D(x, 0, z), (π/2, π/2, 0), radius=12)
+    for x in 30:30:500
+        for z in 30:30:500
+            juliadots3D(Point3D(x, 0, z), RotXYZ(-π/2, 0, π/2), radius=8)
         end
     end
-    for y in 30:50:500
-        for z in 30:50:500
-                juliadots3D(Point3D(0, y, z), (0, π/2, -π), radius=12)
+    for y in 30:30:500
+        for z in 30:30:500
+            juliadots3D(Point3D(0, y, z), RotXYZ(0, π/2, 0), radius=8)
         end
     end
 

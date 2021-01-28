@@ -1,23 +1,29 @@
 """
-    text3D(str, pt::Point3D;
-        halign = :left,
-        valign = :baseline,
-        center = Point3D(0, 0, 0),
-        rotation = (0, 0, 0))
+text3D(str, anchor::Point3D;
+        halign=:left,
+        valign=:baseline,
+        about=Point3D(0., 0., 0.),
+        rotation::Rotation=RotXYZ(0, 0, 0))
 
 Draw text at point `pt`, lying in the plane of the x axis.
-Angles in `rotation` rotate the text. The `center` of rotation defaults 
-to `Point3D(0, 0, 0)`.
+Angles in `rotation` rotate the text about the `about` point,
+defaulting to `Point3D(0, 0, 0)`.
 
 Uses current `fontface()` and `fontsize()` settings.
 
-TODO Make sense of it all.
+Specify rotations using functions from Rotations.jl, such as:
+
+- `RotX(a)`
+- `RotZ(a)`
+- `RotXZ(a1, a2)`
+- `RotXYZ(a1, a2, a3)`
+
 """
 function text3D(str, anchor::Point3D;
         halign=:left,
         valign=:baseline,
-        center=Point3D(0, 0, 0),
-        rotation = (0, 0, 0))
+        about=Point3D(0., 0., 0.),
+        rotation::Rotation=RotXYZ(0, 0, 0))
 
     textoutlines(str, O, :path,
         halign=halign,
@@ -29,11 +35,11 @@ function text3D(str, anchor::Point3D;
      for e in o
         if e.element_type == 0
             (x, y) = e.points
-            newpt = rotateby(Point3D(anchor.x + x, anchor.y -y, anchor.z), center, rotation...)
+            newpt = rotateby(Point3D(anchor.x + x, anchor.y -y, anchor.z), about, rotation)
             pin(newpt,  gfunction = (p3, p2) -> move(p2))
         elseif e.element_type == 1
             (x, y) = e.points
-            newpt = rotateby(Point3D(anchor.x + x, anchor.y -y, anchor.z), center, rotation...)
+            newpt = rotateby(Point3D(anchor.x + x, anchor.y -y, anchor.z), about, rotation)
             pin(newpt,  gfunction = (p3, p2) -> line(p2))
         elseif e.element_type == 3
             closepath()

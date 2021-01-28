@@ -1,4 +1,4 @@
-using Thebes, Luxor, Colors
+using Thebes, Luxor, Colors, Rotations
 
 function frame(scene, fn)
     background("black")
@@ -6,15 +6,14 @@ function frame(scene, fn)
     sethue("gold")
     fontsize(50)
     helloworld()
-    eyepoint(400, 0, 200)
+    eyepoint(400, 50, 200)
     fontface("JuliaMono-Black")
-    #axes3D(100)
-    for i in 1:-.02:0
-        setopacity(1 - i)
-        sethue(HSB(360i, .8, .85))
-        text3D("Hello Ole", between(eyepoint()/5, Point3D(0, 0, 0), i), halign=:center,
-            rotation = (-π/2 + (eased_n * 2π), π, -π/2 + eased_n * 2π))
-    end
+    axes3D(100)
+    r = eased_n * 2π
+    text3D("Hello Ole",
+        Point3D(0, 0, 0),
+        halign=:center,
+        rotation = RotXYZ(-r, π/2 + r, π/2 + r))
 end
 
 oletext = Movie(300, 300, "oletext")

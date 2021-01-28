@@ -1,6 +1,8 @@
 module Thebes
 
 using Luxor
+using StaticArrays
+using Rotations
 
 include("utils.jl")
 include("Point3D.jl")

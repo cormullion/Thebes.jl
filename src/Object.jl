@@ -219,7 +219,7 @@ moveby(m::Object, pt::Point3D) = moveby(m::Object, pt.x, pt.y, pt.z)
 moveby!(m::Object, pt::Point3D) = moveby!(m::Object, pt.x, pt.y, pt.z)
 
 """
-   scaleby!(m::Object, x, y, z)
+    scaleby!(m::Object, x, y, z)
 
 Scale object by x in x, y in y, and z in z.
 """
@@ -245,16 +245,24 @@ function face(m::Object, n)
 end
 
 """
+    rotateby!(m::Object, r::Rotation)
     rotateby!(m::Object, angleX, angleY, angleZ)
 
-Rotate an object around the x, y, and/or z axis by angleX, angleY, angleZ.
+Rotate an object through rotation `r`, or around the x, y,
+and/or z axis by `angleX`, `angleY`, `angleZ`.
 """
 function rotateby!(m::Object, angleX, angleY, angleZ)
     for n in 1:length(m.vertices)
         v = m.vertices[n]
-        v = rotateX(v, angleX)
-        v = rotateY(v, angleY)
-        v = rotateZ(v, angleZ)
+        RotXYZ(angleX, angleY, angleZ)
+        m.vertices[n] = v
+    end
+    return m
+end
+
+function rotateby!(m::Object, r::Rotation)
+    for n in 1:length(m.vertices)
+        v = m.vertices[n] * r
         m.vertices[n] = v
     end
     return m
@@ -270,10 +278,16 @@ function rotateby(m::Object, angleX, angleY, angleZ)
     return rotateby!(mcopy, angleX, angleY, angleZ)
 end
 
+function rotateby(m::Object, r::Rotation)
+    mcopy = deepcopy(m)
+    return rotateby!(mcopy, r)
+end
+
 """
     rotateby!(m::Object, pt::Point3D, angleX, angleY, angleZ)
+    rotateby!(m::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
 
-Rotate an object around a point by angleX, angleY, angleZ.
+Rotate an object around a point by rotation r, or angleX, angleY, angleZ.
 """
 function rotateby!(m::Object, pt::Point3D, angleX, angleY, angleZ)
     for n in 1:length(m.vertices)
@@ -286,12 +300,26 @@ function rotateby!(m::Object, pt::Point3D, angleX, angleY, angleZ)
     return m
 end
 
+function rotateby!(m::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
+    for n in 1:length(m.vertices)
+        v = m.vertices[n] * r
+        m.vertices[n] = v
+    end
+    return m
+end
+
 """
     rotateby(m::Object, pt::Point3D, angleX, angleY, angleZ)
+    rotateby(m::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
 
-Rotate a copy of the object around a point by angleX, angleY, angleZ.
+Rotate a copy of the object around a point by rotation r, or angleX, angleY, angleZ.
 """
 function rotateby(m::Object, pt::Point3D, angleX, angleY, angleZ)
     mcopy = deepcopy(m)
     return rotateby!(mcopy, pt, angleX, angleY, angleZ)
+end
+
+function rotateby(m::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
+    mcopy = deepcopy(m)
+    return rotateby!(mcopy, pt, r)
 end

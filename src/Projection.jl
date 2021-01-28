@@ -127,24 +127,50 @@ project(px, py, pz, proj::Projection) = project(Point3D(px, py, pz), proj)
 
 # functions to update the projection
 
+"""
+    eyepoint()
+    eyepoint(pt::Point3D)
+
+Get or set the current eye position.
+"""
 function eyepoint()
     CURRENTPROJECTION[1].eyepoint
 end
 
+
+"""
+    centerpoint()
+    centerpoint(pt::Point3D)
+
+Get or set the current center position.
+"""
 function centerpoint()
     CURRENTPROJECTION[1].centerpoint
 end
 
+"""
+    uppoint()
+    uppoint(pt::Point3D)
+
+Get or set the current eye position.
+"""
 function uppoint()
     CURRENTPROJECTION[1].uppoint
 end
 
+"""
+    perspective()
+    perspective(n)
+
+Get or set the current  perspective.
+"""
 function perspective()
     CURRENTPROJECTION[1].perspective
 end
 
 function eyepoint(pt::Point3D)
     CURRENTPROJECTION[1] = newprojection(pt, centerpoint(), uppoint(), perspective())
+    return CURRENTPROJECTION[1].eyepoint
 end
 
 function centerpoint(pt::Point3D)
@@ -152,6 +178,7 @@ function centerpoint(pt::Point3D)
         throw(error("if the uppoint is the centerpoint, which way is up?"))
     end
     CURRENTPROJECTION[1] = newprojection(eyepoint(), pt, uppoint(), perspective())
+    return CURRENTPROJECTION[1].centerpoint
 end
 
 """
@@ -165,10 +192,12 @@ function uppoint(pt::Point3D)
         throw(error("if the uppoint is the centerpoint, which way is up?"))
     end
     CURRENTPROJECTION[1] = newprojection(eyepoint(), centerpoint(), pt, perspective())
+    return CURRENTPROJECTION[1].uppoint
 end
 
 function perspective(k)
     CURRENTPROJECTION[1] = newprojection(eyepoint(), centerpoint(), uppoint(), k)
+    return CURRENTPROJECTION[1].perspective
 end
 
 eyepoint(x, y, z) = eyepoint(Point3D(x, y, z))

@@ -36,10 +36,9 @@ end
 """
     drawcube(n=10, action=:stroke)
 
-Draw a cube.
+Draw a cube. `drawcube(1)` draws a wireframe unit cube.
 """
 function drawcube(n=10, action=:stroke)
-    projection = Thebes.CURRENTPROJECTION[1]
     @layer begin
         setline(2)
         fontsize(10)

@@ -1,18 +1,20 @@
-struct Point3D <: Real
-   x
-   y
-   z
+struct Point3D <: FieldVector{3, Float64}
+    x::Float64
+    y::Float64
+    z::Float64
 end
 
 import Base: +, -, ==, *, ^, <, >, /, !=
-import Base: size, getindex, isnan, isapprox, isequal, isless
+import Base: isnan, isapprox, isequal, isless, broadcastable
 import Luxor: between, distance, midpoint
+
+Base.broadcastable(x::Point3D) = Ref(x)
 
 function +(p1::Point3D, p2::Point3D)
     Point3D((p2.x + p1.x), (p2.y + p1.y), (p2.z + p1.z))
 end
 +(p1::Point3D, k::Number)              = Point3D(p1.x + k, p1.y + k, p1.z + k)
-+(k::Number, p2::Point3D)              = +(p1::Point3D, k::Number)
++(k::Number, p2::Point3D)              = +(p2::Point3D, k::Number)
 
 function -(p1::Point3D, p2::Point3D)
     Point3D((p1.x - p2.x), (p1.y - p2.y), (p1.z - p2.z))
@@ -27,7 +29,6 @@ end
 
 """
     distance(p1::Point3D, p2::Point3D)
-
 
 Return the distance between two points.
 
@@ -57,10 +58,6 @@ function between(couple::NTuple{2, Point3D}, x=0.5)
     return p1 + (x * (p2 - p1))
 end
 
-# for broadcasting
-Base.size(::Point3D) = 3
-Base.getindex(p::Thebes.Point3D, i::Int64) = [p.x, p.y, p.z][i]
-
 /(p2::Point3D, k::Number)              = Point3D(p2.x/k, p2.y/k, p2.z/k)
 ^(p::Point3D, e::Integer)              = Point3D(p.x^e,  p.y^e, p.z^e)
 ^(p::Point3D, e::Float64)              = Point3D(p.x^e,  p.y^e, p.z^e)
@@ -68,7 +65,7 @@ Base.getindex(p::Thebes.Point3D, i::Int64) = [p.x, p.y, p.z][i]
 # conversion
 
 function Base.convert(type::Type{Point3D}, pt::Point)
-    return Point3D(pt.x, pt.y, 0)
+    return Point3D(pt.x, pt.y, 0.0)
 end
 
 # some refinements
@@ -153,7 +150,8 @@ end
 
 # rotations
 
-### TODO 3D rotations hurt my brain, so this is a good hunting ground for bugs...
+
+# old versions just redirect to Rotations now
 """
     rotateX(pt3D::Point3D, rad)
 
@@ -162,24 +160,18 @@ Return a new point resulting from rotating the point around the x axis by an ang
 Rotations are anticlockwise when looking along axis from 0 to +axis.
 """
 function rotateX(pt3D::Point3D, rad)
-    cosa = cos(rad)
-    sina = sin(rad)
-    y = pt3D.y * cosa - pt3D.z * sina
-    z = pt3D.y * sina + pt3D.z * cosa
-    return Point3D(pt3D.x, y, z)
+    return RotX(rad) * pt3D
 end
 
 """
     rotateY(pt3D::Point3D, rad)
 
 Return a new point resulting from rotating the point around the y axis by an angle in radians.
+
+Rotations are anticlockwise when looking along axis from 0 to +axis.
 """
 function rotateY(pt3D::Point3D, rad)
-    cosa = cos(rad)
-    sina = sin(rad)
-    z = pt3D.z * cosa - pt3D.x * sina
-    x = pt3D.z * sina + pt3D.x * cosa
-    return Point3D(x, pt3D.y, z)
+    return RotY(rad) * pt3D
 end
 
 """
@@ -188,72 +180,110 @@ end
 Return a new point resulting from rotating the point around the z axis by an angle in radians.
 """
 function rotateZ(pt3D::Point3D, rad)
-    cosa = cos(rad)
-    sina = sin(rad)
-    x = pt3D.x * cosa - pt3D.y * sina
-    y = pt3D.x * sina + pt3D.y * cosa
-    return Point3D(x, y, pt3D.z)
+    return RotZ(rad) * pt3D
 end
 
 # rotate around axes
 
+## copies (new points)
 """
     rotateby(pt::Point3D, angleX, angleY, angleZ)
     rotateby(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
+    rotateby(point::Point3D, r::Rotation)
+    rotateby(ptlist::Array{Point3D, 1}, r::Rotation)
 
 Return a new point/list of points resulting from rotating
 around the x, y, and z axes by angleX, angleY, angleZ.
+
+The Z rotation is first, then the Y, then the X.
+
+A 3×3 rotation matrix parameterized by the
+"Tait-Bryant" XYZ Euler angle convention,
+consisting of first a rotation about the Z
+axis by theta3, followed by a rotation about
+the Y axis by theta2, and finally a rotation
+about the X axis by theta1.
 """
-function rotateby(pt::Point3D, angleX, angleY, angleZ)
-    v = rotateX(pt, angleX)
-    v = rotateY(v, angleY)
-    v = rotateZ(v, angleZ)
-    return v
+function rotateby(point::Point3D, angleX::Float64, angleY::Float64, angleZ::Float64)
+    return RotXYZ(angleX, angleY, angleZ) * point
 end
 
-function rotateby(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
+function rotateby(ptlist::Array{Point3D, 1}, angleX::Float64, angleY::Float64, angleZ::Float64)
     return rotateby.(ptlist, angleX, angleY, angleZ)
 end
 
+function rotateby(point::Point3D, r::Rotation)
+    return r * point
+end
+
+function rotateby(ptlist::Array{Point3D, 1}, r::Rotation)
+    return rotateby.(ptlist, r)
+end
+
+## update an array of points
 """
     rotateby!(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
 
-Return the list of points with each one rotated
-around the x, y, and z axes by angleX, angleY, angleZ.
+Modify a list of points by rotating each one around the
+x, y, and z axes by angleX, angleY, angleZ.
 """
-function rotateby!(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
+function rotateby!(ptlist::Array{Point3D, 1}, angleX::Float64, angleY::Float64, angleZ::Float64)
     for i in eachindex(ptlist)
         ptlist[i] = rotateby(ptlist[i], angleX, angleY, angleZ)
     end
     return ptlist
 end
 
-# rotate around point
+# rotate a point around another point
+
+## copy (new point)
 
 """
-    rotateby(newpt::Point3D, existingpt::Point3D, angleX, angleY, angleZ)
-
-Return a new point/list resulting from rotating each point
-by angleX, angleY, angleZ around another point.
+    rotateby(point::Point3D, about::Point3D, angleX, angleY, angleZ)
+    rotateby(point::Point3D, about::Point3D, r::Rotation)
+    rotateby(ptlist::Array{Point3D, 1}, about::Point3D, r::Rotation)
 """
-function rotateby(newpt::Point3D, existingpt::Point3D, angleX, angleY, angleZ)
-    v = newpt - existingpt
-    v = rotateX(v, angleX)
-    v = rotateY(v, angleY)
-    v = rotateZ(v, angleZ)
-    return v + existingpt
+function rotateby(point::Point3D, about::Point3D, angleX::Float64, angleY::Float64, angleZ::Float64)
+    return RotXYZ(angleX, angleY, angleZ) * (point - about) + about
+end
+function rotateby(point::Point3D, about::Point3D, r::Rotation)
+    return r * (point - about) + about
+end
+function rotateby(ptlist::Array{Point3D, 1}, about::Point3D, r::Rotation)
+    return rotateby.(ptlist, about, r)
 end
 
-"""
-    rotateby!(ptlist::Point3D, existingpt::Point3D, angleX, angleY, angleZ)
 
-Rotate each point in the list by angleX, angleY, angleZ around another point.
+## update an array of points
 """
-function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, angleX, angleY, angleZ)
+    rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, angleX, angleY, angleZ)
+    rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, r::Rotation)
+    rotateby!(ptlist::Array{Point3D, 1}, r::Rotation=RotXYZ{Float64})
+
+Rotate each point in the list by rotation (or angleX, angleY, angleZ) around another point (or origin).
+"""
+function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, angleX::Float64, angleY::Float64, angleZ::Float64)
     for i in eachindex(ptlist)
         ptlist[i] = rotateby(ptlist[i], existingpt, angleX, angleY, angleZ)
     end
     return ptlist
+end
+function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, r::Rotation)
+    for i in eachindex(ptlist)
+        ptlist[i] = rotateby(ptlist[i], existingpt, r)
+    end
+    return ptlist
+end
+
+rotateby!(ptlist::Array{Point3D, 1}, r::Rotation=RotXYZ{Float64}) = rotateby!(ptlist, Point3D(0.0, 0.0, 0.0), r)
+
+"""
+    moveby(pt::Point3D, d::Point3D)
+
+Return a new point that's the result of moving a point `pt` by a vector `d`.
+"""
+function moveby(pt::Point3D, d::Point3D)
+    return pt + d
 end
 
 """
@@ -269,11 +299,24 @@ end
 moveby!(ptlist::Array{Point3D, 1}, x, y, z) = moveby!(ptlist, Point3D(x, y, z))
 
 """
-    surfacenormal(ptlist)
+    scaleby!(ptlist::Array{Point3D, 1}, x, y, z)
+
+Scales a list of points by multiplying by `x` in X, `y` in Y, `z` in Z.
+"""
+function scaleby!(ptlist::Array{Point3D, 1}, x, y, z)
+   for n in 1:length(ptlist)
+       v = ptlist[n]
+       ptlist[n] = Point3D(v.x * x, v.y * y, v.z * z)
+   end
+   return ptlist
+end
+
+"""
+    surfacenormal(ptlist::Array{Point3D, 1})
 
 Finds one of these.
 """
-function surfacenormal(ptlist)
+function surfacenormal(ptlist::Array{Point3D, 1})
    normal = Point3D(0, 0, 0)
    for i in 1:length(ptlist)
       vertexCurrent = ptlist[i]

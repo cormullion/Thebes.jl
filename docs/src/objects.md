@@ -1,6 +1,6 @@
 ```@meta
 DocTestSetup = quote
-    using Thebes, Luxor, Colors
+    using Thebes, Luxor, Colors, Rotations
     end
 ```
 
