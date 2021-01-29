@@ -39,7 +39,7 @@ function mygfunction(vertices, faces, labels; action=:fill)
 end
 
 function main()
-    Drawing(800, 800.0, "/tmp/test-5.svg")
+    Drawing(800, 800.0, "test-5.svg")
     origin()
 
     eyepoint(Point3D(500, 500, 500))

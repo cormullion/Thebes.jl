@@ -22,7 +22,7 @@ function mygfunction(vertices, faces, labels, action=:fill)
 end
 
 function main()
-    Drawing(800, 800, "/tmp/moreobjects.svg")
+    Drawing(800, 800, "moreobjects.svg")
     origin()
     t = Table(6, 6, 100, 80)
 

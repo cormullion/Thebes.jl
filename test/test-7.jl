@@ -9,7 +9,7 @@ platonics = [:boxtorus, :concave, :cone, :crossshape, :cube, :cuboctahedron, :do
 :truncated_dodecahedron, :truncated_icosahedron, :truncated_octahedron, :truncated_tetrahedron]
 
 function main()
-    Drawing(800, 800, "/tmp/cubes.svg")
+    Drawing(800, 800, "cubes.svg")
     origin()
     background("orange")
     #setopacity(0.75)

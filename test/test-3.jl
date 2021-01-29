@@ -1,7 +1,7 @@
 using Thebes, Luxor, Random
 
 function main()
-    Drawing(800, 800, "/tmp/test3.png")
+    Drawing(800, 800, "test3.png")
     background("azure")
     origin()
 

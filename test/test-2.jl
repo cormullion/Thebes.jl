@@ -5,7 +5,7 @@ Thebes.simplegfunction(vertices, faces, labels, action=:fill)
 
 function main()
 
-    Drawing(400, 400, "/tmp/test2-pyramids.png")
+    Drawing(400, 400, "test2-pyramids.png")
     origin()
     background("white")
     setopacity(1)

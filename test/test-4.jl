@@ -25,7 +25,7 @@ end
 
 function main()
 
-    Drawing(800, 800, "/tmp/test-4.svg")
+    Drawing(800, 800, "test-4.svg")
     background("ivory")
     origin()
     setopacity(0.5)

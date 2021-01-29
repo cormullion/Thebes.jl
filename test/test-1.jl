@@ -3,7 +3,7 @@ mygfunction(vertices, faces, labels) =
 Thebes.simplegfunction(vertices, faces, labels, action=:fill)
 
 function main()
-    Drawing(800, 800, "/tmp/test1.svg")
+    Drawing(800, 800, "test1.svg")
     origin()
     background("grey95")
     setopacity(0.7)

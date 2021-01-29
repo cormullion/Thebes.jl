@@ -56,7 +56,7 @@ te = textextents("Julia")
 for y in -1200:te[3]:1200
         for x in -1200:te[4]:1200
             sethue(HSB(mod(x*y, 360), .6, .9))
-            text3D("Julia", Point3D(x, y, 0), center=Point3D(x, y, 0), rotation=RotZ(π/2))
+            text3D("Julia", Point3D(x, y, 0), about=Point3D(x, y, 0), rotation=RotZ(π/2))
         end
     end
 finish() # hide

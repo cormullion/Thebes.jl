@@ -1,5 +1,5 @@
 """
-text3D(str, anchor::Point3D;
+     text3D(str, anchor::Point3D;
         halign=:left,
         valign=:baseline,
         about=Point3D(0., 0., 0.),
@@ -17,7 +17,6 @@ Specify rotations using functions from Rotations.jl, such as:
 - `RotZ(a)`
 - `RotXZ(a1, a2)`
 - `RotXYZ(a1, a2, a3)`
-
 """
 function text3D(str, anchor::Point3D;
         halign=:left,
