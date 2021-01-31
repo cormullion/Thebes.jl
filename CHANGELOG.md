@@ -1,6 +1,6 @@
 # Changelog
 
-## [v0.5.0] - forthcoming
+## [v0.5.0] - 2020-01-31
 
 ### Added
 
@@ -8,9 +8,9 @@
 
 ### Changed
 
-- Point3D are now FieldVectors from StaticArrays.jl
+- Point3Ds are now FieldVectors from StaticArrays.jl
 - rotations now calculated by Rotations.jl
-- rotateby functions modified
+- all `rotateby` functions modified
 
 ### Removed
 

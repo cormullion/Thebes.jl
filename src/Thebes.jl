@@ -4,8 +4,8 @@ using Luxor
 using StaticArrays
 using Rotations
 
-include("utils.jl")
 include("Point3D.jl")
+include("utils.jl")
 include("Projection.jl")
 include("Object.jl")
 include("pin.jl")
@@ -34,7 +34,7 @@ export project, Projection, newprojection,
        scaleby!, sortfaces!,
        sphericaltocartesian, cartesiantospherical,
        dotproduct3D, magnitude, anglebetweenvectors,
-       surfacenormal, face,
+       surfacenormal, face, crossproduct3D, pointsperpendicular,
 
        text3D
 

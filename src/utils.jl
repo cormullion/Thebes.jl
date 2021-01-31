@@ -117,3 +117,32 @@ function carpet(n=100; kind=:circular)
         end
     end
 end
+
+"""
+    crossproduct3D(A::Point3D, B::Point3D)
+
+Find one of these.
+"""
+function crossproduct3D(A::Point3D, B::Point3D)
+    x = (A.y * B.z) - (A.z * B.y)
+    y = (A.z * B.x) - (A.x * B.z)
+    z = (A.x * B.y) - (A.y * B.x)
+    return Point3D(x, y, z)
+end
+
+"""
+    pointsperpendicular(p1::Point3D, p2::Point3D, radius, angles = [0, π])
+
+Find points perpendicular to a line joining p1 and p2.
+Points are `radius` units away from the line.
+"""
+function pointsperpendicular(p1::Point3D, p2::Point3D, radius, angles = [0, π])
+    V3 = p2 - p1 # unit vector
+    V3 /= distance(Point3D(0.0, 0.0, 0.0), V3)
+    e = Point3D(0.0, 0.0, 1.0)
+    V1 = crossproduct3D(e, V3) # unit vector perpendicular to both e and V3
+    V1 /= distance(Point3D(0.0, 0.0, 0.0), V1)
+    V2 = crossproduct3D(V3, V1) # third unit vector perpendicular to both V3 and V1
+    # find points P on the circle θ radians relative to vector V1 (x-axis)
+    return [p1 + radius * (cos(θ) * V1 + sin(θ) * V2) for θ in angles]
+end

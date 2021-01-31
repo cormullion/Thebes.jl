@@ -9,7 +9,7 @@ Draw text at point `pt`, lying in the plane of the x axis.
 Angles in `rotation` rotate the text about the `about` point,
 defaulting to `Point3D(0, 0, 0)`.
 
-Uses current `fontface()` and `fontsize()` settings.
+Uses Luxor's `fontface()` and `fontsize()` settings.
 
 Specify rotations using functions from Rotations.jl, such as:
 

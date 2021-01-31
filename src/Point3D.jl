@@ -106,12 +106,16 @@ end
 """
     anglebetweenvectors(v1::Point3D, v2::Point3D)
 
-Calclates anglebetweenvectors
+Calclate the angle between two vectors.
 """
 function anglebetweenvectors(v1::Point3D, v2::Point3D)
     intermediate = dotproduct3D(v1, v2)/(magnitude(v1) * magnitude(v2))
     # avoid domain errors
-    return acos(min(max(-1, intermediate), 1))
+    if isnan(intermediate)
+        return 0.0
+    else
+        return acos(min(max(-1, intermediate), 1))
+    end
 end
 
 """
@@ -127,7 +131,7 @@ end
 """
     sphericaltocartesian(rho, theta, phi)
 
-Return Point3D(x, y, z) of (rho, theta, phi).
+Return `Point3D(x, y, z)` corresponding to `(rho, theta, phi)`.
 """
 function sphericaltocartesian(rho, theta, phi)
     x = rho * sin(phi) * cos(theta)

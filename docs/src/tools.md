@@ -314,7 +314,9 @@ sphericaltocartesian
 cartesiantospherical
 
 dotproduct3D
+crossproduct3D
 magnitude
 anglebetweenvectors
 surfacenormal
+pointsperpendicular
 ```
