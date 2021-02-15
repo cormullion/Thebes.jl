@@ -153,7 +153,7 @@ end
 You can load a few more objects by including the `moreobjects.jl` file:
 
 ```
-include("data/moreobjects.jl")
+include(dirname(dirname(pathof(Thebes))) * "/data/moreobjects.jl")
 ```
 
 which brings these objects into play:

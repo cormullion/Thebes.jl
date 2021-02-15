@@ -253,17 +253,14 @@ and/or z axis by `angleX`, `angleY`, `angleZ`.
 """
 function rotateby!(m::Object, angleX, angleY, angleZ)
     for n in 1:length(m.vertices)
-        v = m.vertices[n]
-        RotXYZ(angleX, angleY, angleZ)
-        m.vertices[n] = v
+        m.vertices[n] = RotXYZ(angleX, angleY, angleZ) * m.vertices[n]
     end
     return m
 end
 
 function rotateby!(m::Object, r::Rotation)
     for n in 1:length(m.vertices)
-        v = m.vertices[n] * r
-        m.vertices[n] = v
+        m.vertices[n] = r * m.vertices[n]
     end
     return m
 end
