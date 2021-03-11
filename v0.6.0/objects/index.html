@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Objects · Thebes</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="Thebes logo"/></a><div class="docs-package-name"><span class="docs-autofit">Thebes</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction to Thebes</a></li><li><a class="tocitem" href="../basics/">The basics</a></li><li><a class="tocitem" href="../views/">Views</a></li><li><a class="tocitem" href="../polys/">Polygons and planes</a></li><li class="is-active"><a class="tocitem" href>Objects</a><ul class="internal"><li><a class="tocitem" href="#Making-objects"><span>Making objects</span></a></li><li><a class="tocitem" href="#OFF-the-shelf-objects"><span>OFF the shelf objects</span></a></li><li><a class="tocitem" href="#Using-objects"><span>Using objects</span></a></li><li><a class="tocitem" href="#Rendering-objects"><span>Rendering objects</span></a></li><li><a class="tocitem" href="#Faces"><span>Faces</span></a></li><li><a class="tocitem" href="#Using-custom-code"><span>Using custom code</span></a></li></ul></li><li><a class="tocitem" href="../text/">Text</a></li><li><a class="tocitem" href="../tools/">Tools</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Objects</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Objects</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/cormullion/Thebes.jl/blob/master/docs/src/objects.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Objects"><a class="docs-heading-anchor" href="#Objects">Objects</a><a id="Objects-1"></a><a class="docs-heading-anchor-permalink" href="#Objects" title="Permalink"></a></h1><p>So far we&#39;ve been drawing individual points and lines. This gets tiresome when you have a lot of them. Fortunately, Thebes has a few features for handling larger groups of points.</p><h2 id="Making-objects"><a class="docs-heading-anchor" href="#Making-objects">Making objects</a><a id="Making-objects-1"></a><a class="docs-heading-anchor-permalink" href="#Making-objects" title="Permalink"></a></h2><p>You make a 3D object using <code>make()</code>, and then use <code>pin()</code> to throw it onto the 2D drawing.</p><p><code>make()</code> expects an array of 3D points, an (optional) array of face definitions, and an (optional) array of labels, plus an (optional) name. These arrays let you link faces with vertices. It returns an Object.</p><p>A Cube object is already defined in Thebes (we needn&#39;t have made one earlier, really). So after:</p><pre><code class="language-none">cube = make(Cube, &quot;cube&quot;)</code></pre><p>the <code>cube</code> variable contains:</p><pre><code class="language-none">Object(
+    Point3D[
+        Point3D(-0.5, 0.5, -0.5),
+        Point3D(0.5, 0.5, -0.5),
+        Point3D(0.5, -0.5, -0.5),
+        Point3D(-0.5, -0.5, -0.5),
+        Point3D(-0.5, 0.5, 0.5),
+        Point3D(0.5, 0.5, 0.5),
+        Point3D(0.5, -0.5, 0.5),
+        Point3D(-0.5, -0.5, 0.5)
+    ],
+
+    [[1, 2, 3, 4],
+     [2, 6, 7, 3],
+     [6, 5, 8, 7],
+     [5, 1, 4, 8],
+     [1, 5, 6, 2],
+     [4, 3, 7, 8]],
+
+     [1, 2, 3, 4, 5, 6],
+
+     &quot;cube&quot;)</code></pre><p>The default rendering applied by <code>pin()</code> is an attempt at a simple hidden-surface display. In real 3D software, this process has to be far more sophisticated.</p><pre><code class="language-julia">eyepoint(10, 10, 10)
+perspective(3000)
+cube = make(Cube, &quot;cube&quot;)
+pin(cube)</code></pre><p><img src="../assets/figures/simplecubeobject.svg" alt="simple cube object"/></p><p>Here&#39;s a very simple example of how you might make your own object from scratch.</p><pre><code class="language-julia">tol = 0.001
+a = Point3D[]
+for t in -2pi:tol:2pi
+    push!(a, Point3D((100 + cos(5t)) * cos(3t), (100 + cos(5t)) * sin(2t), sin(5t)))
+end
+sethue(&quot;darkorange&quot;)
+knot = make([a, []], &quot;knot&quot;)
+
+pin(knot, gfunction = (o) -&gt; poly(objecttopoly(o)[1], :stroke))</code></pre><p><img src="../assets/figures/object1.svg" alt="point example"/></p><p>The <code>objecttopoly()</code> function returns a tuple, containing the 2D vertices, and the polygons that define the faces.</p><h2 id="OFF-the-shelf-objects"><a class="docs-heading-anchor" href="#OFF-the-shelf-objects">OFF the shelf objects</a><a id="OFF-the-shelf-objects-1"></a><a class="docs-heading-anchor-permalink" href="#OFF-the-shelf-objects" title="Permalink"></a></h2><p>Obviously this isn&#39;t something you&#39;d want to do &quot;by hand&quot; very often. Fortunately there are plenty of people who are prepared to make 3D objects and distribute them in standard file formats, via the internet. Thebes.jl knows about one of these formats, the <a href="https://en.wikipedia.org/wiki/OFF_(file_format)">Object File Format (.OFF)</a>. So there are a few objects already available for you to use directly.</p><h2 id="Using-objects"><a class="docs-heading-anchor" href="#Using-objects">Using objects</a><a id="Using-objects-1"></a><a class="docs-heading-anchor-permalink" href="#Using-objects" title="Permalink"></a></h2><p>The following objects are preloaded (from <code>data/objects.jl</code>) when Thebes.jl starts:</p><ul><li>Cube</li><li>Tetrahedron</li><li>Pyramid</li><li>Teapot</li></ul><pre><code class="language-julia">t = Tiler(600, 300, 2, 2)
+setline(0.5)
+for (n, o) in enumerate([Cube, Tetrahedron, Pyramid, Teapot])
+    @layer begin
+        translate(first.(t)[n])
+        object = make(o, string(o))
+        scaleby!(object, 80, 80, 80)
+        pin(object)
+    end
+end</code></pre><p><img src="../assets/figures/moreobjects.svg" alt="more objects"/></p><pre><code class="language-julia">helloworld()
+axes3D(200)
+teapot = make(Teapot)
+setline(0.5)
+scaleby!(teapot, 100, 100, 100)
+pin(teapot, gfunction=wireframe)</code></pre><p><img src="../assets/figures/teapot.svg" alt="teapot"/></p><p>You can load a few more objects by including the <code>moreobjects.jl</code> file:</p><pre><code class="language-none">include(dirname(dirname(pathof(Thebes))) * &quot;/data/moreobjects.jl&quot;)</code></pre><p>which brings these objects into play:</p><p><code>boxcube</code> <code>boxtorus</code> <code>concave</code> <code>cone</code> <code>crossshape</code> <code>cube</code> <code>cuboctahedron</code> <code>dodecahedron</code> <code>geodesic</code> <code>helix2</code> <code>icosahedron</code> <code>icosidodecahedron</code> <code>octahedron</code> <code>octtorus</code> <code>rhombicosidodecahedron</code> <code>rhombicuboctahedron</code> <code>rhombitruncated_cubeoctahedron</code> <code>rhombitruncated_icosidodecahedron</code> <code>snub_cube</code> <code>snub_dodecahedron</code> <code>sphere2</code> <code>tet3d</code> <code>tetrahedron</code> <code>triangle</code> <code>truncated_cube</code> <code>truncated_dodecahedron</code> <code>truncated_icosahedron</code> <code>truncated_octahedron</code> <code>truncated_tetrahedron</code></p><h2 id="Rendering-objects"><a class="docs-heading-anchor" href="#Rendering-objects">Rendering objects</a><a id="Rendering-objects-1"></a><a class="docs-heading-anchor-permalink" href="#Rendering-objects" title="Permalink"></a></h2><p>To render objects, there are many choices you can make about how to draw the faces and the vertices.</p><h3 id="Using-gfunctions"><a class="docs-heading-anchor" href="#Using-gfunctions">Using gfunctions</a><a id="Using-gfunctions-1"></a><a class="docs-heading-anchor-permalink" href="#Using-gfunctions" title="Permalink"></a></h3><p>You do this with a gfunction.</p><p>Here&#39;s a simple example:</p><pre><code class="language-julia">include(dirname(pathof(Thebes)) * &quot;/../data/moreobjects.jl&quot;)
+
+setlinejoin(&quot;bevel&quot;)
+eyepoint(150, 150, 150)
+
+function mygfunction(o::Object)
+    cols = [Luxor.julia_green, Luxor.julia_red, Luxor.julia_purple, Luxor.julia_blue]
+    sortfaces!(o)
+    if !isempty(o.faces)
+        @layer begin
+            for (n, face) in enumerate(o.faces)
+                @layer begin
+                    vertices = o.vertices[face]
+                    sn = surfacenormal(vertices)
+                    ang = anglebetweenvectors(sn, eyepoint())
+                    sethue(cols[mod1(n, end)])
+                    pin(vertices, gfunction = (p3, p2) -&gt;
+                        begin
+                            poly(p2, :fill)
+                            sethue(&quot;gold&quot;)
+                            poly(p2, :stroke, close=true)
+                        end)
+                end
+            end
+        end
+    end
+    setcolor(&quot;gold3&quot;)
+    pin.(o.vertices, gfunction = (p3, p2) -&gt; begin
+        setopacity(1)
+        circle(p2, 2, :fill)
+        end)
+end
+
+object = make(geodesic, &quot;geodesic&quot;)
+setopacity(0.9)
+setline(0.5)
+pin(scaleby!(object, 200, 200, 200), gfunction = mygfunction)</code></pre><p><img src="../assets/figures/geodesic.svg" alt="geodesic"/></p><h2 id="Faces"><a class="docs-heading-anchor" href="#Faces">Faces</a><a id="Faces-1"></a><a class="docs-heading-anchor-permalink" href="#Faces" title="Permalink"></a></h2><p>The faces are drawn in the order in which they were defined. But to be a more realistic 3D drawing, the faces should be drawn so that the ones nearest the viewer are drawn last, or better still, so that the ones that can&#39;t be seen aren&#39;t drawn at all.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>This is why Thebes is more of a wireframe tool than any kind of genuine 3D application. Use Makie.jl. Or program Blender with Julia.</p></div></div><p>In theory it&#39;s possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The <code>sortfaces!()</code> function used above can do this for simple objects - it may be sufficient.</p><h2 id="Using-custom-code"><a class="docs-heading-anchor" href="#Using-custom-code">Using custom code</a><a id="Using-custom-code-1"></a><a class="docs-heading-anchor-permalink" href="#Using-custom-code" title="Permalink"></a></h2><p>Thebes.jl is a work in progress, and a good general-purpose rendering function that draws everything with lots of optional parameters is not yet provided. However, you can avoid using the built-in <code>pin(o::Object)</code> function, and experiment with code such as the following:</p><pre><code class="language-">using Luxor, Thebes, Colors, ColorSchemes
+
+include(dirname(pathof(Thebes)) * &quot;/../data/moreobjects.jl&quot;)
+
+function lighten(col::Colorant, f)
+    c = convert(RGB, col)
+    return RGB(f * c.r, f* c.g, f * c.b)
+end
+
+function drawobject(o;
+        color=colorant&quot;red&quot;)
+    setlinejoin(&quot;bevel&quot;)
+    if !isempty(o.faces)
+        @layer begin
+            for (n, f) in enumerate(o.faces)
+                vs = o.vertices[f]
+                sn = surfacenormal(vs)
+                ang = anglebetweenvectors(sn, eyepoint())
+                sl = slope(O, vs[1])
+                sethue(lighten(color, rescale(ang, 0, π, -2, 2)))
+                pin(vs, gfunction = (p3, p2) -&gt; begin
+                    poly(p2, :fill)
+                    sethue(&quot;grey30&quot;)
+                    poly(p2, :stroke)
+                end)
+            end
+        end
+    end
+end
+
+function sphere(size, origin, color)
+    s1 = make(sphere2)
+    scaleby!(s1, size, size, size)
+    moveby!(s1, origin)
+    sortfaces!(s1)
+    drawobject(s1, color=color)
+end
+
+function main()
+    Drawing(500, 500, &quot;assets/figures/juliaspheres.svg&quot;)
+    background(&quot;grey20&quot;)
+    origin()
+    helloworld()
+    eyepoint(300, 300, 300)
+    perspective(450)
+    setline(.5)
+    sphere(90, Point3D(150, 0, 0), RGB(Luxor.julia_red...))
+    sphere(90, Point3D(0, 150, 0), RGB(Luxor.julia_purple...))
+    sphere(90, Point3D(0, 0, 150), RGB(Luxor.julia_green...))
+    finish()
+end
+
+main()
+nothing # hide</code></pre><p><img src="assets/figures/juliaspheres.svg" alt="custom object"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../polys/">« Polygons and planes</a><a class="docs-footer-nextpage" href="../text/">Text »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 11 March 2021 14:01">Thursday 11 March 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
