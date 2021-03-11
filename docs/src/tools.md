@@ -51,33 +51,14 @@ function cullfrontfaces!(m::Object, angle;
     return m
 end
 
-function drawobject(object)
-    pin(object, gfunction = (args...) -> begin
-        vertices, faces, labels = args
-        setopacity(0.8)
-        sethue("grey80")
-        if !isempty(faces)
-            @layer begin
-                for (n, p) in enumerate(faces)
-                    poly(p, :fillpreserve, close=true)
-                    @layer begin
-                        sethue("grey20")
-                        strokepath()
-                    end
-                end
-            end
-        end
-    end)
-end
-
 sortfaces!.((objectcut, objectfull))
 cullfrontfaces!(objectcut, π/3)
 
 translate(-200, 0)
-drawobject(objectcut)
+pin(objectcut)
 
 translate(400, 0)
-drawobject(objectfull)
+pin(objectfull)
 
 @show length(objectcut.faces)
 @show length(objectfull.faces)

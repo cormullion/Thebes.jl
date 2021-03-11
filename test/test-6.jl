@@ -8,19 +8,6 @@ rhombicuboctahedron, rhombitruncated_cubeoctahedron, rhombitruncated_icosidodeca
 snub_cube, snub_dodecahedron, sphere2, tet3d, tetrahedron, triangle, truncated_cube,
 truncated_dodecahedron, truncated_icosahedron, truncated_octahedron, truncated_tetrahedron]
 
-function mygfunction(vertices, faces, labels, action=:fill)
-    if !isempty(faces)
-        @layer begin
-            for (n, p) in enumerate(faces)
-                sethue(isodd(n) ? "red" : "blue")
-                poly(p, action)
-                sethue("black")
-                poly(p, :stroke)
-            end
-        end
-    end
-end
-
 function main()
     Drawing(800, 800, "moreobjects.svg")
     origin()
@@ -38,7 +25,7 @@ function main()
             scaleby!(object, 10, 10, 10)
             rotateby!(object, 0.1, 0.1,  0.1)
             sortfaces!(object)
-            pin(object, gfunction = mygfunction)
+            pin(object)
         end
     end
     finish()

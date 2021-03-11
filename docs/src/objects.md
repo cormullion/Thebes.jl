@@ -47,7 +47,7 @@ Object(
      "cube")
 ```
 
-The default rendering applied by `pin()` uses less than fifty shades of grey to draw it.
+The default rendering applied by `pin()` is an attempt at a simple hidden-surface display. In real 3D software, this process has to be far more sophisticated.
 
 ```@example
 using Thebes, Luxor # hide
@@ -84,7 +84,7 @@ end
 sethue("darkorange")
 knot = make([a, []], "knot")
 
-pin(knot, gfunction = (args...) -> poly(args[1], :stroke))
+pin(knot, gfunction = (o) -> poly(objecttopoly(o)[1], :stroke))
 
 finish() # hide
 nothing # hide
@@ -92,11 +92,7 @@ nothing # hide
 
 ![point example](assets/figures/object1.svg)
 
-The gfunction here receives the `vertices`, `faces`, and `labels` in `args`, but the faces and labels are empty, so this simple use of `pin` only needs to draw a polygon through the vertices.
-
-!!! warning
-
-    The gfunction used by `pin()` for objects doesn't give you access to the 3D points, unlike the versions used for points.
+The `objecttopoly()` function returns a tuple, containing the 2D vertices, and the polygons that define the faces.
 
 ## OFF the shelf objects
 
@@ -120,11 +116,12 @@ sethue("blue") # hide
 helloworld() # hide
 
 t = Tiler(600, 300, 2, 2)
+setline(0.5)
 for (n, o) in enumerate([Cube, Tetrahedron, Pyramid, Teapot])
     @layer begin
         translate(first.(t)[n])
         object = make(o, string(o))
-        scaleby!(object, 50, 50, 50)
+        scaleby!(object, 80, 80, 80)
         pin(object)
     end
 end
@@ -135,17 +132,20 @@ nothing # hide
 
 ![more objects](assets/figures/moreobjects.svg)
 
-```
-@svg begin
-    helloworld()
-    perspective(1600)
-    axes3D()
-    teapot = make(Teapot)
-    sortfaces!(teapot)
-    scaleby!(teapot, 15, 15, 15)
-    setopacity(0.5)
-    pin(teapot)
-end
+```@example
+using Thebes, Luxor # hide
+Drawing(800, 300, "assets/figures/teapot.svg") # hide
+background("white") # hide
+origin() # hide
+helloworld()
+axes3D(200)
+teapot = make(Teapot)
+setline(0.5)
+scaleby!(teapot, 100, 100, 100)
+pin(teapot, gfunction=wireframe)
+finish() # hide
+nothing # hide
+
 ```
 
 ![teapot](assets/figures/teapot.svg)
@@ -162,7 +162,13 @@ which brings these objects into play:
 
 ## Rendering objects
 
-To render objects, there are many choices you can make about how to draw the faces and the vertices. You do this with a gfunction. For objects, the gfunction is more complex than for points and lines. It takes lists of vertices, faces, and labels. Here's a simple example:
+To render objects, there are many choices you can make about how to draw the faces and the vertices.
+
+### Using gfunctions
+
+You do this with a gfunction.
+
+Here's a simple example:
 
 ```@example
 using Thebes, Luxor # hide
@@ -177,32 +183,37 @@ helloworld() # hide
 setlinejoin("bevel")
 eyepoint(150, 150, 150)
 
-function mygfunction(vertices, faces, labels; action=:fill)
+function mygfunction(o::Object)
     cols = [Luxor.julia_green, Luxor.julia_red, Luxor.julia_purple, Luxor.julia_blue]
-
-    if !isempty(faces)
+    sortfaces!(o)
+    if !isempty(o.faces)
         @layer begin
-        for (n, p) in enumerate(faces)
-
-            @layer begin
-                sethue(cols[mod1(n, end)])
-                poly(p, close = true, action)
-            end
-
-            sethue("white")
-            setline(0.5)
-            poly(p, :stroke, close=true)
-
+            for (n, face) in enumerate(o.faces)
+                @layer begin
+                    vertices = o.vertices[face]
+                    sn = surfacenormal(vertices)
+                    ang = anglebetweenvectors(sn, eyepoint())
+                    sethue(cols[mod1(n, end)])
+                    pin(vertices, gfunction = (p3, p2) ->
+                        begin
+                            poly(p2, :fill)
+                            sethue("gold")
+                            poly(p2, :stroke, close=true)
+                        end)
+                end
             end
         end
     end
-    setcolor("gold")
-    circle.(vertices, 2, :fill)
+    setcolor("gold3")
+    pin.(o.vertices, gfunction = (p3, p2) -> begin
+        setopacity(1)
+        circle(p2, 2, :fill)
+        end)
 end
 
-setopacity(0.7)
 object = make(geodesic, "geodesic")
-sortfaces!(object)
+setopacity(0.9)
+setline(0.5)
 pin(scaleby!(object, 200, 200, 200), gfunction = mygfunction)
 
 finish() # hide
@@ -219,53 +230,67 @@ The faces are drawn in the order in which they were defined. But to be a more re
 
     This is why Thebes is more of a wireframe tool than any kind of genuine 3D application. Use Makie.jl. Or program Blender with Julia.
 
-In theory it's possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The `sortfaces!()` function can do this for simple objects - it may be sufficient.
+In theory it's possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The `sortfaces!()` function used above can do this for simple objects - it may be sufficient.
+
+## Using custom code
+
+Thebes.jl is a work in progress, and a good general-purpose rendering function that draws everything with lots of optional parameters is not yet provided. However, you can avoid using the built-in `pin(o::Object)` function, and experiment with code such as the following:
 
 ```@example
-using Thebes, Luxor # hide
-Drawing(600, 500, "assets/figures/sortsurfaces.svg") # hide
+using Luxor, Thebes, Colors, ColorSchemes
 
-function mygfunction(vertices, faces, labels; action=:fill)
-    cols = [Luxor.julia_green, Luxor.julia_red, Luxor.julia_purple, Luxor.julia_blue]
-    if !isempty(faces)
+include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
+
+function lighten(col::Colorant, f)
+    c = convert(RGB, col)
+    return RGB(f * c.r, f* c.g, f * c.b)
+end
+
+function drawobject(o;
+        color=colorant"red")
+    setlinejoin("bevel")
+    if !isempty(o.faces)
         @layer begin
-            for (n, p) in enumerate(faces)
-
-                @layer begin
-                    sethue(cols[mod1(n, end)])
-                    poly(p, close = true, action)
-                end
-
-                sethue("white")
-                setline(0.5)
-                poly(p, :stroke, close=true)
-
+            for (n, f) in enumerate(o.faces)
+                vs = o.vertices[f]
+                sn = surfacenormal(vs)
+                ang = anglebetweenvectors(sn, eyepoint())
+                sl = slope(O, vs[1])
+                sethue(lighten(color, rescale(ang, 0, π, -2, 2)))
+                pin(vs, gfunction = (p3, p2) -> begin
+                    poly(p2, :fill)
+                    sethue("grey30")
+                    poly(p2, :stroke)
+                end)
             end
         end
     end
 end
 
-background("black")
-origin()
-setlinejoin("bevel")
-eyepoint(Point3D(150, 150, 150))
-perspective(0)
-axes3D(20)
+function sphere(size, origin, color)
+    s1 = make(sphere2)
+    scaleby!(s1, size, size, size)
+    moveby!(s1, origin)
+    sortfaces!(s1)
+    drawobject(s1, color=color)
+end
 
-object = make(Cube, "cube")
-scaleby!(object, 100, 100, 100)
+function main()
+    Drawing(500, 500, "assets/figures/juliaspheres.svg")
+    background("grey20")
+    origin()
+    helloworld()
+    eyepoint(300, 300, 300)
+    perspective(450)
+    setline(.5)
+    sphere(90, Point3D(150, 0, 0), RGB(Luxor.julia_red...))
+    sphere(90, Point3D(0, 150, 0), RGB(Luxor.julia_purple...))
+    sphere(90, Point3D(0, 0, 150), RGB(Luxor.julia_green...))
+    finish()
+end
 
-# draw as is
-moveby!(object, Point3D(0, -200, 0))
-pin(object, gfunction = mygfunction)
-
-# draw with sorted faces
-moveby!(object, Point3D(0, 400, 0))
-sortfaces!(object, eyepoint=eyepoint())
-pin(object, gfunction = mygfunction)
-
-finish() # hide
+main()
 nothing # hide
 ```
 
-![object](assets/figures/sortsurfaces.svg)
+![custom object](assets/figures/juliaspheres.svg)

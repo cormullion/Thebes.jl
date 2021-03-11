@@ -19,25 +19,6 @@ objectnames = ["boxcube", "boxtorus", "concave", "cone", "crossshape", "cube",
 "truncated_dodecahedron", "truncated_icosahedron", "truncated_octahedron",
 "truncated_tetrahedron"]
 
-function mygfunction(vertices, faces, labels; action=:fill)
-   if !isempty(faces)
-       @layer begin
-           for (n, p) in enumerate(faces)
-               @layer begin
-                   isodd(n) ? sethue("grey30") : sethue("grey90")
-                   setopacity(0.5)
-                   poly(p, action)
-               end
-
-               sethue("black")
-               setline(0.5)
-               poly(p, :stroke, close=true)
-
-           end
-       end
-   end
-end
-
 function main()
     Drawing(800, 800.0, "test-5.svg")
     origin()
@@ -59,7 +40,7 @@ function main()
             scaleby!(object, 15, 15, 15)
             rotateby!(object, 0, 0, 0)
             #sortfaces!(object)
-            pin(object, gfunction = mygfunction)
+            pin(object)
             sethue("black")
             label(string(objectnames[n]), :S, offset=tiles.tileheight/2)
         end

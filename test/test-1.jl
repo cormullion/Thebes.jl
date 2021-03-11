@@ -1,6 +1,4 @@
 using Thebes, Luxor, Random, Rotations
-mygfunction(vertices, faces, labels) =
-Thebes.simplegfunction(vertices, faces, labels, action=:fill)
 
 function main()
     Drawing(800, 800, "test1.svg")
@@ -23,7 +21,7 @@ function main()
             moveby!(object, 0, 0, 0)
             rotateby!(object, 0, n/5, 0)
             sortfaces!(object)
-            pin(object, gfunction=mygfunction)
+            pin(object)
             sethue("black")
             text(string(n), O  + (0, 30))
             fontsize(50)

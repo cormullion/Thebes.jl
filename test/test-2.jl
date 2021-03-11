@@ -1,8 +1,5 @@
 using Thebes, Luxor
 
-mygfunction(vertices, faces, labels) =
-Thebes.simplegfunction(vertices, faces, labels, action=:fill)
-
 function main()
 
     Drawing(400, 400, "test2-pyramids.png")
@@ -53,9 +50,9 @@ function main()
 
     # needs depth sorting of faces
     sortfaces!.(pyramids, eyepoint=eyepoint())
-    pin(menkaure, gfunction=mygfunction)
-    pin(khafre, gfunction=mygfunction)
-    pin(khufu, gfunction=mygfunction)
+    pin(menkaure)
+    pin(khafre)
+    pin(khufu)
     finish()
 end
 

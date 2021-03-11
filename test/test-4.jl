@@ -10,19 +10,6 @@ rhombitruncated_icosidodecahedron, snub_cube, snub_dodecahedron, sphere2, tet3d,
 tetrahedron, triangle, truncated_cube, truncated_dodecahedron,
 truncated_icosahedron, truncated_octahedron, truncated_tetrahedron]
 
-function anothergfunction(vertices, faces, labels, action=:fill)
-    if !isempty(faces)
-        @layer begin
-            for (n, p) in enumerate(faces)
-                randomhue()
-                polysmooth(p, 2, action)
-                sethue("black")
-                polysmooth(p, 2, :stroke)
-            end
-        end
-    end
-end
-
 function main()
 
     Drawing(800, 800, "test-4.svg")
@@ -43,7 +30,7 @@ function main()
             moveby!(object, 1 * rand(), 1 * rand(), 10 * rand())
             rotateby!(object, #= object.vertices[1],=# 2pi * rand(), 2pi * rand(), 2pi * rand())
             sortfaces!(object)
-            pin(object, gfunction= anothergfunction)
+            pin(object)
         end
     end
     finish()

@@ -14,16 +14,6 @@ function main()
     background("orange")
     #setopacity(0.75)
     o = platonics[rand(1:end)]
-    function anothergfunction(vertices, faces, labels, action=:fill)
-        if !isempty(faces)
-            @layer begin
-                for (n, p) in enumerate(faces)
-                    randomhue()
-                    poly(p, action)
-                end
-            end
-        end
-    end
 
     @layer begin
         sethue("magenta")
@@ -37,12 +27,12 @@ function main()
             scaleby!(object, 10, 10, 10)
             moveby!(object, x, y, 50rand())
             rotateby!(object, object.vertices[1], rand(), rand(), rand())
-            pin(object, gfunction = anothergfunction)
+            pin(object)
 
             # dark version
             moveby!(object, 0, 0, -object.vertices[1].z)
             scaleby!(object, 1, 1, 0)
-            pin(object, gfunction = anothergfunction)
+            pin(object)
         end
     end
     finish()

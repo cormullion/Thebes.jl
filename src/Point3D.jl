@@ -129,27 +129,45 @@ end
 
 
 """
-    sphericaltocartesian(rho, theta, phi)
+    sphericaltocartesian(ρ, θ, ϕ)
 
-Return `Point3D(x, y, z)` corresponding to `(rho, theta, phi)`.
+Return `Point3D(x, y, z)` corresponding to `(ρ, θ, ϕ)`:
+
+- ρ is the distance from the origin (ie radius)
+
+- θ is the azimuthal angle (the longitude) 0 is +x, π is -x, 2π is +x
+
+- ϕ is the polar angle (the latitude) 0 is North Pole, π is South Pole
+
+There are two major conventions for spherical coordinate notation.
+
+In physics books:
+
+(ρ, θ, φ) gives the radial distance, polar angle (latitude), and azimuthal angle (longitude)
+
+In mathematics books:
+
+(ρ, θ , φ ) gives the radial distance, azimuthal angle (longitude), and polar angle (latitude)
+
+So we're using the mathematics one here.
 """
-function sphericaltocartesian(rho, theta, phi)
-    x = rho * sin(phi) * cos(theta)
-    y = rho * sin(phi) * sin(theta)
-    z = rho * cos(phi)
+function sphericaltocartesian(ρ, θ, ϕ)
+    x = ρ * sin(ϕ) * cos(θ)
+    y = ρ * sin(ϕ) * sin(θ)
+    z = ρ * cos(ϕ)
     return Point3D(x, y, z)
 end
 
 """
     cartesiantospherical(x, y, z)
 
-Return (phi, rho, theta) of (x, y, z).
+Return `(ρ, θ, ϕ)` (radius, longitude, latitude) of the Point3D(x, y, z).
 """
 function cartesiantospherical(x, y, z)
-    phi = atan(y, x)
-    rho = sqrt(x^2 + y^2 + z^2)
-    theta = acos(z/rho)
-    return (phi, rho, theta)
+    ϕ = atan(y, x)
+    ρ = sqrt(x^2 + y^2 + z^2)
+    θ = acos(z/ρ)
+    return (ρ, θ, ϕ)
 end
 
 # rotations

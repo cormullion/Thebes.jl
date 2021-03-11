@@ -19,7 +19,7 @@ export project, Projection, newprojection,
 
        pin,
 
-       simplegfunction,
+       hiddensurface, wireframe,
 
        Object, Teapot, Cube, Tetrahedron, Pyramid,
 

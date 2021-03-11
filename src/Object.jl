@@ -5,17 +5,17 @@ mutable struct Object
     name::String
 end
 
-function Base.size(m::Object)
-       length(m.vertices)
+function Base.size(o::Object)
+    length(o.vertices)
 end
 
-function Base.length(m::Object)
-       length(m.vertices)
+function Base.length(o::Object)
+    length(o.vertices)
 end
 
-Base.lastindex(m::Object) = length(m)
+Base.lastindex(o::Object) = length(o)
 
-Base.broadcastable(m::Object) = Ref(m)
+Base.broadcastable(o::Object) = Ref(o)
 
 """
     make(primitive, name="unnamed")
@@ -62,14 +62,41 @@ include("../data/objects.jl")
 # include("moreobjects.jl")
 
 """
-    objecttopoly(m::Object)
+    objecttopoly(o::Object)
 
-Return a list of 2D points representing the 3D Object in `m`.
+Return a tuple:
+
+- an array of 2D points representing the vertices of `o`
+
+- an array of 2D polygons representing the faces of `o`
+
+## Example
+
+This example draws the faces of a cube in colors, and marks
+the vertices in black.
+
+```
+using Luxor, Thebes
+
+@draw begin
+    helloworld()
+    o = make(Cube)
+    scaleby!(o, 100, 100, 100)
+    vs, fs = objecttopoly(o)
+    setopacity(0.4)
+    sethue("black")
+    for face in fs
+        randomhue()
+        poly(face, :fill)
+    end
+    sethue("black")
+    circle.(vs, 3, :fill)
+end
+```
 """
-function objecttopoly(m::Object)
+function objecttopoly(o::Object)
     vertices2D = Point[]
-
-    for v in m.vertices
+    for v in o.vertices
         r = project(v)
         if r != nothing
             push!(vertices2D, r)
@@ -78,9 +105,9 @@ function objecttopoly(m::Object)
         end
     end
     facepolys = Array[]
-    if length(m.faces) > 0
-        for n in 1:length(m.faces)
-            push!(facepolys, vertices2D[m.faces[n]])
+    if length(o.faces) > 0
+        for n in 1:length(o.faces)
+            push!(facepolys, vertices2D[o.faces[n]])
         end
     end
     filter!(f -> !isnan(f.x) && !isnan(f.y), vertices2D)
@@ -88,19 +115,19 @@ function objecttopoly(m::Object)
 end
 
 """
-    sortfaces!(m::Object;
-        eyepoint::Point3D=Point3D(0, 0, 0))
+    sortfaces!(o::Object;
+        eyepoint::Point3D=eyepoint())
 
 Find the averages of the z values of the faces in Object, and sort the faces
-of m so that the faces are in order of nearest (highest) z relative to eyepoint...
+of o so that the faces are in order of nearest (highest) z relative to eyepoint...
 
 or something like that ? not sure how this works
 """
-function sortfaces!(m::Object;
+function sortfaces!(o::Object;
         eyepoint::Point3D=eyepoint())
     avgs = Float64[]
-    for f in m.faces
-        vs = m.vertices[f]
+    for f in o.faces
+        vs = o.vertices[f]
         s = 0.0
         for v in vs
             s += distance(v, eyepoint)
@@ -109,214 +136,241 @@ function sortfaces!(m::Object;
         push!(avgs, avg)
     end
     neworder = reverse(sortperm(avgs))
-    m.faces = m.faces[neworder]
-    m.labels = m.labels[neworder]
-    return m
+    o.faces = o.faces[neworder]
+    o.labels = o.labels[neworder]
+    return o
 end
 
-sortfaces!(m::Array{Object, 1}; kwargs...) =
-   map(sortfaces!, m)
+sortfaces!(o::Array{Object, 1}; kwargs...) =
+   map(sortfaces!, o)
 
-
-"""
-    simplegfunction(vertices, faces, labels; action=:stroke)
-
-In a Luxor drawing, draw the 2D vertices and faces, using alternating grey shades.
-
-"""
-function simplegfunction(vertices, faces, labels; action=:fill)
-   if !isempty(faces)
+function hiddensurface(o::Object)
+   if !isempty(o.faces)
+       sortfaces!(o)
        @layer begin
-           for (n, p) in enumerate(faces)
+           for (n, face) in enumerate(o.faces)
                @layer begin
-                   isodd(n) ? sethue("grey20") : sethue("grey80")
-                   poly(p, action)
+                   vertices = o.vertices[face]
+                   sn = surfacenormal(vertices)
+                   ang = anglebetweenvectors(sn, eyepoint())
+                   setgrey(rescale(ang, 0, π, 1, 0))
+                   pin(vertices, gfunction = (p3, p2) ->
+                    begin
+                       poly(p2, :fill)
+                       sethue("white")
+                       poly(p2, :stroke, close=true)
+                    end)
                end
-               sethue("black")
-               setline(0.5)
-               poly(p, :stroke, close=true)
            end
        end
    end
 end
 
+function wireframe(o::Object)
+   if !isempty(o.faces)
+       sortfaces!(o)
+       @layer begin
+           for (n, face) in enumerate(o.faces)
+               @layer begin
+                   vertices = o.vertices[face]
+                   pin(vertices, gfunction = (p3, p2) ->
+                    begin
+                       poly(p2, :stroke, close=true)
+                    end)
+               end
+           end
+       end
+   end
+end
 
 """
-    pin(m::Object;
-        gfunction = (v, f, l; kwargs... ) -> simplegfunction(v, f, l; kwargs...))
+    pin(o::Object;
+        gfunction=(o) -> hiddensurface(o))
 
-Draw an object, calling a gfunction, the default is `simplegfunction()`.
+Draw a rendering of an object.
 
-To define and change the default gfunction:
+The default rendering function is `hiddensurface()`.
+
+You can also use the built-in `wireframe()` rendering function.
+
+## Examples
+
 
 ```
-function mygfunction(vertices, faces, labels; action=:fill)
-    setlinejoin("bevel")
-    if !isempty(faces)
-        @layer begin
-            for (n, p) in enumerate(faces)
-                 @layer begin
-                     isodd(n) ? sethue("grey30") : sethue("grey90")
-                     setopacity(0.5)
-                     poly(p, action)
-                 end
-                 sethue("black")
-                 setline(0.5)
-                 poly(p, :stroke, close=true)
-             end
-        end
-    end
-end
+@draw begin
+    o = make(Cube)
+    axes3D(200)
+    scaleby!(o, 200, 200, 200)
+    eyepoint(250, 270, 300)
+    pin(o) # use an attempted hiddensurface rendering
 
-@svg begin
-    helloworld()
-    object = make(Cube)
-    scaleby!(object, 100, 100, 100)
-    rotateby!(object, object.vertices[1], rand(), rand(), rand())
-    sortfaces!(object)
-    pin(object, gfunction = mygfunction)
+    o = make(Tetrahedron)
+    axes3D(200)
+    scaleby!(o, 200, 200, 200)
+    eyepoint(250, 270, 300)
+    pin(o, gfunction=wireframe) # use a wireframe rendering
+end
+```
+## More help
+
+You could write your own rendering function to draw objects.
+
+```
+function a_rendering_function(o::Object)
+   if !isempty(o.faces)
+       sortfaces!(o)
+       @layer begin
+           for (n, face) in enumerate(o.faces)
+               @layer begin
+                   vertices = o.vertices[face]
+                   sn = surfacenormal(vertices)
+                   ang = anglebetweenvectors(sn, eyepoint())
+                   setgrey(rescale(ang, 0, π, 1, 0))
+                   pin(vertices, gfunction = (p3, p2) ->
+                    begin
+                       poly(p2, :fill)
+                       sethue("white")
+                       poly(p2, :stroke, close=true)
+                    end)
+               end
+           end
+       end
+   end
 end
 ```
 """
-function pin(m::Object;
-      gfunction = (v, f, l; kwargs... ) -> simplegfunction(v, f, l; kwargs...))
-   vertices, faces = objecttopoly(m)
-   gfunction(vertices, faces, m.labels)
-end
-
-function pin(m::Array{Object, 1};
-      gfunction = (v, f, l; kwargs... ) -> simplegfunction(v, f, l; kwargs...))
-   vertices, faces = objecttopoly.(m)
-   gfunction.(vertices, faces, m.labels)
+function pin(o::Object;
+    gfunction = (o) -> hiddensurface(o))
+    gfunction(o)
 end
 
 """
-    moveby!(m::Object, x, y, z)
-    moveby!(m::Object, pt::Point3D)
+    moveby!(o::Object, x, y, z)
+    moveby!(o::Object, pt::Point3D)
 
 Set the position of object to Point3D(x, y, z).
 """
-function moveby!(m::Object, x, y, z)
-   for n in 1:length(m.vertices)
-       nv = m.vertices[n]
-       m.vertices[n] = Point3D(nv.x + x, nv.y + y, nv.z + z)
+function moveby!(o::Object, x, y, z)
+   for n in 1:length(o.vertices)
+       nv = o.vertices[n]
+       o.vertices[n] = Point3D(nv.x + x, nv.y + y, nv.z + z)
    end
-   return m
+   return o
 end
 
 """
-    moveby(m::Object, x, y, z)
-    moveby(m::Object, pt::Point3D)
+    moveby(o::Object, x, y, z)
+    moveby(o::Object, pt::Point3D)
 
 Set the position of a copy of the object to Point3D(x, y, z).
 """
-function moveby(m::Object, x, y, z)
-   mcopy = deepcopy(m)
-   return moveby!(mcopy, x, y, z)
+function moveby(o::Object, x, y, z)
+   ocopy = deepcopy(o)
+   return moveby!(ocopy, x, y, z)
 end
 
-moveby(m::Object, pt::Point3D) = moveby(m::Object, pt.x, pt.y, pt.z)
-moveby!(m::Object, pt::Point3D) = moveby!(m::Object, pt.x, pt.y, pt.z)
+moveby(o::Object, pt::Point3D) = moveby(o::Object, pt.x, pt.y, pt.z)
+moveby!(o::Object, pt::Point3D) = moveby!(o::Object, pt.x, pt.y, pt.z)
 
 """
-    scaleby!(m::Object, x, y, z)
+    scaleby!(o::Object, x, y, z)
 
 Scale object by x in x, y in y, and z in z.
 """
-function scaleby!(m::Object, x, y, z)
-   for n in 1:length(m.vertices)
-       nv = m.vertices[n]
-       m.vertices[n] = Point3D(nv.x * x, nv.y * y, nv.z * z)
+function scaleby!(o::Object, x, y, z)
+   for n in 1:length(o.vertices)
+       nv = o.vertices[n]
+       o.vertices[n] = Point3D(nv.x * x, nv.y * y, nv.z * z)
    end
-   return m
+   return o
 end
 
 """
-    face(m::Object, n)
+    face(o::Object, n)
 """
-function face(m::Object, n)
+function face(o::Object, n)
    facepoints = Point3D[]
-   if length(m.faces) > 0
-       for i in m.faces[n]
-           push!(facepoints, m.vertices[i])
+   if length(o.faces) > 0
+       for i in o.faces[n]
+           push!(facepoints, o.vertices[i])
        end
    end
    return facepoints
 end
 
 """
-    rotateby!(m::Object, r::Rotation)
-    rotateby!(m::Object, angleX, angleY, angleZ)
+    rotateby!(o::Object, r::Rotation)
+    rotateby!(o::Object, angleX, angleY, angleZ)
 
 Rotate an object through rotation `r`, or around the x, y,
 and/or z axis by `angleX`, `angleY`, `angleZ`.
 """
-function rotateby!(m::Object, angleX, angleY, angleZ)
-    for n in 1:length(m.vertices)
-        m.vertices[n] = RotXYZ(angleX, angleY, angleZ) * m.vertices[n]
+function rotateby!(o::Object, angleX, angleY, angleZ)
+    for n in 1:length(o.vertices)
+        o.vertices[n] = RotXYZ(angleX, angleY, angleZ) * o.vertices[n]
     end
-    return m
+    return o
 end
 
-function rotateby!(m::Object, r::Rotation)
-    for n in 1:length(m.vertices)
-        m.vertices[n] = r * m.vertices[n]
+function rotateby!(o::Object, r::Rotation)
+    for n in 1:length(o.vertices)
+        o.vertices[n] = r * o.vertices[n]
     end
-    return m
+    return o
 end
 
 """
-    rotateby(m::Object, angleX, angleY, angleZ)
+    rotateby(o::Object, angleX, angleY, angleZ)
 
 Rotate a copy of the object by angleX, angleY, angleZ.
 """
-function rotateby(m::Object, angleX, angleY, angleZ)
-    mcopy = deepcopy(m)
-    return rotateby!(mcopy, angleX, angleY, angleZ)
+function rotateby(o::Object, angleX, angleY, angleZ)
+    ocopy = deepcopy(o)
+    return rotateby!(ocopy, angleX, angleY, angleZ)
 end
 
-function rotateby(m::Object, r::Rotation)
-    mcopy = deepcopy(m)
-    return rotateby!(mcopy, r)
+function rotateby(o::Object, r::Rotation)
+    ocopy = deepcopy(o)
+    return rotateby!(ocopy, r)
 end
 
 """
-    rotateby!(m::Object, pt::Point3D, angleX, angleY, angleZ)
-    rotateby!(m::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
+    rotateby!(o::Object, pt::Point3D, angleX, angleY, angleZ)
+    rotateby!(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
 
 Rotate an object around a point by rotation r, or angleX, angleY, angleZ.
 """
-function rotateby!(m::Object, pt::Point3D, angleX, angleY, angleZ)
-    for n in 1:length(m.vertices)
-        v = m.vertices[n] - pt
+function rotateby!(o::Object, pt::Point3D, angleX, angleY, angleZ)
+    for n in 1:length(o.vertices)
+        v = o.vertices[n] - pt
         v = rotateX(v, angleX)
         v = rotateY(v, angleY)
         v = rotateZ(v, angleZ)
-        m.vertices[n] = v + pt
+        o.vertices[n] = v + pt
     end
-    return m
+    return o
 end
 
-function rotateby!(m::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
-    for n in 1:length(m.vertices)
-        v = m.vertices[n] * r
-        m.vertices[n] = v
+function rotateby!(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
+    for n in 1:length(o.vertices)
+        v = o.vertices[n] * r
+        o.vertices[n] = v
     end
-    return m
+    return o
 end
 
 """
-    rotateby(m::Object, pt::Point3D, angleX, angleY, angleZ)
-    rotateby(m::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
+    rotateby(o::Object, pt::Point3D, angleX, angleY, angleZ)
+    rotateby(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
 
 Rotate a copy of the object around a point by rotation r, or angleX, angleY, angleZ.
 """
-function rotateby(m::Object, pt::Point3D, angleX, angleY, angleZ)
-    mcopy = deepcopy(m)
-    return rotateby!(mcopy, pt, angleX, angleY, angleZ)
+function rotateby(o::Object, pt::Point3D, angleX, angleY, angleZ)
+    ocopy = deepcopy(o)
+    return rotateby!(ocopy, pt, angleX, angleY, angleZ)
 end
 
-function rotateby(m::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
-    mcopy = deepcopy(m)
-    return rotateby!(mcopy, pt, r)
+function rotateby(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
+    ocopy = deepcopy(o)
+    return rotateby!(ocopy, pt, r)
 end

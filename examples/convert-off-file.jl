@@ -26,9 +26,9 @@ function convert_off_file(fname)
     return (vertices, faces)
 end
 
-iobuffer = IOBuffer()
 
 # cd(expanduser("/tmp/geometry"))
+# iobuffer = IOBuffer()
 #
 # for f in ["boxcube.off", "boxtorus.off", "concave.off", "cone.off", "cross.off", "cube.off",
 # "cuboctahedron.off", "dodecahedron.off", "geodesic.off", "helix2.off", "icosahedron.off",
@@ -43,12 +43,13 @@ iobuffer = IOBuffer()
 #     println(iobuffer, fname, " ", object)
 # end
 #
-
-for f in readdir()
-    object = convert_off_file(f)
-    println(iobuffer, f, " ", object)
-end
-
-open("/tmp/objects.txt", "w") do f
+#=open("/tmp/objects.txt", "w") do f
     write(f, String(take!(iobuffer)))
 end
+for f in readdir()
+object = convert_off_file(f)
+println(iobuffer, f, " ", object)
+end
+=#
+
+sphere1  = convert_off_file("/tmp/Untitled.obj.off")
