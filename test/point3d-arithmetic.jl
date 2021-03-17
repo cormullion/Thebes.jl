@@ -14,6 +14,13 @@ p3 = Point3D(20, 20, 20)
 @test between(p1, p2, 1.0) ≈ Point3D(10.0, 10.0, 10.0)
 @test between(p1, p2, 0.0) ≈ Point3D(0.0, 0.0, 0.0)
 
+@test midpoint(p1, p2) ≈ Point3D(5.0, 5.0, 5.0)
+@test midpoint(p1, p3) ≈ Point3D(10.0, 10.0, 10.0)
+@test midpoint(p2, p3) ≈ Point3D(15.0, 15.0, 15.0)
+@test midpoint(Point3D(0, 0, 0), Point3D(10, 0, 0)) ≈ Point3D(5.0, 0.0, 0.0)
+@test midpoint(Point3D(0, 0, 0), Point3D(0, 10, 0)) ≈ Point3D(0.0, 5.0, 0.0)
+@test midpoint(Point3D(0, 0, 0), Point3D(0, 0, 10)) ≈ Point3D(0.0, 0.0, 5.0)
+
 Drawing(1, 1, :png)
 @test pin(Point3D(1000, 1000, 1000)) == nothing
 

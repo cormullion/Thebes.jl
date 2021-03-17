@@ -1,13 +1,25 @@
 # Changelog
 
+## [v0.7.0] - 2020
+
+### Added
+
+### Changed
+
+- midpoint() was wrong, fixed
+
+### Removed
+
+### Deprecated
+
 ## [v0.6.0] - 2020-02-21
 
 ### Added
 
 ### Changed
 
-- cartesiantospherical returns points in correct "math" order `(ρ, θ, ϕ)`
-rather than scrambled "physics"-style
+- cartesiantospherical() returns points in correct "math" order `(ρ, θ, ϕ)`
+rather than scrambled "physics"-style :) 
 - pin(object) changed to accept a simpler rendering function
 
 ### Removed

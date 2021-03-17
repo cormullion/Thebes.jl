@@ -124,7 +124,7 @@ end
 Find the midpoint between two points. See also `between()`.
 """
 function midpoint(pt1::Point3D, pt2::Point3D)
-    return Point3D((pt1.x + pt2.x)/2, (pt1.y + pt2.y)/2, (pt1.z + pt1.z)/2)
+    return (pt1 + pt2)/2
 end
 
 
