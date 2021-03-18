@@ -1,9 +1,9 @@
 ![thebes](docs/src/assets/figures/repository-open-graph-template.png)
 
-| **Documentation**                       | **Build Status**                          | **Code Coverage**               |
-|:---------------------------------------:|:-----------------------------------------:|:-------------------------------:|
-| [![][docs-stable-img]][docs-stable-url] | [![Build Status][travis-img]][travis-url] | [![][codecov-img]][codecov-url] |
-| [![][docs-development-img]][docs-development-url] | [![Build Status][appvey-img]][appvey-url] |                                 |
+| **Documentation**                                    | **Build Status**                          | **Code Coverage**               |
+|:----------------------------------------------------:|:-----------------------------------------:|:-------------------------------:|
+| [![][docs-stable-img]][docs-stable-url]              | [![Build Status][ci-img]][ci-url]         | [![][codecov-img]][codecov-url] |
+| [![][docs-development-img]][docs-development-url]    | [![Build Status][appvey-img]][appvey-url] |                                 |
 
 # Thebes
 
@@ -33,3 +33,6 @@ Many thanks to Chris @c42f who helped me implement the rotations using Rotations
 
 [codecov-img]: https://codecov.io/gh/cormullion/Thebes.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/cormullion/Thebes.jl
+
+[ci-img]: https://github.com/cormullion/Thebes.jl/workflows/CI/badge.svg
+[ci-url]: https://github.com/cormullion/Thebes.jl/actions?query=workflow%3ACI
