@@ -3,35 +3,35 @@
 <defs>
 <g>
 <symbol overflow="visible" id="glyph0-0">
-<path style="stroke:none;" d="M 0.515625 0 L 0.515625 -11.476562 L 9.625 -11.476562 L 9.625 0 Z M 8.1875 -1.4375 L 8.1875 -10.039062 L 1.953125 -10.039062 L 1.953125 -1.4375 Z M 8.1875 -1.4375 "/>
+<path style="stroke:none;" d="M 0.796875 2.828125 L 0.796875 -11.28125 L 8.796875 -11.28125 L 8.796875 2.828125 Z M 1.703125 1.9375 L 7.90625 1.9375 L 7.90625 -10.390625 L 1.703125 -10.390625 Z M 1.703125 1.9375 "/>
 </symbol>
 <symbol overflow="visible" id="glyph0-1">
-<path style="stroke:none;" d="M 2.203125 0 L 0.328125 0 L 4.4375 -5.882812 L 0.585938 -11.476562 L 2.53125 -11.476562 L 5.460938 -7.085938 L 8.367188 -11.476562 L 10.21875 -11.476562 L 6.367188 -5.882812 L 10.40625 0 L 8.476562 0 L 5.382812 -4.71875 Z M 2.203125 0 "/>
+<path style="stroke:none;" d="M 1.015625 -11.671875 L 2.703125 -11.671875 L 5.609375 -7.328125 L 8.515625 -11.671875 L 10.21875 -11.671875 L 6.46875 -6.0625 L 10.46875 0 L 8.765625 0 L 5.484375 -4.96875 L 2.1875 0 L 0.484375 0 L 4.640625 -6.234375 Z M 1.015625 -11.671875 "/>
 </symbol>
 <symbol overflow="visible" id="glyph0-2">
-<path style="stroke:none;" d="M 0.328125 -11.476562 L 2.140625 -11.476562 L 5.4375 -5.960938 L 8.734375 -11.476562 L 10.554688 -11.476562 L 6.21875 -4.625 L 6.21875 0 L 4.664062 0 L 4.664062 -4.625 Z M 0.328125 -11.476562 "/>
+<path style="stroke:none;" d="M -0.03125 -11.671875 L 1.671875 -11.671875 L 4.90625 -6.875 L 8.109375 -11.671875 L 9.8125 -11.671875 L 5.6875 -5.5625 L 5.6875 0 L 4.09375 0 L 4.09375 -5.5625 Z M -0.03125 -11.671875 "/>
 </symbol>
 <symbol overflow="visible" id="glyph0-3">
-<path style="stroke:none;" d="M 0.367188 -1.289062 L 7.40625 -10.109375 L 0.882812 -10.109375 L 0.882812 -11.476562 L 9.40625 -11.476562 L 9.40625 -10.140625 L 2.328125 -1.367188 L 9.40625 -1.367188 L 9.40625 0 L 0.367188 0 Z M 0.367188 -1.289062 "/>
+<path style="stroke:none;" d="M 0.90625 -11.671875 L 10.0625 -11.671875 L 10.0625 -10.46875 L 2.6875 -1.328125 L 10.25 -1.328125 L 10.25 0 L 0.71875 0 L 0.71875 -1.203125 L 8.09375 -10.34375 L 0.90625 -10.34375 Z M 0.90625 -11.671875 "/>
 </symbol>
 </g>
 </defs>
-<g id="surface104">
+<g id="surface98">
 <rect x="0" y="0" width="600" height="500" style="fill:rgb(100%,100%,100%);fill-opacity:1;stroke:none;"/>
 <path style="fill:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 300 250 L 95.941406 367.8125 "/>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,0%,0%);fill-opacity:1;" d="M 97.851562 371.128906 L 87.9375 372.433594 L 94.027344 364.5 "/>
 <g style="fill:rgb(100%,0%,0%);fill-opacity:1;">
-  <use xlink:href="#glyph0-1" x="82.602739" y="367.433662"/>
+  <use xlink:href="#glyph0-1" x="82.458208" y="367.433662"/>
 </g>
 <path style="fill:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(0%,50.196078%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 300 250 L 504.058594 367.8125 "/>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,50.196078%,0%);fill-opacity:1;" d="M 505.972656 364.5 L 512.0625 372.433594 L 502.148438 371.128906 "/>
 <g style="fill:rgb(0%,50.196078%,0%);fill-opacity:1;">
-  <use xlink:href="#glyph0-2" x="506.725386" y="367.433662"/>
+  <use xlink:href="#glyph0-2" x="507.174605" y="367.433662"/>
 </g>
 <path style="fill:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(0%,0%,100%);stroke-opacity:1;stroke-miterlimit:10;" d="M 300 250 L 300 14.371094 "/>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,100%);fill-opacity:1;" d="M 296.171875 14.371094 L 300 5.132812 L 303.828125 14.371094 "/>
 <g style="fill:rgb(0%,0%,100%);fill-opacity:1;">
-  <use xlink:href="#glyph0-3" x="295.113281" y="0.132675"/>
+  <use xlink:href="#glyph0-3" x="294.519531" y="0.132675"/>
 </g>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,100%,100%);fill-opacity:1;" d="M 100 201.011719 L 57.574219 274.496094 L 142.425781 274.496094 "/>
 <path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(100%,100%,100%);stroke-opacity:1;stroke-miterlimit:10;" d="M 100 201.011719 L 57.574219 274.496094 L 142.425781 274.496094 Z M 100 201.011719 "/>
