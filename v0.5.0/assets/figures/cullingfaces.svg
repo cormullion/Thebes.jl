@@ -21,17 +21,17 @@
 <path style="fill:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%,0%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 300 250 L 95.941406 367.8125 "/>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(100%,0%,0%);fill-opacity:1;" d="M 97.851562 371.128906 L 87.9375 372.433594 L 94.027344 364.5 "/>
 <g style="fill:rgb(100%,0%,0%);fill-opacity:1;">
-  <use xlink:href="#glyph0-1" x="82.899614" y="367.433662"/>
+  <use xlink:href="#glyph0-1" x="82.602739" y="367.433662"/>
 </g>
 <path style="fill:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(0%,50.196078%,0%);stroke-opacity:1;stroke-miterlimit:10;" d="M 300 250 L 504.058594 367.8125 "/>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,50.196078%,0%);fill-opacity:1;" d="M 505.972656 364.5 L 512.0625 372.433594 L 502.148438 371.128906 "/>
 <g style="fill:rgb(0%,50.196078%,0%);fill-opacity:1;">
-  <use xlink:href="#glyph0-2" x="506.948042" y="367.433662"/>
+  <use xlink:href="#glyph0-2" x="506.725386" y="367.433662"/>
 </g>
 <path style="fill:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(0%,0%,100%);stroke-opacity:1;stroke-miterlimit:10;" d="M 300 250 L 300 14.371094 "/>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,100%);fill-opacity:1;" d="M 296.171875 14.371094 L 300 5.132812 L 303.828125 14.371094 "/>
 <g style="fill:rgb(0%,0%,100%);fill-opacity:1;">
-  <use xlink:href="#glyph0-3" x="295.480469" y="0.132675"/>
+  <use xlink:href="#glyph0-3" x="295.113281" y="0.132675"/>
 </g>
 <path style="fill-rule:nonzero;fill:rgb(80%,80%,80%);fill-opacity:0.8;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(20%,20%,20%);stroke-opacity:0.8;stroke-miterlimit:10;" d="M 15.148438 250 L 57.574219 274.496094 L 100 201.011719 L 57.574219 176.515625 Z M 15.148438 250 "/>
 <path style="fill-rule:nonzero;fill:rgb(80%,80%,80%);fill-opacity:0.8;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(20%,20%,20%);stroke-opacity:0.8;stroke-miterlimit:10;" d="M 57.574219 274.496094 L 57.574219 323.484375 L 142.425781 323.484375 L 142.425781 274.496094 Z M 57.574219 274.496094 "/>
