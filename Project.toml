@@ -1,7 +1,7 @@
 name = "Thebes"
 uuid = "8b424ff8-82f5-59a4-86a6-de3761897198"
 authors = ["cormullion <cormullion@mac.com>"]
-version = "0.6.0"
+version = "0.7.0"
 
 [deps]
 Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
@@ -21,7 +21,7 @@ test = ["Test", "Random", "Luxor"]
 
 [compat]
 julia = "1"
-Luxor = "1, 2"
+Luxor = "1, 2, 3"
 StaticArrays = "0.10, 0.11, 0.12, 1.0"
 Rotations = "1"
 Colors = "0.7, 0.8, 0.9, 0.10, 0.11, 0.12, 0.13, 0.14"
