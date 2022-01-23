@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Views · Thebes</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="Thebes logo"/></a><div class="docs-package-name"><span class="docs-autofit">Thebes</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction to Thebes</a></li><li><a class="tocitem" href="../basics/">The basics</a></li><li class="is-active"><a class="tocitem" href>Views</a><ul class="internal"><li><a class="tocitem" href="#Eyepoint-and-centerpoint"><span>Eyepoint and centerpoint</span></a></li><li><a class="tocitem" href="#Perspective"><span>Perspective</span></a></li><li><a class="tocitem" href="#Orbits"><span>Orbits</span></a></li></ul></li><li><a class="tocitem" href="../polys/">Polygons and planes</a></li><li><a class="tocitem" href="../objects/">Objects</a></li><li><a class="tocitem" href="../text/">Text</a></li><li><a class="tocitem" href="../tools/">Tools</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Views</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Views</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/cormullion/Thebes.jl/blob/master/docs/src/views.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Views-and-perspective"><a class="docs-heading-anchor" href="#Views-and-perspective">Views and perspective</a><a id="Views-and-perspective-1"></a><a class="docs-heading-anchor-permalink" href="#Views-and-perspective" title="Permalink"></a></h1><h2 id="Eyepoint-and-centerpoint"><a class="docs-heading-anchor" href="#Eyepoint-and-centerpoint">Eyepoint and centerpoint</a><a id="Eyepoint-and-centerpoint-1"></a><a class="docs-heading-anchor-permalink" href="#Eyepoint-and-centerpoint" title="Permalink"></a></h2><p>Thebes takes a simple view of life. There’s a global Thebes ‘realm’ which is created when you start <code>using</code> it. It’s a good idea to check and/or set the current viewing parameters when you start a new Luxor document, in case you’re inheriting anything from a previous run.</p><p>Here are the functions that control your view of the 3D scene:</p><ul><li><code>helloworld()</code>  </li><li><code>eyepoint()</code>  </li><li><code>centerpoint()</code></li><li><code>uppoint()</code></li><li><code>perspective()</code></li></ul><p>The first one is a useful one to remember: it simply resets all the viewing parameters to the default settings.</p><p>The <code>eyepoint()</code> function moves the <code>eyepoint</code>, and <code>centerpoint()</code> changes the location that is the center of your view. The <code>uppoint()</code> function specifies a point relative to <code>centerpoint</code>. A line running from centerpoint to the up point defines the “up” direction.</p><p>So, to see the side view of the helix, continued from the previous chapter, we can just lower our viewpoint a bit, from the default 100 in z down to 50:</p><pre><code class="language-julia">helix = [Point3D(150cos(θ), 150sin(θ), 5θ) for θ in 0:π/48:4π]
+
+setline(0.2)
+
+eyepoint(500, 500, 50)
+
+axes3D()
+
+for p in helix
+    pin(p, Point3D(0, 0, p.z))
+end</code></pre><p><img src="../assets/figures/helix6.svg" alt="point example"/></p><h2 id="Perspective"><a class="docs-heading-anchor" href="#Perspective">Perspective</a><a id="Perspective-1"></a><a class="docs-heading-anchor-permalink" href="#Perspective" title="Permalink"></a></h2><p>As yet we&#39;ve seen no perspective. The defaut value of the perspective parameter, as returned by <code>perspective()</code>, is 0. This means that there&#39;s none of that foreshortening or converging of lines that head off into the distance. And if you look at a cube, it has that familiar unrealistic appearance of cubes drawn without perspective.</p><pre><code class="language-julia">function makecube()
+    cube = [
+        Point3D(1,   1, -1),
+        Point3D(1,  -1, -1),
+        Point3D(-1, -1, -1),
+        Point3D(-1,  1, -1),
+        Point3D(1,   1,  1),
+        Point3D(1,  -1,  1),
+        Point3D(-1, -1,  1),
+        Point3D(-1,  1,  1)]
+    r = Point3D[]
+
+    for e in (
+        [1, 2, 3, 4, 1],
+        [5, 6, 7, 8, 5],
+        [5, 1, 2, 6, 7],
+        [7, 3, 4, 8, 5])
+        append!(r, cube[e])
+    end
+    return r
+end
+
+
+pin(50makecube())
+
+finish()</code></pre><p><img src="../assets/figures/cube1.svg" alt="isometric cube example"/></p><p>This animation views the cube and changes the perspective slowly, starting at 0, then moving from 300 up to 1400.</p><p><img src="../assets/figures/perspectivemovie-animation.gif" alt="perspective cube example"/></p><p>As the value of <code>perspective</code> increases, the apparent magnification increases, and parallel lines start to converge. The next example shows the converging parallel lines.</p><pre><code class="language-julia">function makecube()
+    cube = [
+        Point3D(1,   1, -1),
+        Point3D(1,  -1, -1),
+        Point3D(-1, -1, -1),
+        Point3D(-1,  1, -1),
+        Point3D(1,   1,  1),
+        Point3D(1,  -1,  1),
+        Point3D(-1, -1,  1),
+        Point3D(-1,  1,  1)]
+    r = Point3D[]
+
+    for e in (
+        [1, 2, 3, 4, 1],
+        [5, 6, 7, 8, 5],
+        [5, 1, 2, 6, 7],
+        [7, 3, 4, 8, 5])
+        append!(r, cube[e])
+    end
+    return r
+end
+
+
+eyepoint(200, 50, 100)
+perspective(150)
+pts = pin(50makecube())
+
+sethue(&quot;red&quot;)
+setline(0.1)
+for p1 in pts
+    for p2 in pts
+        p1 == p2 &amp;&amp; continue
+        rule(p1, slope(p1, p2))
+    end
+end</code></pre><p><img src="../assets/figures/cube-in-perspective.svg" alt="cube in perspective"/></p><p>There are enough converging parallel lines there to give an ancient Egyptian architect nightmares.</p><h2 id="Orbits"><a class="docs-heading-anchor" href="#Orbits">Orbits</a><a id="Orbits-1"></a><a class="docs-heading-anchor-permalink" href="#Orbits" title="Permalink"></a></h2><p>To fly around the scene, move the eyepoint around, while looking at the center.</p><pre><code class="language-none">using Thebes, Luxor
+function frame(scene, framenumber, object)
+    background(&quot;skyblue&quot;)
+    setlinejoin(&quot;bevel&quot;)
+
+    setline(3.0)
+    sethue(&quot;grey30&quot;)
+    carpet(500)
+    eased_n = rescale(scene.easingfunction(framenumber, 0, 1,
+        scene.framerange.stop), 0, 1, 0, 2π)
+
+    sethue(&quot;white&quot;)
+    perspective(200)
+    eyepoint(200cos(eased_n), 200sin(eased_n), 40)
+    pts = pin(50object)
+
+    sethue(&quot;orange&quot;)
+    setline(0.5)
+    for pair in ((1, 2), (2, 3), (3, 4), (4, 1))
+        rule(pts[first(pair)], slope(pts[first(pair)], pts[last(pair)]))
+    end
+
+    axes3D()
+end
+
+function makecube()
+    cube = [
+        Point3D(1,   1, -1),
+        Point3D(1,  -1, -1),
+        Point3D(-1, -1, -1),
+        Point3D(-1,  1, -1),
+        Point3D(1,   1,  1),
+        Point3D(1,  -1,  1),
+        Point3D(-1, -1,  1),
+        Point3D(-1,  1,  1)]
+    r = Point3D[]
+
+    for e in (
+        [1, 2, 3, 4, 1],
+        [5, 6, 7, 8, 5],
+        [5, 1, 2, 6, 7],
+        [7, 3, 4, 8, 5])
+        append!(r, cube[e])        
+    end
+    return r
+end
+
+
+function main()
+    w = 600
+    h = 400
+    movie1 = Movie(w, h, &quot;3D movie&quot;)
+    cube = makecube()
+    d = animate(movie1,
+            Scene(movie1, (s, f)  -&gt; frame(s, f, cube),
+                    1:150, easingfunction=easeinoutsine),
+        creategif=true,
+        framerate=20,
+        pathname=&quot;/tmp/orbiting-a-cube.gif&quot;)
+    return d
+end
+
+main()</code></pre><p><img src="../assets/figures/orbiting-a-cube.gif" alt="animation"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../basics/">« The basics</a><a class="docs-footer-nextpage" href="../polys/">Polygons and planes »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 23 January 2022 10:41">Sunday 23 January 2022</span>. Using Julia version 1.7.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
