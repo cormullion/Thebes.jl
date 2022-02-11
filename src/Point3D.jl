@@ -76,9 +76,13 @@ end
 /(p1::Point3D, shift::NTuple{3, Real}) = Point3D(p1.x / shift[1], p1.y / shift[2], p1.z / shift[3])
 
 # comparisons
-
 isequal(p1::Point3D, p2::Point3D)         = isapprox(p1.x, p2.x, atol=0.00000001) && isapprox(p1.y, p2.y, atol=0.00000001) && isapprox(p1.z, p2.z, atol=0.00000001)
-isapprox(p1::Point3D, p2::Point3D)        = isapprox(p1.x, p2.x, atol=0.00000001) && isapprox(p1.y, p2.y, atol=0.00000001) && isapprox(p1.z, p2.z, atol=0.00000001)
+
+# allow kwargs
+function Base.isapprox(p1::Point3D, p2::Point3D; atol=1e-6, kwargs...)
+    return isapprox(p1.x, p2.x; atol=atol, kwargs...) && isapprox(p1.y, p2.y; atol=atol, kwargs...) && isapprox(p1.z, p2.z; atol=atol, kwargs...)
+end
+
 isless(p1::Point3D, p2::Point3D)          = (p1.x < p2.x) && (p1.y < p2.y) && (p1.z < p2.z)
 !=(p1::Point3D, p2::Point3D)              = !isequal(p1, p2)
 <(p1::Point3D, p2::Point3D)               = isless(p1,p2)
@@ -159,19 +163,32 @@ function sphericaltocartesian(ρ, θ, ϕ)
 end
 
 """
+    sphericaltocartesian((ρ, θ, ϕ))
+
+Return `Point3D(x, y, z)` corresponding to `(ρ, θ, ϕ)`.
+"""
+sphericaltocartesian((ρ, θ, ϕ)) = sphericaltocartesian(ρ, θ, ϕ)
+
+"""
     cartesiantospherical(x, y, z)
 
 Return `(ρ, θ, ϕ)` (radius, longitude, latitude) of the Point3D(x, y, z).
 """
 function cartesiantospherical(x, y, z)
-    ϕ = atan(y, x)
     ρ = sqrt(x^2 + y^2 + z^2)
-    θ = acos(z/ρ)
+    θ = atan(y, x)
+    ϕ = acos(z/ρ)
     return (ρ, θ, ϕ)
 end
 
-# rotations
+"""
+    cartesiantospherical(pt::Point3D)
 
+Return `(ρ, θ, ϕ)` (radius, longitude, latitude) of `pt`.
+"""
+cartesiantospherical(pt::Point3D) = cartesiantospherical(pt.x, pt.y, pt.z)
+
+# rotations
 
 # old versions just redirect to Rotations now
 """

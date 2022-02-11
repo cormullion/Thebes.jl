@@ -27,4 +27,26 @@ Drawing(1, 1, :png)
 pt = pin(Point3D(-1000, -1000, -1000))
 @test isapprox(pt.x, 0)
 @test isapprox(pt.y, 0)
+
+# test spherical ↔ cartesian
+
+(ρ, θ, ϕ) = cartesiantospherical(2.0, 3.0, 4.0)
+
+@test ρ ≈ 5.385164807134504
+@test θ ≈ 0.982793723247329
+@test ϕ ≈ 0.7335813236400831
+
+(x, y, z) = sphericaltocartesian((ρ, θ, ϕ))
+
+@test isapprox(x, 2.0, atol=10e-3)
+@test isapprox(y, 3.0, atol=10e-3)
+@test isapprox(z, 4.0, atol=10e-3)
+
+(ρ₁, θ₁, ϕ₁) = cartesiantospherical(x, y, z)
+
+# round trip
+@test isapprox(ρ₁, ρ)
+@test isapprox(θ₁, θ)
+@test isapprox(ϕ₁, ϕ)
+
 finish()

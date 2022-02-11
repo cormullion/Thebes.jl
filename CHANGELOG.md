@@ -1,5 +1,23 @@
 # Changelog
 
+## [v0.8.0] - ???
+
+### Added
+
+- 3D LaTex text
+
+### Changed
+
+- Project.toml
+- some point3d comparisons
+- fixed wrong spherical/cartesian conversions
+
+### Removed
+
+### Deprecated
+
+──────────────────────────────────────────
+
 ## [v0.7.0] - 2022-01-21
 
 ### Added

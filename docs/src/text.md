@@ -65,6 +65,40 @@ nothing # hide
 
 ![text ](assets/figures/text2.svg)
 
+It's also possible to write math equations in ``\LaTeX`` by
+passing a `LaTeXString` to the `text` function. Thebes and
+Luxor use
+[MathTeXEngine.jl](https://github.com/Kolaru/MathTeXEngine.jl)
+to parse the `LaTeXString`. You should load MathTeXEngine.jl
+(`using MathTeXEngine`) before accessing this feature.
+
+```julia
+using Luxor
+using Thebes
+using MathTeXEngine
+using Rotations
+using LaTeXStrings
+
+@drawsvg begin
+    background(0.0, 0.05, 0.1)
+    helloworld()
+    perspective(300)
+    eyepoint(200, 200, 200)
+    sethue("white")
+    fontsize(40)
+    setline(1)
+    e = L"e^{i\pi} + 1 = 0"
+    for i in 0:π/10:2π - π/10
+        text3D(e,
+            sphericaltocartesian(50, i, π/2),
+            about=sphericaltocartesian(50, i, π/2),
+            rotation=RotZ(i))
+    end
+end
+```
+
+![LaTeX text](assets/figures/text3.svg)
+
 ```@docs
 text3D
 ```
