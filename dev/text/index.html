@@ -27,8 +27,29 @@ for y in -1200:te[3]:1200
             sethue(HSB(mod(x*y, 360), .6, .9))
             text3D(&quot;Julia&quot;, Point3D(x, y, 0), about=Point3D(x, y, 0), rotation=RotZ(π/2))
         end
-    end</code></pre><p><img src="../assets/figures/text2.svg" alt="text "/></p><article class="docstring"><header><a class="docstring-binding" id="Thebes.text3D" href="#Thebes.text3D"><code>Thebes.text3D</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia"> text3D(str, anchor::Point3D;
+    end</code></pre><p><img src="../assets/figures/text2.svg" alt="text "/></p><p>It&#39;s also possible to write math equations in <span>$\LaTeX$</span> by passing a <code>LaTeXString</code> to the <code>text</code> function. Thebes and Luxor use <a href="https://github.com/Kolaru/MathTeXEngine.jl">MathTeXEngine.jl</a> to parse the <code>LaTeXString</code>. You should load MathTeXEngine.jl (<code>using MathTeXEngine</code>) before accessing this feature.</p><pre><code class="language-julia">using Luxor
+using Thebes
+using MathTeXEngine
+using Rotations
+using LaTeXStrings
+
+@drawsvg begin
+    background(0.0, 0.05, 0.1)
+    helloworld()
+    perspective(300)
+    eyepoint(200, 200, 200)
+    sethue(&quot;white&quot;)
+    fontsize(40)
+    setline(1)
+    e = L&quot;e^{i\pi} + 1 = 0&quot;
+    for i in 0:π/10:2π - π/10
+        text3D(e,
+            sphericaltocartesian(50, i, π/2),
+            about=sphericaltocartesian(50, i, π/2),
+            rotation=RotZ(i))
+    end
+end</code></pre><p><img src="../assets/figures/text3.svg" alt="LaTeX text"/></p><article class="docstring"><header><a class="docstring-binding" id="Thebes.text3D" href="#Thebes.text3D"><code>Thebes.text3D</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia"> text3D(str, anchor::Point3D;
     halign=:left,
     valign=:baseline,
     about=Point3D(0., 0., 0.),
-    rotation::Rotation=RotXYZ(0, 0, 0))</code></pre><p>Draw text at point <code>pt</code>, lying in the plane of the x axis. Angles in <code>rotation</code> rotate the text about the <code>about</code> point, defaulting to <code>Point3D(0, 0, 0)</code>.</p><p>Uses Luxor&#39;s <code>fontface()</code> and <code>fontsize()</code> settings.</p><p>Specify rotations using functions from Rotations.jl, such as:</p><ul><li><code>RotX(a)</code></li><li><code>RotZ(a)</code></li><li><code>RotXZ(a1, a2)</code></li><li><code>RotXYZ(a1, a2, a3)</code></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/cormullion/Thebes.jl/blob/168319571ab5072cbed372dd0cbe9462f3857ba9/src/text.jl#L1-L20">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../objects/">« Objects</a><a class="docs-footer-nextpage" href="../tools/">Tools »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 21 January 2022 15:19">Friday 21 January 2022</span>. Using Julia version 1.7.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+    rotation::Rotation=RotXYZ(0, 0, 0))</code></pre><p>Draw text at point <code>pt</code>, lying in the plane of the x axis. Angles in <code>rotation</code> rotate the text about the <code>about</code> point, defaulting to <code>Point3D(0, 0, 0)</code>.</p><p>Uses Luxor&#39;s <code>fontface()</code> and <code>fontsize()</code> settings.</p><p>Specify rotations using functions from Rotations.jl, such as:</p><ul><li><code>RotX(a)</code></li><li><code>RotZ(a)</code></li><li><code>RotXZ(a1, a2)</code></li><li><code>RotXYZ(a1, a2, a3)</code></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/cormullion/Thebes.jl/blob/48fb5b47aced1dd27023cc61c8805c7a7f33a110/src/text.jl#L1-L20">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../objects/">« Objects</a><a class="docs-footer-nextpage" href="../tools/">Tools »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 11 February 2022 12:38">Friday 11 February 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
