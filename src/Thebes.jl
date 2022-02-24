@@ -17,6 +17,7 @@ include("utils.jl")
 include("Projection.jl")
 include("Object.jl")
 include("pin.jl")
+include("path.jl")
 include("text.jl")
 
 export project, Projection, newprojection,

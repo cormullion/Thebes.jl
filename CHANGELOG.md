@@ -5,6 +5,7 @@
 ### Added
 
 - 3D LaTex text
+- draw Luxor paths
 
 ### Changed
 
