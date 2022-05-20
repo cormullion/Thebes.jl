@@ -52,7 +52,7 @@ function make(vf, name="unnamed")
     # don't redefine when passed an array
     vertices = deepcopy(vf[1])
     faces    = deepcopy(vf[2])
-    labels   = collect(1:length(faces))
+    labels   = collect(eachindex(faces))
     return Object(vertices, faces, labels, name)
 end
 
@@ -106,7 +106,7 @@ function objecttopoly(o::Object)
     end
     facepolys = Array[]
     if length(o.faces) > 0
-        for n in 1:length(o.faces)
+        for n in eachindex(o.faces)
             push!(facepolys, vertices2D[o.faces[n]])
         end
     end
@@ -251,7 +251,7 @@ end
 Set the position of object to Point3D(x, y, z).
 """
 function moveby!(o::Object, x, y, z)
-   for n in 1:length(o.vertices)
+   for n in eachindex(o.vertices)
        nv = o.vertices[n]
        o.vertices[n] = Point3D(nv.x + x, nv.y + y, nv.z + z)
    end
@@ -278,7 +278,7 @@ moveby!(o::Object, pt::Point3D) = moveby!(o::Object, pt.x, pt.y, pt.z)
 Scale object by x in x, y in y, and z in z.
 """
 function scaleby!(o::Object, x, y, z)
-   for n in 1:length(o.vertices)
+   for n in eachindex(o.vertices)
        nv = o.vertices[n]
        o.vertices[n] = Point3D(nv.x * x, nv.y * y, nv.z * z)
    end
@@ -306,14 +306,14 @@ Rotate an object through rotation `r`, or around the x, y,
 and/or z axis by `angleX`, `angleY`, `angleZ`.
 """
 function rotateby!(o::Object, angleX, angleY, angleZ)
-    for n in 1:length(o.vertices)
+    for n in eachindex(o.vertices)
         o.vertices[n] = RotXYZ(angleX, angleY, angleZ) * o.vertices[n]
     end
     return o
 end
 
 function rotateby!(o::Object, r::Rotation)
-    for n in 1:length(o.vertices)
+    for n in eachindex(o.vertices)
         o.vertices[n] = r * o.vertices[n]
     end
     return o
@@ -341,7 +341,7 @@ end
 Rotate an object around a point by rotation r, or angleX, angleY, angleZ.
 """
 function rotateby!(o::Object, pt::Point3D, angleX, angleY, angleZ)
-    for n in 1:length(o.vertices)
+    for n in eachindex(o.vertices)
         v = o.vertices[n] - pt
         v = rotateX(v, angleX)
         v = rotateY(v, angleY)
@@ -352,7 +352,7 @@ function rotateby!(o::Object, pt::Point3D, angleX, angleY, angleZ)
 end
 
 function rotateby!(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
-    for n in 1:length(o.vertices)
+    for n in eachindex(o.vertices)
         v = o.vertices[n] * r
         o.vertices[n] = v
     end

@@ -343,7 +343,7 @@ moveby!(ptlist::Array{Point3D, 1}, x, y, z) = moveby!(ptlist, Point3D(x, y, z))
 Scales a list of points by multiplying by `x` in X, `y` in Y, `z` in Z.
 """
 function scaleby!(ptlist::Array{Point3D, 1}, x, y, z)
-   for n in 1:length(ptlist)
+   for n in eachindex(ptlist)
        v = ptlist[n]
        ptlist[n] = Point3D(v.x * x, v.y * y, v.z * z)
    end
@@ -357,7 +357,7 @@ Finds one of these.
 """
 function surfacenormal(ptlist::Array{Point3D, 1})
    normal = Point3D(0, 0, 0)
-   for i in 1:length(ptlist)
+   for i in eachindex(ptlist)
       vertexCurrent = ptlist[i]
       vertexNext    = ptlist[mod1(i + 1, end)]
       x = normal.x + ( (vertexCurrent.y - vertexNext.y) * (vertexCurrent.z + vertexNext.z))

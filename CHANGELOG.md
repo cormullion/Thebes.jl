@@ -1,6 +1,6 @@
 # Changelog
 
-## [v0.8.0] - ???
+## [v0.8.0] - 2022-05-20 11:01:59
 
 ### Added
 
@@ -12,6 +12,7 @@
 - Project.toml
 - some point3d comparisons
 - fixed wrong spherical/cartesian conversions
+- eachindex()
 
 ### Removed
 

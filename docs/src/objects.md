@@ -294,3 +294,11 @@ nothing # hide
 ```
 
 ![custom object](assets/figures/juliaspheres.svg)
+
+This code uses the surface normal of each rectangular facet to change the color. The surface normal is an imaginary line that meets the facet at right angles, and indicates the direction of that facet. If you measure the distance between the surface normal and the direction of, say, the direction of a line from the origin to the eyepoint, you can obtain a value that indicates the orientation of the facet. You can then use this, as here, to change the color: an angle approaching π suggests that the facet is almost facing the viewer, and you can color it accordingly.
+
+![surface normal](assets/figures/eyepoint.gif)
+
+!!! note
+
+   It's hard work doing it all like this! There are easier ways...

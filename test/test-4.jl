@@ -24,7 +24,7 @@ function main()
     for (pos, n) in tiles
         @layer begin
             translate(pos)
-            object = make(moreobjects[rand(1:length(moreobjects))])
+            object = make(moreobjects[rand(eachindex(moreobjects))])
 
             scaleby!(object, 30, 30, 30)
             moveby!(object, 1 * rand(), 1 * rand(), 10 * rand())
