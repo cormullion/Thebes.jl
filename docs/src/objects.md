@@ -94,10 +94,6 @@ nothing # hide
 
 The `objecttopoly()` function returns a tuple, containing the 2D vertices, and the polygons that define the faces.
 
-## OFF the shelf objects
-
-Obviously this isn't something you'd want to do "by hand" very often. Fortunately there are plenty of people who are prepared to make 3D objects and distribute them in standard file formats, via the internet. Thebes.jl knows about one of these formats, the [Object File Format (.OFF)](https://en.wikipedia.org/wiki/OFF_(file_format)). So there are a few objects already available for you to use directly.
-
 ## Using objects
 
 The following objects are preloaded (from `data/objects.jl`) when Thebes.jl starts:
@@ -302,3 +298,67 @@ This code uses the surface normal of each rectangular facet to change the color.
 !!! note
 
    It's hard work doing it all like this! There are easier ways...
+
+## OFF the shelf objects
+
+There are many formats for exchanging 3D data between software applications. Thebes.jl knows about one of these formats, the [Object File Format (.OFF)](https://en.wikipedia.org/wiki/OFF_(file_format)). You'll find a few objects already made for you to use directly.
+
+Here's what a typical OFF file, "cube.off", looks like:
+
+```plain
+OFF
+8 6 0
+-0.500000 -0.500000 0.500000
+0.500000 -0.500000 0.500000
+-0.500000 0.500000 0.500000
+0.500000 0.500000 0.500000
+-0.500000 0.500000 -0.500000
+0.500000 0.500000 -0.500000
+-0.500000 -0.500000 -0.500000
+0.500000 -0.500000 -0.500000
+4 0 1 3 2
+4 2 3 5 4
+4 4 5 7 6
+4 6 7 1 0
+4 1 7 5 3
+4 6 0 2 4
+```
+
+The file contains 8 3D points, defined as three numbers, followed by the definitions of 6 faces. The first face `4 0 1 3 2` has 4 vertices, and joins vertices 0 (on line 3), 1, 3, and 2.
+
+To load the contents of the OFF file into an object, use `import_off_file()`.
+
+Here's an example that loads an OFF file of the mask of Tutenkhamun (from the `data` directory) and rotates it.
+
+```julia
+using Luxor
+using Thebes
+
+function frame(scene, framenumber, o)
+    eased_n = rescale(scene.easingfunction(framenumber, 0, 1,
+    scene.framerange.stop), 0, 1, 0, 2π)
+    perspective(200)
+    eyepoint(200cos(eased_n), 200sin(eased_n), 80)
+    background("black")
+    setlinejoin("bevel")
+    sethue("gold")
+    setline(0.4)   
+    pin(o)
+end
+
+function main()
+    scaleby!(o, 15)
+    moveby!(o, 0, 0, -150)
+    amovie = Movie(600, 600, "tut")
+    animate(amovie,
+        Scene(amovie, (s, f) -> frame(s, f, o), 1:50),
+        framerate=15,
+        creategif=true)
+end
+
+f = dirname(dirname(pathof(Thebes))) * "/data/tut.off"
+o = make(import_off_file(f))
+main()
+```
+
+![animated Tutankhamun](assets/figures/tut.gif)

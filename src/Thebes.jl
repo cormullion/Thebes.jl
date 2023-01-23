@@ -45,7 +45,9 @@ export project, Projection, newprojection,
        dotproduct3D, magnitude, anglebetweenvectors,
        surfacenormal, face, crossproduct3D, pointsperpendicular,
 
-       text3D
+       text3D,
+
+       import_off_file
 
 const CURRENTPROJECTION = [newprojection(Point3D(100, 100, 100), Point3D(0, 0, 0), Point3D(0, 0, 1))]
 

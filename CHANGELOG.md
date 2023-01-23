@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.9.0] - 2023-01-
+
+### Added
+
+- `scaleby!(o, d)`
+- `import_off_file(fname)`
+
+### Changed
+
+### Removed
+
+### Deprecated
+
+──────────────────────────────────────────
+
 ## [v0.8.0] - 2022-05-20 11:01:59
 
 ### Added

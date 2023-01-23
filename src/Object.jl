@@ -42,17 +42,21 @@ and an array of labels.
         push!(a, Point3D((50 + cos(5t)) * cos(3t), (50 + cos(5t)) * sin(2t), sin(5t)))
     end
     Knot = make((a, []), "knot")
-    pin(Knot, gfunction = (args...) -> poly(args[1], :stroke))
+    pin(Knot, gfunction=(args...) -> begin
+        for verts in args[1].vertices
+            pin(verts)
+        end
+    end)
 end
+```
 
 The default gfunction expects faces - if there aren't any, use a gfunction that draws vertices.
-```
 """
 function make(vf, name="unnamed")
     # don't redefine when passed an array
     vertices = deepcopy(vf[1])
-    faces    = deepcopy(vf[2])
-    labels   = collect(eachindex(faces))
+    faces = deepcopy(vf[2])
+    labels = collect(eachindex(faces))
     return Object(vertices, faces, labels, name)
 end
 
@@ -124,7 +128,7 @@ of o so that the faces are in order of nearest (highest) z relative to eyepoint.
 or something like that ? not sure how this works
 """
 function sortfaces!(o::Object;
-        eyepoint::Point3D=eyepoint())
+    eyepoint::Point3D=eyepoint())
     avgs = Float64[]
     for f in o.faces
         vs = o.vertices[f]
@@ -132,7 +136,7 @@ function sortfaces!(o::Object;
         for v in vs
             s += distance(v, eyepoint)
         end
-        avg = s/length(unique(vs))
+        avg = s / length(unique(vs))
         push!(avgs, avg)
     end
     neworder = reverse(sortperm(avgs))
@@ -141,46 +145,46 @@ function sortfaces!(o::Object;
     return o
 end
 
-sortfaces!(o::Array{Object, 1}; kwargs...) =
-   map(sortfaces!, o)
+sortfaces!(o::Array{Object,1}; kwargs...) =
+    map(sortfaces!, o)
 
 function hiddensurface(o::Object)
-   if !isempty(o.faces)
-       sortfaces!(o)
-       @layer begin
-           for (n, face) in enumerate(o.faces)
-               @layer begin
-                   vertices = o.vertices[face]
-                   sn = surfacenormal(vertices)
-                   ang = anglebetweenvectors(sn, eyepoint())
-                   setgrey(rescale(ang, 0, π, 1, 0))
-                   pin(vertices, gfunction = (p3, p2) ->
-                    begin
-                       poly(p2, :fill)
-                       sethue("white")
-                       poly(p2, :stroke, close=true)
-                    end)
-               end
-           end
-       end
-   end
+    if !isempty(o.faces)
+        sortfaces!(o)
+        @layer begin
+            for (n, face) in enumerate(o.faces)
+                @layer begin
+                    vertices = o.vertices[face]
+                    sn = surfacenormal(vertices)
+                    ang = anglebetweenvectors(sn, eyepoint())
+                    setgrey(rescale(ang, 0, π, 1, 0))
+                    pin(vertices, gfunction=(p3, p2) ->
+                        begin
+                            poly(p2, :fill)
+                            sethue("white")
+                            poly(p2, :stroke, close=true)
+                        end)
+                end
+            end
+        end
+    end
 end
 
 function wireframe(o::Object)
-   if !isempty(o.faces)
-       sortfaces!(o)
-       @layer begin
-           for (n, face) in enumerate(o.faces)
-               @layer begin
-                   vertices = o.vertices[face]
-                   pin(vertices, gfunction = (p3, p2) ->
-                    begin
-                       poly(p2, :stroke, close=true)
-                    end)
-               end
-           end
-       end
-   end
+    if !isempty(o.faces)
+        sortfaces!(o)
+        @layer begin
+            for (n, face) in enumerate(o.faces)
+                @layer begin
+                    vertices = o.vertices[face]
+                    pin(vertices, gfunction=(p3, p2) ->
+                        begin
+                            poly(p2, :stroke, close=true)
+                        end)
+                end
+            end
+        end
+    end
 end
 
 """
@@ -240,7 +244,7 @@ end
 ```
 """
 function pin(o::Object;
-    gfunction = (o) -> hiddensurface(o))
+    gfunction=(o) -> hiddensurface(o))
     gfunction(o)
 end
 
@@ -251,11 +255,11 @@ end
 Set the position of object to Point3D(x, y, z).
 """
 function moveby!(o::Object, x, y, z)
-   for n in eachindex(o.vertices)
-       nv = o.vertices[n]
-       o.vertices[n] = Point3D(nv.x + x, nv.y + y, nv.z + z)
-   end
-   return o
+    for n in eachindex(o.vertices)
+        nv = o.vertices[n]
+        o.vertices[n] = Point3D(nv.x + x, nv.y + y, nv.z + z)
+    end
+    return o
 end
 
 """
@@ -265,8 +269,8 @@ end
 Set the position of a copy of the object to Point3D(x, y, z).
 """
 function moveby(o::Object, x, y, z)
-   ocopy = deepcopy(o)
-   return moveby!(ocopy, x, y, z)
+    ocopy = deepcopy(o)
+    return moveby!(ocopy, x, y, z)
 end
 
 moveby(o::Object, pt::Point3D) = moveby(o::Object, pt.x, pt.y, pt.z)
@@ -278,24 +282,31 @@ moveby!(o::Object, pt::Point3D) = moveby!(o::Object, pt.x, pt.y, pt.z)
 Scale object by x in x, y in y, and z in z.
 """
 function scaleby!(o::Object, x, y, z)
-   for n in eachindex(o.vertices)
-       nv = o.vertices[n]
-       o.vertices[n] = Point3D(nv.x * x, nv.y * y, nv.z * z)
-   end
-   return o
+    for n in eachindex(o.vertices)
+        nv = o.vertices[n]
+        o.vertices[n] = Point3D(nv.x * x, nv.y * y, nv.z * z)
+    end
+    return o
 end
+
+"""
+    scaleby!(o::Object, d)
+
+Scale object by d in x, d in y, and d in z.
+"""
+scaleby!(o::Object, d) = scaleby!(o, d, d, d)
 
 """
     face(o::Object, n)
 """
 function face(o::Object, n)
-   facepoints = Point3D[]
-   if length(o.faces) > 0
-       for i in o.faces[n]
-           push!(facepoints, o.vertices[i])
-       end
-   end
-   return facepoints
+    facepoints = Point3D[]
+    if length(o.faces) > 0
+        for i in o.faces[n]
+            push!(facepoints, o.vertices[i])
+        end
+    end
+    return facepoints
 end
 
 """
