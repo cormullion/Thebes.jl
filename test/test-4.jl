@@ -10,7 +10,7 @@ rhombitruncated_icosidodecahedron, snub_cube, snub_dodecahedron, sphere2, tet3d,
 tetrahedron, triangle, truncated_cube, truncated_dodecahedron,
 truncated_icosahedron, truncated_octahedron, truncated_tetrahedron]
 
-function main()
+function test_4()
 
     Drawing(800, 800, "test-4.svg")
     background("ivory")
@@ -36,4 +36,4 @@ function main()
     finish()
 end
 
-main()
+test_4()

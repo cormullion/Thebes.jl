@@ -8,7 +8,7 @@ rhombicuboctahedron, rhombitruncated_cubeoctahedron, rhombitruncated_icosidodeca
 snub_cube, snub_dodecahedron, sphere2, tet3d, tetrahedron, triangle, truncated_cube,
 truncated_dodecahedron, truncated_icosahedron, truncated_octahedron, truncated_tetrahedron]
 
-function main()
+function test_6()
     Drawing(800, 800, "moreobjects.svg")
     origin()
     t = Table(6, 6, 100, 80)
@@ -31,4 +31,4 @@ function main()
     finish()
 end
 
-main()
+test_6()

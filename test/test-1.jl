@@ -1,6 +1,6 @@
 using Thebes, Luxor, Random, Rotations
 
-function main()
+function test_1()
     Drawing(800, 800, "test1.svg")
     origin()
     background("grey95")
@@ -30,7 +30,6 @@ function main()
         end
     end
     finish()
-    preview()
 end
 
-main()
+test_1()

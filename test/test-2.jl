@@ -1,6 +1,6 @@
 using Thebes, Luxor
 
-function main()
+function test2()
 
     Drawing(400, 400, "test2-pyramids.png")
     origin()
@@ -56,4 +56,4 @@ function main()
     finish()
 end
 
-main()
+test2()

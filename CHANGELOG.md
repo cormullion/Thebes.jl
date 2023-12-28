@@ -1,6 +1,21 @@
 # Changelog
 
-## [v0.9.0] - 2023-01-
+## [v1.0.0] - 2023-12-????
+
+### Added
+
+### Changed
+
+- Package extensions added kind of
+- min Julia 1.9
+
+### Removed
+
+### Deprecated
+
+──────────────────────────────────────────
+
+## [v0.9.0] - 2023-01-24
 
 ### Added
 
@@ -8,6 +23,8 @@
 - `import_off_file(fname)`
 
 ### Changed
+
+- Package extensions sort of added
 
 ### Removed
 

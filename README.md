@@ -17,7 +17,7 @@ Luxor.jl is built on [Cairo.jl](https://github.com/JuliaGraphics/Cairo.jl), and 
 
 # Acknowledgements
 
-Many thanks to Chris @c42f who helped me implement the rotations using Rotations.jl.
+Many thanks to @c42f who helped me implement the rotations using Rotations.jl!
 
 [docs-development-img]: https://img.shields.io/badge/docs-development-blue.svg
 [docs-development-url]: http://cormullion.github.io/Thebes.jl/dev/

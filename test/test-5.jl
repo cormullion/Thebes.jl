@@ -19,7 +19,7 @@ objectnames = ["boxcube", "boxtorus", "concave", "cone", "crossshape", "cube",
 "truncated_dodecahedron", "truncated_icosahedron", "truncated_octahedron",
 "truncated_tetrahedron"]
 
-function main()
+function test_5()
     Drawing(800, 800.0, "test-5.svg")
     origin()
 
@@ -48,4 +48,4 @@ function main()
     finish()
 end
 
-main()
+test_5()

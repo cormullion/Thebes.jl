@@ -1,6 +1,6 @@
 using Thebes, Luxor, Random
 
-function main()
+function test_3()
     Drawing(800, 800, "test3.png")
     background("azure")
     origin()
@@ -28,4 +28,4 @@ function main()
     finish()
 end
 
-main()
+test_3()
