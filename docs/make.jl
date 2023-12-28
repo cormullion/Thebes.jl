@@ -1,9 +1,15 @@
 using Documenter, Thebes, Luxor, Rotations
 
 makedocs(
-    modules = [Thebes],
+    modules  = [Thebes],
     sitename = "Thebes",
-    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true", sidebar_sitename=true),
+    warnonly = true,
+    format   = Documenter.HTML(
+        size_threshold = nothing,
+        prettyurls = get(ENV, "CI", nothing) == "true",
+        assets = ["assets/thebes-docs.css"],
+        collapselevel = 1,
+    ),
     pages    = Any[
         "Introduction to Thebes"  => "index.md",
         "The basics"              => "basics.md",
@@ -18,5 +24,7 @@ makedocs(
 
 deploydocs(
     repo = "github.com/cormullion/Thebes.jl.git",
-    target = "build"
+    target="build",
+    push_preview=true,
+    forcepush=true,
 )
