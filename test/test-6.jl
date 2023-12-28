@@ -1,4 +1,4 @@
-using Thebes
+using Thebes, Luxor
 
 include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
 

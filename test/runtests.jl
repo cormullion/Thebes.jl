@@ -1,4 +1,5 @@
-using Thebes, Test
+using Test
+using Thebes
 
 mktempdir() do tmpdir
     cd(tmpdir) do
