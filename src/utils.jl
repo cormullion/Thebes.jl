@@ -113,7 +113,9 @@ function carpet(n=100; kind=:circular)
                     push!(shape2D, pt)
                 end
             end
-            poly(shape2D, :fill, close=true)
+            if length(shape2D) > 1
+                poly(shape2D, :fill, close=true)
+            end
         end
     end
 end

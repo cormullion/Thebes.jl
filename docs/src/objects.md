@@ -47,7 +47,7 @@ Object(
      "cube")
 ```
 
-The default rendering applied by `pin()` is an attempt at a simple hidden-surface display. In real 3D software, this process has to be far more sophisticated.
+The default rendering applied by `pin()` is an attempt at a simple hidden-surface display. 
 
 ```@example
 using Thebes, Luxor # hide
@@ -66,6 +66,13 @@ nothing # hide
 ```
 
 ![simple cube object](assets/figures/simplecubeobject.svg)
+
+!!! note
+    
+    In real 3D software such as Makie.jl, the rendering can
+    be much more sophisticated!
+
+The default gfunction for this method of `pin` is `hiddensurface()`.
 
 Here's a very simple example of how you might make your own object from scratch.
 
@@ -291,7 +298,7 @@ nothing # hide
 
 ![custom object](assets/figures/juliaspheres.svg)
 
-This code uses the surface normal of each rectangular facet to change the color. The surface normal is an imaginary line that meets the facet at right angles, and indicates the direction of that facet. If you measure the distance between the surface normal and the direction of, say, the direction of a line from the origin to the eyepoint, you can obtain a value that indicates the orientation of the facet. You can then use this, as here, to change the color: an angle approaching π suggests that the facet is almost facing the viewer, and you can color it accordingly.
+This code uses the surface normal of each triangular facet to change the color. The surface normal is an imaginary line that meets the facet at right angles, and indicates the direction of that facet. If you measure the distance between the surface normal and the direction of, say, the direction of a line from the origin to the eyepoint, you can obtain a value that indicates the orientation of the facet. You can then use this, as shown below, to change the color: an angle approaching π suggests that the facet is almost facing the viewer, and you can color it accordingly.
 
 ![surface normal](assets/figures/eyepoint.gif)
 

@@ -9,7 +9,7 @@ DocTestSetup = quote
 Thebes.jl is a small package that adds some simple 3D features to Luxor.jl, a vector-graphics package for graphics workers who like to automate their work with Julia.
 
 !!! warning
-
+    
     Remember: Thebes.jl is intended for simple wireframe constructions in 3D. Don't expect a comprehensive range of 3D modelling and rendering tools. Use Makie.jl (or Blender)!
 
 The 3D world of Thebes is superimposed on the 2D world of Luxor:
@@ -32,7 +32,7 @@ There are two main things you have to know in order to draw in 3D:
 - there's a function called `pin()` that draws 2D graphics on the Luxor drawing at the position corresponding to the 3D point.
 
 !!! note
-
+    
     The `pin()` function sort of “pins” a 3D coordinate onto the 2D flat drawing surface. If I think of a better name for this function, I might change it, but I wanted to avoid everything obvious, like “draw”, “render”, “display”, “plot”, and have something short and easy to type.
 
 ## A simple example
@@ -60,8 +60,10 @@ nothing # hide
 
 ![point example](assets/figures/simpleexample.svg)
 
-!!! tip
+The `pin` function draws a small circle at the 3D point `p1` and returns the corresponding 2D point's coordinate.
 
+!!! tip
+    
     Because Thebes.jl displays 3D points on the current 2D Luxor drawing, you should always have a current drawing before using most of the functions from Thebes.
 
 ### Point cloud
@@ -88,7 +90,7 @@ length(c)
 
 ## Helical dots
 
-Let's draw a helix made of dots:
+Let's draw a helix with dots:
 
 ```@example
 using Thebes, Luxor # hide
@@ -110,7 +112,7 @@ nothing # hide
 
 ## gfunctions
 
-The default graphical rendition of a 3D point is pretty basic: a circle. But you can modify the graphics drawn at each location by passing a function to the `pin()` function's optional keyword argument, `gfunction` .
+The default graphical rendition of a 3D point is pretty basic: a circle. But you can modify the graphics drawn at each location by passing a function to the `pin()` function's optional keyword argument, `gfunction`.
 
 Suppose you want to draw a randomly colored circle at the location of each 3D point, with radius 5 units.
 
@@ -158,7 +160,7 @@ nothing # hide
 
 ![point stars example](assets/figures/helix2stars.svg)
 
-In this next example, the gfunction calculates the distance of the 3D point from the 3D origin, and then draws the 2D circle with a 2D radius that reflects the distance. The function therefore requires both the original 3D point (in the first argument `p3`) and the second argument (in `p2`), its 2D projection.
+In this next example, the gfunction calculates the distance of the 3D point from the 3D origin, and then draws the 2D circle with a radius that reflects that distance. The function therefore requires both the original 3D point (in the first argument `p3`) and the second argument (in `p2`), its 2D projection.
 
 ```@example
 using Thebes, Luxor # hide
@@ -182,10 +184,10 @@ nothing # hide
 ![point example](assets/figures/helix3.svg)
 
 !!! note
-
+    
     Remember that all the graphics drawn are 2D graphics. This isn't real 3D, remember! The human brain is quite adaptable, though.
 
-In the next example, each random 3D point is drawn twice, the second time with a zero z coordinate, to make shadows.
+In the next example, each random 3D point is drawn twice, the second time using zero for the z coordinate, to make shadows.
 
 ```
 using Thebes, Luxor # hide
@@ -240,7 +242,7 @@ nothing # hide
 
 ![line example](assets/figures/helix4.svg)
 
-The default gfunction's arguments consist of two pairs of points (a pair of 3D points, and a pair of 2D points), not just two of each, and Luxor's trusty `line()` function is the default action, connecting the 2D pair.
+The default gfunction's arguments for this `pin` method consist of two pairs of points (a pair of 3D points, and a pair of 2D points), not just two of each, and Luxor's trusty `line()` function is the default action, connecting the 2D pair.
 
 Or you could provide a custom gfunction to draw multicoloured arrows instead:
 
@@ -275,9 +277,23 @@ In 2D graphics, things sometimes go wrong when values get close to zero or infin
 
 In general, if the `pin()` function can't display points or lines, it will probably just discard them and carry on, rather than attempt to draw things in impossible locations or straight lines that curve in space. So if you notice parts of your drawing missing, the easiest thing to do is to move the eyepoint further away from the 3D points in question.
 
+!!! note
+    
+    Makie.jl offers support for realistic andflexible 3D projections.
+
 ## Conversions
 
-The `convert()` function provides a useful way to convert 2D coordinates to 3D. If you can generate your graphics in 2D, you can convert them to 3D, and then use `pin()` to project them back into two dimensions.
+The `convert()` function provides a useful way to convert 2D coordinates to 3D. 
+
+```julia
+convert(Point3D, Point(10, 30))
+3-element Point3D:
+ 10.0
+ 30.0
+  0.0
+```
+
+If you can generate your graphics in 2D, you can convert them to 3D, and then use `pin()` to project them back into two dimensions.
 
 This example shows how to draw the familiar Julia coloured circles. We can't use real circles (because there are no Bézier paths in Thebes yet), so we use `ngon()` with plenty of sides - 60 is probably good enough if your output is high-quality SVG.
 

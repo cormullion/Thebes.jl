@@ -148,6 +148,12 @@ end
 sortfaces!(o::Array{Object,1}; kwargs...) =
     map(sortfaces!, o)
 
+"""
+    hiddensurface(o::Object)
+
+Given an object `o`, sort the faces in `o.faces`, 
+then draw filled grey polygons for each face.
+"""
 function hiddensurface(o::Object)
     if !isempty(o.faces)
         sortfaces!(o)
@@ -170,6 +176,12 @@ function hiddensurface(o::Object)
     end
 end
 
+"""
+    wireframe(o::Object)
+
+Given an object `o`, sort the faces in `o.faces`, 
+then draw grey stroked polygons for each face.    
+"""
 function wireframe(o::Object)
     if !isempty(o.faces)
         sortfaces!(o)
@@ -198,7 +210,6 @@ The default rendering function is `hiddensurface()`.
 You can also use the built-in `wireframe()` rendering function.
 
 ## Examples
-
 
 ```
 @draw begin

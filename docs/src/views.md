@@ -50,7 +50,7 @@ nothing # hide
 
 ## Perspective
 
-As yet we've seen no perspective. The defaut value of the perspective parameter, as returned by `perspective()`, is 0. This means that there's none of that foreshortening or converging of lines that head off into the distance. And if you look at a cube, it has that familiar unrealistic appearance of cubes drawn without perspective.
+As yet we've seen no perspective. The default value of the perspective parameter, as returned by `perspective()`, is 0. This means that there's none of that foreshortening or converging of lines that head off into the distance. And if you look at a cube, it has that familiar unrealistic appearance of cubes drawn without perspective. It doesn't matter if you move the eyepoint further away, either.
 
 ```@example
 using Thebes, Luxor # hide
@@ -143,7 +143,6 @@ end
 
 finish() # hide
 nothing # hide
-
 ```
 
 ![cube in perspective](assets/figures/cube-in-perspective.svg)
@@ -152,7 +151,7 @@ There are enough converging parallel lines there to give an ancient Egyptian arc
 
 ## Orbits
 
-To fly around the scene, move the eyepoint around, while looking at the center.
+To fly around the scene, move the eyepoint around while looking at the center.
 
 ```
 using Thebes, Luxor
