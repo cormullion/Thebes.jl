@@ -1,10 +1,7 @@
-import Pkg
-Pkg.add("LaTeXStrings")
-Pkg.add("MathTeXEngine")
-
-using Luxor
 using Thebes
+using Luxor
 using Rotations
+
 using LaTeXStrings
 using MathTeXEngine
 
