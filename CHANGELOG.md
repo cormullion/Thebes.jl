@@ -1,12 +1,12 @@
 # Changelog
 
-## [v1.0.0] - 2023-12-????
+## [v1.0.0] - 2024-01-01
 
 ### Added
 
 ### Changed
 
-- Package extensions added kind of
+- Package extensions for LaTeX
 - min Julia 1.9
 
 ### Removed

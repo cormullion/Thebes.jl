@@ -40,7 +40,13 @@ text3D("the z-axis", Point3D(0, 0, 0),
 end 800 600
 ```
 
-The three main differences between `Luxor.text()` and `Thebes.text3D()` are the anchor position (a Point3D), the `about` keyword, and the `rotation` keyword. You can see above that the `the y-axis` text has been rotated around the Z axis by 90°. The `the z-axis` text is aligned right, so the first rotation - in the z-axis - sends the text to be aligned with the y-axis, such that the 's' is almost touching the origin. Then the 90° clockwise rotation about the x-axis lifts the text up to run along the z-axis. In the construction `RotX(...) * RotZ(...)`, the z-axis rotation is applied first.
+The three main differences between `Luxor.text()` and `Thebes.text3D()` are the anchor position (a Point3D), the `about` keyword, and the `rotation` keyword. 
+
+You can see that the `the y-axis` text has been rotated around the Z axis by 90°. 
+
+The `the z-axis` text is aligned right, so it starts off on the negative part of the x-axis. The first rotation - in the z-axis - sends the text to be aligned with the y-axis, such that the 's' is almost touching the origin. Then the 90° clockwise rotation about the x-axis lifts the text up to run along the z-axis. 
+
+Rotations.jl is doing all the hard work here: in the construction `RotX(...) * RotZ(...)`, the z-axis rotation is applied first.
 
 You can also use some of Luxor's text functions, such as `textextents()`, which helps you get the (2D) dimensions of text.
 
@@ -64,17 +70,18 @@ end 800 800
 ```
 
 It's also possible to write math equations in ``\LaTeX`` by
-passing a `LaTeXString` to the `text` function. Thebes and
-Luxor use
+passing a `LaTeXString` to the `text` function. Thebes (and
+Luxor) use
 [MathTeXEngine.jl](https://github.com/Kolaru/MathTeXEngine.jl)
-to parse the `LaTeXString`. You should load MathTeXEngine.jl
-(`using MathTeXEngine`) before accessing this feature.
+and
+[LaTeXStrings.jl](https://github.com/JuliaStrings/LaTeXStrings.jl)
+to parse the `LaTeXString`. 
 
 ```julia
-using Luxor
 using Thebes
-using MathTeXEngine
+using Luxor
 using Rotations
+using MathTeXEngine
 using LaTeXStrings
 
 @svg begin
@@ -91,8 +98,8 @@ using LaTeXStrings
         for i in 0:π/12:2π-π/12
             text3D(e,
                 sphericaltocartesian(100, i, π / 2) + Point3D(0, 0, z),
-                about=sphericaltocartesian(100, i, π / 2),
-                rotation= RotZ(i))
+                about = sphericaltocartesian(100, i, π / 2),
+                rotation = RotZ(i))
         end
     end
 end 800 600 "/tmp/text3.svg"

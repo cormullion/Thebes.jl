@@ -59,7 +59,7 @@ Object(
 ```
 
 There are 8 3D points. And there are 6 faces defined. Face 1 is formed by vertices 1, 2, 3, and 4, face 2 is formed by vertices 2, 6, 7, and 3, and so on.
-The default rendering applied by `pin()` is an attempt at a simple hidden-surface display. 
+The default rendering applied by `pin(o::Object)` is an attempt at a simple hidden-surface display. 
 
 ```@example
 using Thebes, Luxor # hide
@@ -87,7 +87,7 @@ We could call:
 
 to specify the rendering function explicitly.
 
-Another built-in gfunction is `wireframe()`:
+Another built-in gfunction is `wireframe(o::Object)`:
 
 ```@example
 using Thebes, Luxor # hide
@@ -114,20 +114,23 @@ setlinejoin("bevel")
 helloworld() # hide
 carpet(200)
 vertices = Point3D[]
-N = 7
-polygon = ngon(O, 150, N, vertices=true)
 
+# heptagonal = 7
+N = 7
+
+# make the base
+polygon = ngon(O, 150, N, verices=true)
 for i in eachindex(polygon)
     push!(vertices, convert(Point3D, polygon[i]))
 end
 
-# add the tip
+# add the tip 200 units above the base
 push!(vertices, Point3D(0, 0, 200))
 
+# make the faces
 faces = Vector{Int64}[]
-
 for i in eachindex(polygon)
-    push!(faces, [i, mod1(i + 1, N), N + 1])
+    push!(faces, [i, mod1(i + t1, N), N + 1])
 end
 
 obj = make([vertices, faces], "")
@@ -179,7 +182,7 @@ These are automatically imported (from `data/objects.jl`) when Thebes.jl starts:
 - Pyramid
 - Teapot
 
-The teapot is a thing, apparently.
+The teapot is a thing in the world of 3D modelling, apparently.
 
 ```@example
 using Thebes, Luxor # hide
@@ -216,11 +219,11 @@ which brings these objects into play:
 
 There are many choices you can make about how to draw the faces and the vertices of an object.
 
-### Using gfunctions
+### Writing gfunctions
 
-The gfunction for `pin` can be used to choose a rendering style for an object.
+The gfunction for `pin(o::Object)` determines the rendering style for an object.
 
-Here's a simple example:
+Here's a simple example of a custom gfunction:
 
 ```@example
 using Thebes, Luxor # hide
@@ -255,74 +258,83 @@ object = make(geodesic, "geodesic")
 end 800 800
 ```
 
-`pin` here calls `mygfunction(o)` to render object `o`. First, the `sortfaces()` function sorts the faces in `o` so that the ones that are furthest from the eyepoint are drawn first. Then the surface normal of each face is calculated, and the angle between the surface normal and a line to the eyepoint determines the color of the face. 
+`pin(o::Object)` here calls `mygfunction(o::Object)` to render object `o`. First, the `sortfaces(o::Object)` function sorts the faces in the object `o` so that the ones that are furthest from the eyepoint are stored first. Then the surface normal of each face is calculated, and the angle between the surface normal and a line to the eyepoint determines the color of the face. 
 
-The surface normal is an imaginary line that meets the face at right angles, and indicates the direction of that face. If you measure the distance between the surface normal and the direction of, say, the direction of a line from the origin to the eyepoint, you can obtain a value that indicates the orientation of the face. You can then use this to control the rendering: an angle approaching π suggests that the facet is almost facing the viewer, and you can color it accordingly.
+The surface normal is an imaginary line that meets the face at right angles, and thus indicates the direction of that face. If you measure the angle between the surface normal and the direction of a line from the origin to the eye point, you can obtain a value that indicates the orientation of the face relative to the eye point. You can then use this to control the rendering: an angle approaching π suggests that the facet is almost facing the viewer, and you can color it accordingly.
 
 ![surface normal](assets/figures/eyepoint.gif)
 
 ## Using custom code
 
-Thebes.jl is a toy rather than a full 3D renderer, and a general-purpose rendering function that draws everything with lots of optional parameters is not provided. There are plenty of ways to experiment:
+Thebes.jl is a toy rather than a full 3D renderer, and a general-purpose rendering function that draws everything with lots of optional parameters is not provided. There are plenty of ways to experiment though:
 
 ```@example
-using Luxor, Thebes, Colors, ColorSchemes
+using Thebes
+using Luxor
+using Rotations
 
-include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
-
-function lighten(col::Colorant, f)
-    c = convert(RGB, col)
-    return RGB(f * c.r, f* c.g, f * c.b)
-end
-
-function drawobject(o;
-        color=colorant"red")
-    setlinejoin("bevel")
+function mygfunction(o::Object)
+    sortfaces!(o)
     if !isempty(o.faces)
         @layer begin
-            for (n, f) in enumerate(o.faces)
-                vs = o.vertices[f]
-                sn = surfacenormal(vs)
-                ang = anglebetweenvectors(sn, eyepoint())
-                sl = slope(O, vs[1])
-                sethue(lighten(color, rescale(ang, 0, π, -2, 2)))
-                pin(vs, gfunction = (p3, p2) -> begin
-                    poly(p2, :fill)
-                    sethue("grey30")
-                    poly(p2, :stroke)
-                end)
+            for (n, face) in enumerate(o.faces)
+                @layer begin
+                    vertices = o.vertices[face]
+                    sn = surfacenormal(vertices)
+                    ang = anglebetweenvectors(sn, eyepoint())
+                    setgrey(rescale(ang, 0, π, 0, 1))
+                    pin(vertices, gfunction=(p3, p2) -> poly(p2, :fillpreserve))
+                    sethue("grey20")
+                    strokepath()
+                end
             end
         end
     end
 end
 
-function sphere(size, origin, color)
-    s1 = make(sphere2)
-    scaleby!(s1, size, size, size)
-    moveby!(s1, origin)
-    sortfaces!(s1)
-    drawobject(s1, color=color)
+function cullfrontfaces!(m::Object, angle;
+        eyepoint::Point3D=eyepoint())
+    avgs = Float64[]
+    for face in m.faces
+        vertices = m.vertices[face]
+        s = 0.0
+        for vertex in vertices
+            s += distance(vertex, eyepoint)
+        end
+        average = s / length(unique(vertices))
+        θ⃗ = surfacenormal(vertices)
+        if anglebetweenvectors(θ⃗, eyepoint) > angle
+            push!(avgs, average)
+        end
+    end
+    neworder = sortperm(avgs)
+    m.faces = m.faces[neworder]
+    m.labels = m.labels[neworder]
+    return m
 end
 
-function main()
-    @drawsvg begin
-    background("grey20")
+@drawsvg begin
     helloworld()
-    eyepoint(300, 300, 300)
-    perspective(450)
-    setline(.5)
-    sphere(90, Point3D(150, 0, 0), RGB(Luxor.julia_red...))
-    sphere(90, Point3D(0, 150, 0), RGB(Luxor.julia_purple...))
-    sphere(90, Point3D(0, 0, 150), RGB(Luxor.julia_green...))
-    end 800 600
-end
-
-main()
+    setlinejoin("bevel")
+    setline(0.5)
+    setopacity(0.8)
+    include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
+    shape = icosidodecahedron
+    objectfull = make(shape, "the full object")
+    objectcut = make(shape, "the cut-open object")
+    map(o -> scaleby!(o, 150, 150, 150), (objectfull, objectcut))
+    sortfaces!.((objectcut, objectfull))
+    cullfrontfaces!(objectcut, π / 3)
+    translate(-200, 0)
+    pin(objectcut, gfunction=mygfunction)
+    translate(400, 0)
+    pin(objectfull, gfunction=mygfunction)
+end 800 600
 ```
 
 !!! note
    
-   There are easier ways...
+   There are probably better ways to do this...!
 
 ## OFF the shelf objects
 

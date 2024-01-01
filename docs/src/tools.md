@@ -301,11 +301,11 @@ scaleby!
 
 A useful function is `sphericaltocartesian()`. This takes three values using spherical coordinates - radius, azimuthal angle, polar angle - and converts them to Cartesian coordinates - x, y, and z.
 
+The `sphericaltocartesian()` function accepts three arguments: `(ρ, θ, φ)` - a radius, azimuthal angle, and a polar angle, in that order, and converts it to a 3D point in Cartesian coordinates.
+
 !!! note
     
-    One way to find out whether someone is a mathematician or a physicist is to ask them the order and meaning of the arguments `(ρ, θ, φ)` in a `sphericaltocartesian()` function. If `ρ` is the radius, is `θ` the azimuthal angle or the polar angle, and is `φ` the polar angle or the azimuthal angle?
-
-The `sphericaltocartesian()` function accepts three arguments: `(ρ, θ, φ)` - a radius, azimuthal angle, and a polar angle, in that order (the mathematicians’ order!), and converts it to a 3D point in Cartesian coordinates.
+    One way to find out whether someone is a mathematician or a physicist is to ask them the order and meaning of the arguments `(ρ, θ, φ)` in a `sphericaltocartesian()` function. If `ρ` is the radius, is `θ` the azimuthal angle or the polar angle, and is `φ` the polar angle or the azimuthal angle? We're using the mathematicians’ order, apparently.
 
 This animation shows the green semicircle changing its azimuthal angle from 0° through 360° while the the orange dot changes its polar angle from 0° to 180°.
 
