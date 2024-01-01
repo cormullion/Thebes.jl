@@ -119,7 +119,7 @@ vertices = Point3D[]
 N = 7
 
 # make the base
-polygon = ngon(O, 150, N, verices=true)
+polygon = ngon(O, 150, N, vertices=true)
 for i in eachindex(polygon)
     push!(vertices, convert(Point3D, polygon[i]))
 end
@@ -130,7 +130,7 @@ push!(vertices, Point3D(0, 0, 200))
 # make the faces
 faces = Vector{Int64}[]
 for i in eachindex(polygon)
-    push!(faces, [i, mod1(i + t1, N), N + 1])
+    push!(faces, [i, mod1(i + 1, N), N + 1])
 end
 
 obj = make([vertices, faces], "")
@@ -266,7 +266,9 @@ The surface normal is an imaginary line that meets the face at right angles, and
 
 ## Using custom code
 
-Thebes.jl is a toy rather than a full 3D renderer, and a general-purpose rendering function that draws everything with lots of optional parameters is not provided. There are plenty of ways to experiment though:
+Thebes.jl is a toy rather than a full 3D renderer, and a general-purpose rendering function that draws everything with lots of optional parameters is not provided. There are plenty of ways to experiment though.
+
+Suppose you want to remove the front-facing faces of an object, in order to see inside. That's possible, but a bit of code is needed.
 
 ```@example
 using Thebes
@@ -331,6 +333,8 @@ end
     pin(objectfull, gfunction=mygfunction)
 end 800 600
 ```
+
+The object on the left has had its frontfacing faces removed. The one on the right is intact.
 
 !!! note
    

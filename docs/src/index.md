@@ -45,7 +45,7 @@ using Luxor
     scaleby!(S, 150)
 
     setopacity(0.8)
-    pin(S) # the "draw in 2D" function
+    pin(S) # the "project into 2D" function
 end 800 500
 ```
 

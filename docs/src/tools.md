@@ -8,69 +8,6 @@ DocTestSetup = quote
 
 There are some useful tools that might help you explore the limited 3D world provided by Thebes.jl.
 
-## Getting your hands dirty
-
-Suppose you want to remove the front-facing faces of an object, in order to see inside. That's possible, but a bit of code is needed.
-
-```@example
-using Thebes, Luxor, Colors # hide
-
-@drawsvg begin
-background("grey20") # hide
-helloworld() # hide
-eyepoint(200, 200, 200)
-axes3D(300)
-setlinejoin("bevel")
-
-include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
-
-objectfull = make(cuboctahedron, "the full object")
-objectcut  = make(cuboctahedron, "the cut-open object")
-
-map(o -> scaleby!(o, 60, 60, 60), (objectfull, objectcut))
-
-function cullfrontfaces!(m::Object, angle;
-        eyepoint::Point3D=eyepoint())
-    avgs = Float64[]
-    for f in m.faces
-        vs = m.vertices[f]
-        s = 0.0
-        for v in vs
-            s += distance(v, eyepoint)
-        end
-        avg = s/length(unique(vs))
-
-        θ = surfacenormal(vs)
-        if anglebetweenvectors(θ, eyepoint) > angle
-            push!(avgs, avg)
-        end
-    end
-    neworder = reverse(sortperm(avgs))
-    m.faces = m.faces[neworder]
-    m.labels = m.labels[neworder]
-    return m
-end
-
-sortfaces!.((objectcut, objectfull))
-cullfrontfaces!(objectcut, π/3)
-
-translate(-200, 0)
-pin(objectcut)
-
-translate(400, 0)
-pin(objectfull)
-
-@show length(objectcut.faces)
-@show length(objectfull.faces)
-end 800 600
-```
-
-The object on the left has had its four frontfacing faces removed. The one on the right is intact.
-
-# Geometry
-
-There are some basic geometry utility functions - some of them are analogous to their Luxor 2D counterparts.
-
 ## General
 
 ```@docs
@@ -83,12 +20,15 @@ drawcube
 using Thebes, Luxor # hide
 @drawsvg begin
 background("grey20")
+helloworld()
 sethue("grey40")
 carpet(400)
 drawcube(150)
 axes3D()
 end 800 400
 ```
+
+There are some basic geometry utility functions - some of them are analogous to their Luxor 2D counterparts.
 
 ## Distances
 
