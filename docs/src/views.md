@@ -25,28 +25,25 @@ So, to see the side view of the helix, continued from the previous chapter, we c
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 200, "assets/figures/helix6.svg") # hide
-background("white") # hide
+@drawsvg begin
+background("grey20") # hide
 origin() # hide
 uppoint(0, 0, 100) # hide
 centerpoint(0, 0, 50) # hide
 
-helix = [Point3D(150cos(θ), 150sin(θ), 5θ) for θ in 0:π/48:4π]
+helix = [Point3D(200cos(θ), 200sin(θ), 5θ) for θ in 0:π/48:4π]
 
 setline(0.2)
 
 eyepoint(500, 500, 50)
 
 axes3D()
-
+sethue("gold")
 for p in helix
     pin(p, Point3D(0, 0, p.z))
 end
-finish() # hide
-nothing # hide
+end 800 400
 ```
-
-![point example](assets/figures/helix6.svg)
 
 ## Perspective
 
@@ -79,17 +76,14 @@ function makecube()
     return r
 end
 
-Drawing(600, 300, "assets/figures/cube1.svg") #hide
-background("white") # hide
+@drawsvg begin
+background("grey20") # hide
 origin() # hide
-
+sethue("magenta")
 pin(50makecube())
 
-finish()
-nothing # hide
+end 800 400
 ```
-
-![isometric cube example](assets/figures/cube1.svg)
 
 This animation views the cube and changes the perspective slowly, starting at 0, then moving from 300 up to 1400.
 
@@ -124,15 +118,16 @@ function makecube()
     return r
 end
 
-Drawing(600, 300, "assets/figures/cube-in-perspective.svg") #hide
-background("white") # hide
+@drawsvg begin
+background("grey20") # hide
 origin() # hide
 
 eyepoint(200, 50, 100)
 perspective(150)
+sethue("gold")
 pts = pin(50makecube())
 
-sethue("red")
+sethue("grey60")
 setline(0.1)
 for p1 in pts
     for p2 in pts
@@ -140,20 +135,18 @@ for p1 in pts
         rule(p1, slope(p1, p2))
     end
 end
-
-finish() # hide
-nothing # hide
+end 800 600
 ```
 
-![cube in perspective](assets/figures/cube-in-perspective.svg)
-
 There are enough converging parallel lines there to give an ancient Egyptian architect nightmares.
+
+What are the units of the number you provide to `perspective()`? I don't know - it's a vague magnification constant.
 
 ## Orbits
 
 To fly around the scene, move the eyepoint around while looking at the center.
 
-```
+```julia
 using Thebes, Luxor
 function frame(scene, framenumber, object)
     background("skyblue")
@@ -200,7 +193,6 @@ function makecube()
     end
     return r
 end
-
 
 function main()
     w = 600

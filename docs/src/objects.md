@@ -6,21 +6,32 @@ DocTestSetup = quote
 
 # Objects
 
-So far we've been drawing individual points and lines. This gets tiresome when you have a lot of them. Fortunately, Thebes has a few features for handling larger groups of points.
+So far we’ve been drawing individual points, lines, and polygons. `pin()` has been projecting them all onto the current drawing. 
 
-## Making objects
+You can also draw an `object`. This lets us complete the pin-table:
 
-You make a 3D object using `make()`, and then use `pin()` to throw it onto the 2D drawing.
+|         | `pin()` arguments               | the gfunction arguments                                      |
+|---------|---------------------------------|----------------------------------------------------------|
+| point   | `pin(p1::Point3D)`              | `(p3::Point3D, p2::Point)`                                 |
+| line    | `pin(p1::Point3D, p2::Point3D)` | `((p31::Point3D, p32::Point3D), (p21::Point, p22::Point))` |
+| polygon |` pin(a::Vector{Point3D})`       | `(a1::Vector{Point3D}, a2::Vector{Point})`                 |
+| object  | `pin(o::Object)`                | `(o::Object)`                                              |
+
+An object is a collection of 3D points and a list of faces - which vertices are joined to form a face.
+
+## Making objects with `make`
+
+You can make a 3D object using `make()`, and then use `pin()` to project it onto the 2D drawing.
 
 `make()` expects an array of 3D points, an (optional) array of face definitions, and an (optional) array of labels, plus an (optional) name. These arrays let you link faces with vertices. It returns an Object.
 
-A Cube object is already defined in Thebes (we needn't have made one earlier, really). So after:
+Information about cubes is already defined in Thebes (we needn't have made one earlier, really) as `Cube`, a tuple of Point3Ds and face definitions. You can make a cube object from this data with:
 
 ```
 cube = make(Cube, "cube")
 ```
 
-the `cube` variable contains:
+Now the `cube` variable contains:
 
 ```
 Object(
@@ -47,113 +58,147 @@ Object(
      "cube")
 ```
 
+There are 8 3D points. And there are 6 faces defined. Face 1 is formed by vertices 1, 2, 3, and 4, face 2 is formed by vertices 2, 6, 7, and 3, and so on.
 The default rendering applied by `pin()` is an attempt at a simple hidden-surface display. 
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/simplecubeobject.svg") # hide
-background("white") # hide
-origin() # hide
+@drawsvg begin
+background("grey20") # hide
 helloworld() # hide
-
-eyepoint(10, 10, 10)
-perspective(3000)
+eyepoint(2, 2, 2)
+perspective(500)
 cube = make(Cube, "cube")
 pin(cube)
 
-finish() # hide
-nothing # hide
+end 800 400
 ```
-
-![simple cube object](assets/figures/simplecubeobject.svg)
 
 !!! note
     
-    In real 3D software such as Makie.jl, the rendering can
-    be much more sophisticated!
+    In real 3D software such as Makie.jl, the rendering is much more sophisticated!
 
-The default gfunction for this method of `pin` is `hiddensurface()`.
+The default gfunction for this method of `pin` is `hiddensurface`, which is built in to Thebes as `Thebes.hiddensurface(o::Object)`. 
+We could call:
 
-Here's a very simple example of how you might make your own object from scratch.
+```julia
+    pin(cube, gfunction = hiddensurface)
+```
+
+to specify the rendering function explicitly.
+
+Another built-in gfunction is `wireframe()`:
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/object1.svg") # hide
-background("white") # hide
-origin() # hide
-helloworld() # hide
-
-tol = 0.001
-a = Point3D[]
-for t in -2pi:tol:2pi
-    push!(a, Point3D((100 + cos(5t)) * cos(3t), (100 + cos(5t)) * sin(2t), sin(5t)))
-end
-sethue("darkorange")
-knot = make([a, []], "knot")
-
-pin(knot, gfunction = (o) -> poly(objecttopoly(o)[1], :stroke))
-
-finish() # hide
-nothing # hide
+@drawsvg begin
+    background("grey20") # hide
+    helloworld() # hide
+    eyepoint(2, 2, 2)
+    perspective(500)
+    sethue("gold")
+    cube = make(Cube, "cube")
+    pin(cube, gfunction = wireframe)
+end 800 400
 ```
 
-![point example](assets/figures/object1.svg)
+## Making objects directly 
 
-The `objecttopoly()` function returns a tuple, containing the 2D vertices, and the polygons that define the faces.
+Here's a very simple example of how you might make your own object from scratch. We'll make a heptagonal pyramid, setting N to 7.
+
+```@example
+using Thebes, Luxor # hide
+@drawsvg begin
+background("grey20") # hide
+setlinejoin("bevel")
+helloworld() # hide
+carpet(200)
+vertices = Point3D[]
+N = 7
+polygon = ngon(O, 150, N, vertices=true)
+
+for i in eachindex(polygon)
+    push!(vertices, convert(Point3D, polygon[i]))
+end
+
+# add the tip
+push!(vertices, Point3D(0, 0, 200))
+
+faces = Vector{Int64}[]
+
+for i in eachindex(polygon)
+    push!(faces, [i, mod1(i + 1, N), N + 1])
+end
+
+obj = make([vertices, faces], "")
+setopacity(0.8)
+pin(obj, gfunction = hiddensurface)
+end 800 600
+```
+
+First we pushed the vertices into an array, then added the top vertex as the `N + 1`th. The `faces` array is filled with lists such as `[1, 2, N]`, `[2, 3, N]` to make the sides. Finally the `make()` function takes the vertices and faces and returns an Object.
+
+The pyramid doesn't have a base. To add one, add the line:
+
+```julia
+push!(faces, 1:N)
+```
+
+just before the `make()` function builds the object.
 
 ## Using objects
 
-The following objects are preloaded (from `data/objects.jl`) when Thebes.jl starts:
+Thebes has a few 3D coordinate sets pre-defined that you can use with `make()`:
+
+```@example
+using Thebes, Luxor, Colors # hide
+
+@drawsvg begin
+background("grey20") # hide
+setlinejoin("bevel")
+helloworld() # hide
+perspective(250)
+eyepoint(2, 2, 2)
+
+setopacity(0.8)
+
+pts = between.(boxmiddleleft(), boxmiddleright(), range(0.1, 0.9, length=4))
+for (n, o) in enumerate((Cube, Pyramid, Tetrahedron, Teapot))
+    @layer begin
+        translate(pts[n])
+        pin(make(o))
+    end
+end
+end 800 300
+```
+
+These are automatically imported (from `data/objects.jl`) when Thebes.jl starts:
 
 - Cube
 - Tetrahedron
 - Pyramid
 - Teapot
 
-```@example
-using Thebes, Luxor # hide
-Drawing(800, 300, "assets/figures/moreobjects.svg") # hide
-background("white") # hide
-origin() # hide
-sethue("blue") # hide
-helloworld() # hide
-
-t = Tiler(600, 300, 2, 2)
-setline(0.5)
-for (n, o) in enumerate([Cube, Tetrahedron, Pyramid, Teapot])
-    @layer begin
-        translate(first.(t)[n])
-        object = make(o, string(o))
-        scaleby!(object, 80, 80, 80)
-        pin(object)
-    end
-end
-
-finish() # hide
-nothing # hide
-```
-
-![more objects](assets/figures/moreobjects.svg)
+The teapot is a thing, apparently.
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(800, 300, "assets/figures/teapot.svg") # hide
-background("white") # hide
-origin() # hide
-helloworld()
-axes3D(200)
-teapot = make(Teapot)
-setline(0.5)
-scaleby!(teapot, 100, 100, 100)
-pin(teapot, gfunction=wireframe)
-finish() # hide
-nothing # hide
-
+@drawsvg begin
+    background("grey20") # hide
+    helloworld() # hide
+    perspective(500)
+    eyepoint(200, 200, 150)
+    carpet(200)
+    axes3D()
+    teapot = make(Teapot)
+    setline(0.5)
+    sethue("white")
+    scaleby!(teapot, 100, 100, 100)
+    pin(teapot, gfunction=hiddensurface)
+end 800 400
 ```
 
-![teapot](assets/figures/teapot.svg)
-
-You can load a few more objects by including the `moreobjects.jl` file:
+You can load more objects by including the `moreobjects.jl` file from the `data` folder:
 
 ```
 include(dirname(dirname(pathof(Thebes))) * "/data/moreobjects.jl")
@@ -165,29 +210,22 @@ which brings these objects into play:
 
 ## Rendering objects
 
-To render objects, there are many choices you can make about how to draw the faces and the vertices.
+!!! note
+
+    Rendering objects realistically is not something that Thebes really bothers with - there are many better options for this task. 
+
+There are many choices you can make about how to draw the faces and the vertices of an object.
 
 ### Using gfunctions
 
-You do this with a gfunction.
+The gfunction for `pin` can be used to choose a rendering style for an object.
 
 Here's a simple example:
 
 ```@example
 using Thebes, Luxor # hide
 
-include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
-
-Drawing(600, 600, "assets/figures/geodesic.svg") # hide
-background("white") # hide
-origin() # hide
-sethue("blue") # hide
-helloworld() # hide
-setlinejoin("bevel")
-eyepoint(150, 150, 150)
-
 function mygfunction(o::Object)
-    cols = [Luxor.julia_green, Luxor.julia_red, Luxor.julia_purple, Luxor.julia_blue]
     sortfaces!(o)
     if !isempty(o.faces)
         @layer begin
@@ -196,48 +234,36 @@ function mygfunction(o::Object)
                     vertices = o.vertices[face]
                     sn = surfacenormal(vertices)
                     ang = anglebetweenvectors(sn, eyepoint())
-                    sethue(cols[mod1(n, end)])
-                    pin(vertices, gfunction = (p3, p2) ->
-                        begin
-                            poly(p2, :fill)
-                            sethue("gold")
-                            poly(p2, :stroke, close=true)
-                        end)
+                    setgrey(rescale(ang, 0, π, 0, 1))
+                    pin(vertices, gfunction=(p3, p2) -> poly(p2, :fill))
                 end
             end
         end
     end
-    setcolor("gold3")
-    pin.(o.vertices, gfunction = (p3, p2) -> begin
-        setopacity(1)
-        circle(p2, 2, :fill)
-        end)
 end
 
-object = make(geodesic, "geodesic")
-setopacity(0.9)
-setline(0.5)
-pin(scaleby!(object, 200, 200, 200), gfunction = mygfunction)
+include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
 
-finish() # hide
-nothing # hide
+object = make(geodesic, "geodesic")
+
+@draw begin
+    background("grey20") # hide
+    helloworld() # hide
+    setlinejoin("bevel")
+    eyepoint(200, 200, 200)
+    pin(scaleby!(object, 300, 300, 300), gfunction=mygfunction)
+end 800 800
 ```
 
-![geodesic](assets/figures/geodesic.svg)
+`pin` here calls `mygfunction(o)` to render object `o`. First, the `sortfaces()` function sorts the faces in `o` so that the ones that are furthest from the eyepoint are drawn first. Then the surface normal of each face is calculated, and the angle between the surface normal and a line to the eyepoint determines the color of the face. 
 
-## Faces
+The surface normal is an imaginary line that meets the face at right angles, and indicates the direction of that face. If you measure the distance between the surface normal and the direction of, say, the direction of a line from the origin to the eyepoint, you can obtain a value that indicates the orientation of the face. You can then use this to control the rendering: an angle approaching π suggests that the facet is almost facing the viewer, and you can color it accordingly.
 
-The faces are drawn in the order in which they were defined. But to be a more realistic 3D drawing, the faces should be drawn so that the ones nearest the viewer are drawn last, or better still, so that the ones that can't be seen aren't drawn at all.
-
-!!! note
-
-    This is why Thebes is more of a wireframe tool than any kind of genuine 3D application. Use Makie.jl. Or program Blender with Julia.
-
-In theory it's possible to do some quick calculations on an object to sort the faces into the correct order for a particular viewpoint. The `sortfaces!()` function used above can do this for simple objects - it may be sufficient.
+![surface normal](assets/figures/eyepoint.gif)
 
 ## Using custom code
 
-Thebes.jl is a work in progress, and a good general-purpose rendering function that draws everything with lots of optional parameters is not yet provided. However, you can avoid using the built-in `pin(o::Object)` function, and experiment with code such as the following:
+Thebes.jl is a toy rather than a full 3D renderer, and a general-purpose rendering function that draws everything with lots of optional parameters is not provided. There are plenty of ways to experiment:
 
 ```@example
 using Luxor, Thebes, Colors, ColorSchemes
@@ -279,9 +305,8 @@ function sphere(size, origin, color)
 end
 
 function main()
-    Drawing(500, 500, "assets/figures/juliaspheres.svg")
+    @drawsvg begin
     background("grey20")
-    origin()
     helloworld()
     eyepoint(300, 300, 300)
     perspective(450)
@@ -289,22 +314,15 @@ function main()
     sphere(90, Point3D(150, 0, 0), RGB(Luxor.julia_red...))
     sphere(90, Point3D(0, 150, 0), RGB(Luxor.julia_purple...))
     sphere(90, Point3D(0, 0, 150), RGB(Luxor.julia_green...))
-    finish()
+    end 800 600
 end
 
 main()
-nothing # hide
 ```
 
-![custom object](assets/figures/juliaspheres.svg)
-
-This code uses the surface normal of each triangular facet to change the color. The surface normal is an imaginary line that meets the facet at right angles, and indicates the direction of that facet. If you measure the distance between the surface normal and the direction of, say, the direction of a line from the origin to the eyepoint, you can obtain a value that indicates the orientation of the facet. You can then use this, as shown below, to change the color: an angle approaching π suggests that the facet is almost facing the viewer, and you can color it accordingly.
-
-![surface normal](assets/figures/eyepoint.gif)
-
 !!! note
-
-   It's hard work doing it all like this! There are easier ways...
+   
+   There are easier ways...
 
 ## OFF the shelf objects
 
@@ -335,30 +353,29 @@ The file contains 8 3D points, defined as three numbers, followed by the definit
 
 To load the contents of the OFF file into an object, use `import_off_file()`.
 
-Here's an example that loads an OFF file of the mask of Tutenkhamun (from the `data` directory) and rotates it.
+Here's an example that loads an OFF file of the mask of Tutenkhamun (whicn can be found in the Thebes `data` directory) and rotates it.
 
 ```julia
-using Luxor
-using Thebes
+using Thebes, Luxor # hide
 
 function frame(scene, framenumber, o)
     eased_n = rescale(scene.easingfunction(framenumber, 0, 1,
-    scene.framerange.stop), 0, 1, 0, 2π)
-    perspective(200)
+            scene.framerange.stop), 0, 1, 0, 2π)
+    helloworld()
+    perspective(300)
     eyepoint(200cos(eased_n), 200sin(eased_n), 80)
-    background("black")
+    background("grey20")
     setlinejoin("bevel")
-    sethue("gold")
-    setline(0.4)   
+    setline(0.2)
     pin(o)
 end
 
 function main()
     scaleby!(o, 15)
     moveby!(o, 0, 0, -150)
-    amovie = Movie(600, 600, "tut")
+    amovie = Movie(800, 600, "tut")
     animate(amovie,
-        Scene(amovie, (s, f) -> frame(s, f, o), 1:50),
+        Scene(amovie, (s, f) -> frame(s, f, o), 1:100),
         framerate=15,
         creategif=true)
 end

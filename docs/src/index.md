@@ -6,7 +6,7 @@ end
 
 # Introduction to Thebes
 
-Thebes.jl is a small package that provides a few 3D wireframe tools for use with Luxor.jl, a 2D drawing package. You can define simple shapes in 3D, and have them drawn onto a Luxor drawing.
+Thebes.jl is a small package that provides a few 3D wireframe tools for use with [Luxor.jl](https://github.com/juliagraphics/Luxor.jl), a simple 2D drawing package. You can define simple shapes in 3D, and have them projected onto a Luxor drawing.
 
 !!! note
 
@@ -24,6 +24,29 @@ To use Thebes, type:
 
 ```
 using Thebes, Luxor
+```
+
+A quick test:
+
+```@example
+using Thebes
+using Luxor
+
+@drawsvg begin
+    background("grey20")
+    eyepoint(150, 150, 150)
+    perspective(700)
+    # read sphere data from a file
+    include(dirname(dirname(pathof(Thebes))) * "/data/sphere.jl")
+    # make a 3D object
+    S = make(sphere, "a sphere")
+    axes3D()
+    # resize sphere from unit coordinates
+    scaleby!(S, 150)
+
+    setopacity(0.8)
+    pin(S) # the "draw in 2D" function
+end 800 500
 ```
 
 ## Documentation

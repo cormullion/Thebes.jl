@@ -6,7 +6,7 @@ DocTestSetup = quote
 
 # The basics
 
-Thebes.jl is a small package that adds some simple 3D features to Luxor.jl, a vector-graphics package for graphics workers who like to automate their work with Julia.
+Thebes.jl is a small package that adds some simple 3D features to [Luxor.jl](https://github.com/JuliaGraphics/Luxor.jl) (a vector-graphics package for graphics workers who like to automate their work with Julia).
 
 !!! warning
     
@@ -14,16 +14,15 @@ Thebes.jl is a small package that adds some simple 3D features to Luxor.jl, a ve
 
 The 3D world of Thebes is superimposed on the 2D world of Luxor:
 
-```
+```@example
 using Thebes, Luxor
 
-@draw begin
-    rulers() # a Luxor function
-    axes3D() # a Thebes function
+@drawsvg begin  # a Luxor macro
+    background("grey20") # a Luxor function
+    rulers()             # a Luxor function
+    axes3D()             # a Thebes function
 end
 ```
-
-![the two worlds](assets/figures/threed.svg)
 
 There are two main things you have to know in order to draw in 3D:
 
@@ -33,7 +32,7 @@ There are two main things you have to know in order to draw in 3D:
 
 !!! note
     
-    The `pin()` function sort of “pins” a 3D coordinate onto the 2D flat drawing surface. If I think of a better name for this function, I might change it, but I wanted to avoid everything obvious, like “draw”, “render”, “display”, “plot”, and have something short and easy to type.
+    The `pin()` function (“<b>p</b>roject <b>in</b>to 2D” perhaps) “pins” 3D information onto the flat 2D drawing surface. I wanted to avoid everything obvious, like “draw”, “render”, “display”, “plot”, “show”, or whatever, and have something short and easy to type. Not to be confused with `Pkg.pin()`.
 
 ## A simple example
 
@@ -41,52 +40,48 @@ Here's a complete example showing Thebes and Luxor working together:
 
 ```@example
 using Thebes, Luxor
-Drawing(600, 300, "assets/figures/simpleexample.svg") # a drawing is required
-background("white")      # Luxor
+d = Drawing(800, 300, "assets/figures/simpleexample.svg") # a drawing is required
+background("grey20")     # Luxor
 origin()                 # Luxor
 setline(1)               # Luxor
+sethue("white")          # Luxor
 axes3D()                 # Thebes
 
 p1 = Point3D(100, 20, 0) # Thebes
 
 loc = pin(p1)            # Thebes  
 
+
 label("there it is!", :e, loc + (5, 0), offset=10, leader=true)  # Luxor
 
 finish()                 # Luxor
-
-nothing # hide
+d # hide
 ```
 
-![point example](assets/figures/simpleexample.svg)
+The `pin` function draws a small circle at the 3D point `p1` and this also returns the corresponding 2D point, which is stored in `loc` and can be used like any other Luxor 2D point.
 
-The `pin` function draws a small circle at the 3D point `p1` and returns the corresponding 2D point's coordinate.
-
-!!! tip
+!!! note
     
     Because Thebes.jl displays 3D points on the current 2D Luxor drawing, you should always have a current drawing before using most of the functions from Thebes.
 
 ### Point cloud
 
-We can do lots of points - here's half a million or so.
+We can do lots of points - here's a few thousand.
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 450, "assets/figures/pointcloud.png") #hide
+@draw begin
 helloworld() # hide
 origin() # hide
-background("black")
+background("grey20")
 setopacity(0.5)
 sethue("gold")
-c = pin.([Point3D(randn() * 50, randn() * 50, randn() * 50)
-    for x in 1:75, y in 1:75, z in 1:75])
+c = pin.([Point3D(randn() * 70, randn() * 70, randn() * 70)
+    for x in 1:50, y in 1:50, z in 1:50])
 axes3D()
 finish() # hide
-nothing # hide
-length(c)
+end 800 600
 ```
-
-![point cloud](assets/figures/pointcloud.png)
 
 ## Helical dots
 
@@ -94,21 +89,18 @@ Let's draw a helix with dots:
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/helix1.svg") #hide
-background("white") # hide
+@drawsvg begin
+background("grey20") # hide
 origin() # hide
 helloworld() # hide
 axes3D()
 
-helix = [Point3D(100cos(θ), 100sin(θ), 10θ) for θ in 0:π/24:4π]
+sethue("white")
+helix = [Point3D(150cos(θ), 150sin(θ), 10θ) for θ in 0:π/24:4π]
 
 pin.(helix)
-
-finish() # hide
-nothing # hide
+end 800 500
 ```
-
-![point example](assets/figures/helix1.svg)
 
 ## gfunctions
 
@@ -118,23 +110,20 @@ Suppose you want to draw a randomly colored circle at the location of each 3D po
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/helix2.svg") #hide
-background("white") # hide
+@drawsvg begin
+background("grey20") # hide
 origin() # hide
 axes3D()
 
-helix = [Point3D(100cos(θ), 100sin(θ), 10θ) for θ in 0:π/24:4π]
+helix_pts = [Point3D(150cos(θ), 150sin(θ), 10θ) for θ in 0:π/24:4π]
 
-pin.(helix, gfunction = (_, pt) -> begin
+pin.(helix_pts, gfunction = (_, pt) -> begin
     randomhue()
     circle(pt, 5, :fill)
     end)
 
-finish()
-nothing # hide
+end 800 500
 ```
-
-![point example](assets/figures/helix2.svg)
 
 The anonymous function passed to `gfunction` expects two arguments: the first contains the 3D point, the second contains the 2D point. The function then has the responsibility to draw the 2D graphics for that 2D point, with the possibility of using anything or nothing about the original 3D coordinates. This gives us more control over the rendering of the points.
 
@@ -142,46 +131,42 @@ If you just want simple Luxor stars, you use the second (2D) argument - you don'
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/helix2stars.svg") #hide
-background("white") # hide
+@drawsvg begin
+background("grey20") # hide
 origin() # hide
 axes3D()
 
-helix = [Point3D(100cos(θ), 100sin(θ), 10θ) for θ in 0:π/24:4π]
+helix = [Point3D(150cos(θ), 150sin(θ), 10θ) for θ in 0:π/24:4π]
 
 pin.(helix, gfunction = (_, pt) -> begin
     randomhue()
     star(pt, 5, 5, 0.5, 0.0, :fill)
     end)
 
-finish() # hide
-nothing # hide
+end 800  500
 ```
-
-![point stars example](assets/figures/helix2stars.svg)
 
 In this next example, the gfunction calculates the distance of the 3D point from the 3D origin, and then draws the 2D circle with a radius that reflects that distance. The function therefore requires both the original 3D point (in the first argument `p3`) and the second argument (in `p2`), its 2D projection.
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/helix3.svg") #hide
-background("white") # hide
+
+@drawsvg begin
+background("grey20") # hide
 origin() # hide
 axes3D(100)
 
 helix = [Point3D(100cos(θ), 100sin(θ), 10θ) for θ in 0:π/24:4π]
+
+sethue("orange")
 
 pin.(helix, gfunction = (p3, p2) -> begin
     d = rescale(distance(p3, Point3D(0, 0, 0)), 100, 200, 1, 10)
     circle(p2, d, :fill)
     end)
 
-
-finish() # hide
-nothing # hide
+end 800 500
 ```
-
-![point example](assets/figures/helix3.svg)
 
 !!! note
     
@@ -189,17 +174,16 @@ nothing # hide
 
 In the next example, each random 3D point is drawn twice, the second time using zero for the z coordinate, to make shadows.
 
-```
+```@example
 using Thebes, Luxor # hide
 
-Drawing(600, 500,  "assets/figures/points-shadows.svg") # hide
-origin() # hide
+@drawsvg begin
 background("grey10") # hide
 eyepoint(Point3D(250, 250, 100)) # hide
 sethue("grey50") # hide
 carpet(300)
 axes3D(100)
-sethue("red")
+sethue("gold")
 for i in 1:300
     randpoint3D = Point3D(rand(0.0:200, 3)...)
     sethue("red")
@@ -209,11 +193,8 @@ for i in 1:300
     pin(Point3D(randpoint3D.x, randpoint3D.y, 0),
         gfunction = (_, p2) -> circle(p2, 2, :fill))
 end
-finish() # hide
-nothing # hide
+end 800 500
 ```
-
-![point example 2](assets/figures/points-shadows.svg)
 
 ## Lines
 
@@ -223,24 +204,23 @@ This code uses the same 3D points in the helix, but this time draws a line from 
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/helix4.svg") #hide
-background("white") # hide
+
+@drawsvg begin
+background("grey20") # hide
 origin() # hide
 axes3D()
 
-helix = [Point3D(150cos(θ), 150sin(θ), 5θ) for θ in 0:π/48:4π]
+helix = [Point3D(200cos(θ), 200sin(θ), 15θ) for θ in 0:π/48:4π]
 
 setline(0.5)
+sethue("gold")
 
 for p in helix
     pin(p, Point3D(0, 0, p.z))
 end
 
-finish() # hide
-nothing # hide
+end 800 500
 ```
-
-![line example](assets/figures/helix4.svg)
 
 The default gfunction's arguments for this `pin` method consist of two pairs of points (a pair of 3D points, and a pair of 2D points), not just two of each, and Luxor's trusty `line()` function is the default action, connecting the 2D pair.
 
@@ -248,14 +228,12 @@ Or you could provide a custom gfunction to draw multicoloured arrows instead:
 
 ```@example
 using Thebes, Luxor # hide
-Drawing(600, 300, "assets/figures/helix5.svg") #hide
-background("white") # hide
+@drawsvg begin
+background("grey20") # hide
 origin() # hide
 axes3D()
 
-helix = [Point3D(150cos(θ), 150sin(θ), 5θ) for θ in 0:π/48:4π]
-
-setline(0.5)
+helix = [Point3D(200cos(θ), 200sin(θ), 15θ) for θ in 0:π/48:4π]
 
 for p in helix
     pin(p, Point3D(0, 0, p.z), gfunction = (p3p, p2p) ->
@@ -265,11 +243,8 @@ for p in helix
         end)
 end
 
-finish() # hide
-nothing # hide
+end 800 500
 ```
-
-![line example](assets/figures/helix5.svg)
 
 # When things go wrong
 
@@ -297,10 +272,11 @@ If you can generate your graphics in 2D, you can convert them to 3D, and then us
 
 This example shows how to draw the familiar Julia coloured circles. We can't use real circles (because there are no Bézier paths in Thebes yet), so we use `ngon()` with plenty of sides - 60 is probably good enough if your output is high-quality SVG.
 
-```@example
+```@example 
 using Thebes, Luxor, Rotations # hide
 
-function drawjuliadots3D(threedots, origin::Point3D, rotation::Rotation=RotXYZ(0, 0, 0);
+function drawjuliadots3D(threedots, origin::Point3D, 
+        rotation::Rotation=RotXYZ(0, 0, 0);
         radius=100)
     for (n, dot) in enumerate(threedots)
         sethue([Luxor.julia_purple, Luxor.julia_green, Luxor.julia_red][mod1(n, end)])
@@ -311,8 +287,7 @@ function drawjuliadots3D(threedots, origin::Point3D, rotation::Rotation=RotXYZ(0
 end
 
 function juliaroom()
-    Drawing(500, 500, "assets/figures/juliaroom.svg")
-    origin()
+    @draw begin
     background("black")
     helloworld()
     eyepoint(1200, 1200, 1200)
@@ -347,13 +322,8 @@ function juliaroom()
     end
 
     axes3D(300)
-    finish()
+    end 800 700
 end
 
 juliaroom()
-nothing # hide
 ```
-
-![the julia room](assets/figures/juliaroom.svg)
-
-You could zoom in to see if you can see the straight edges of the circles - I think 60 points is good enough.

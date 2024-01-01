@@ -3,6 +3,7 @@ module Thebes
 using Luxor
 using StaticArrays
 using Rotations
+
 using PackageExtensionCompat
 
 function __init__()

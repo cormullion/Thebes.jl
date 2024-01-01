@@ -14,9 +14,9 @@ Suppose you want to remove the front-facing faces of an object, in order to see 
 
 ```@example
 using Thebes, Luxor, Colors # hide
-Drawing(600, 500, "assets/figures/cullingfaces.svg") # hide
-background("white") # hide
-origin() # hide
+
+@drawsvg begin
+background("grey20") # hide
 helloworld() # hide
 eyepoint(200, 200, 200)
 axes3D(300)
@@ -62,14 +62,10 @@ pin(objectfull)
 
 @show length(objectcut.faces)
 @show length(objectfull.faces)
-
-finish() # hide
-nothing # hide
+end 800 600
 ```
 
 The object on the left has had its four frontfacing faces removed. The one on the right is intact.
-
-![culling faces](assets/figures/cullingfaces.svg)
 
 # Geometry
 
@@ -81,6 +77,17 @@ There are some basic geometry utility functions - some of them are analogous to 
 axes3D
 carpet
 drawcube
+```
+
+```@example
+using Thebes, Luxor # hide
+@drawsvg begin
+background("grey20")
+sethue("grey40")
+carpet(400)
+drawcube(150)
+axes3D()
+end 800 400
 ```
 
 ## Distances
@@ -100,9 +107,8 @@ This code draws a cyan square lying in the XY plane with a corner at the 3D orig
 ```@example
 using Luxor, Thebes, Rotations # hide
 
-Drawing(500, 500, "assets/figures/basic-rotations.svg") # hide
-background("black") # hide
-origin() # hide
+@drawsvg begin
+background("grey20") # hide
 setlinejoin("bevel") # hide
 
 eyepoint(Point3D(150, 250, 350))
@@ -113,7 +119,12 @@ function drawsquare(ptlist)
         poly(p2, :fill, close=true))
 end
 
-square = [Point3D(0, 0, 0), Point3D(100, 0, 0), Point3D(100, 100, 0), Point3D(0, 100, 0)]
+square = [
+    Point3D(0, 0, 0), 
+    Point3D(100, 0, 0), 
+    Point3D(100, 100, 0), 
+    Point3D(0, 100, 0)
+    ]
 
 sethue("cyan")
 drawsquare(square)
@@ -128,11 +139,8 @@ drawsquare(square)
 
 axes3D(160)
 
-finish() # hide
-nothing # hide
+end 800 400
 ```
-
-![basic rotations](assets/figures/basic-rotations.svg)
 
 The most useful rotation functions are `RotX()`, `RotY()`, `RotZ()`, `RotXY()`, and `RotXYZ()`, which rotate around the axes. All the other permutations are available. A `RotXYZ()` rotation takes three angles. The right-most rotation is applied first, so `RotXYZ()` applies the Z rotation, followed by the Y, then followed by the X.
 
@@ -145,34 +153,35 @@ There are also functions that accept a second 3D point, the `about` point. The r
 ```@example
 using Luxor, Thebes, Rotations # hide
 
-Drawing(600, 600, "assets/figures/basic-rotations-about.svg") # hide
-background("black") # hide
-origin() # hide
-setlinejoin("bevel") # hide
+@drawsvg begin
+    background("grey20")
+    setlinejoin("bevel")
 
-eyepoint(Point3D(350, 350, 350)) # hide
-perspective(320) # hide
+    eyepoint(Point3D(350, 350, 350))
+    perspective(400)
 
-function drawsquare(ptlist) # hide
-    pin(ptlist, gfunction = (p3, p2) -> # hide
-        poly(p2, :fill, close=true)) # hide
-end # hide
+    function drawsquare(ptlist)
+        pin(ptlist, gfunction=(p3, p2) ->
+            poly(p2, :fill, close=true))
+    end
 
-square = [Point3D(0, 0, 0), Point3D(100, 0, 0), Point3D(100, 100, 0), Point3D(0, 100, 0)] # hide
+    square = [
+        Point3D(0, 0, 0),
+        Point3D(100, 0, 0),
+        Point3D(100, 100, 0),
+        Point3D(0, 100, 0)
+    ]
 
-sethue("grey40")
-drawsquare(square)
+    sethue("grey40")
+    drawsquare(square)
 
-sethue("green")
-rotateby!(square, Point3D(100, 100, 0), RotZ(π))
-drawsquare(square)
+    sethue("green")
+    rotateby!(square, Point3D(100, 100, 0), RotZ(π))
+    drawsquare(square)
 
-axes3D(160)
-finish() # hide
-nothing #hide
+    axes3D(160)
+end 800 400
 ```
-
-![basic rotations about](assets/figures/basic-rotations-about.svg)
 
 - `rotateby(point::Point3D, r::Rotation)`
 - `rotateby(point::Point3D, about::Point3D, r::Rotation)`
@@ -213,74 +222,74 @@ In the next example, the square is first moved by `-100/-100/0`, then copies are
 ```@example
 using Luxor, Thebes # hide
 
-Drawing(600, 600, "assets/figures/basic-moves.svg") # hide
-background("black") # hide
-origin() # hide
-setlinejoin("bevel") # hide
+@drawsvg begin
+    background("grey20")
+    setlinejoin("bevel")
 
-eyepoint(Point3D(350, 350, 350)) # hide
-perspective(320) # hide
+    eyepoint(Point3D(400, 400, 500))
+    perspective(600)
 
-function drawsquare(ptlist) # hide
-    pin(ptlist, gfunction = (p3, p2) -> # hide
-        poly(p2, :fill, close=true)) # hide
-end # hide
+    function drawsquare(ptlist)
+        pin(ptlist, gfunction=(p3, p2) ->
+            poly(p2, :fill, close=true))
+    end
 
-square = [Point3D(0, 0, 0), Point3D(100, 0, 0), Point3D(100, 100, 0), Point3D(0, 100, 0)] # hide
+    square = [
+        Point3D(0, 0, 0),
+        Point3D(100, 0, 0),
+        Point3D(100, 100, 0),
+        Point3D(0, 100, 0)
+    ]
 
-sethue("grey40")
-drawsquare(square)
+    sethue("grey40")
+    drawsquare(square)
 
-moveby!(square, Point3D(-100, -100, 0))
+    moveby!(square, Point3D(-100, -100, 0))
 
-setopacity(.6)
-for i in 10:10:200
-    randomhue()
-    drawsquare(moveby.(square, Point3D(0, 0, i)))
-end
+    setopacity(0.6)
+    for i in 10:10:200
+        randomhue()
+        drawsquare(moveby.(square, Point3D(0, 0, i)))
+    end
 
-axes3D(160)
-
-finish() # hide
-nothing #hide
+    axes3D(200)
+end 800 400
 ```
-
-![basic moves](assets/figures/basic-moves.svg)
 
 `scaleby!()` changes the scale of a list of points.
 
 ```@example
 using Luxor, Thebes # hide
 
-Drawing(600, 600, "assets/figures/basic-scale.svg") # hide
-background("black") # hide
-origin() # hide
-setlinejoin("bevel") # hide
+@drawsvg begin
+    background("grey20")
+    setlinejoin("bevel")
 
-helloworld() # hide
+    helloworld()
 
-function drawsquare(ptlist) # hide
-    pin(ptlist, gfunction = (p3, p2) -> # hide
-        poly(p2, :fill, close=true)) # hide
-end # hide
+    function drawsquare(ptlist)
+        pin(ptlist, gfunction=(p3, p2) ->
+            poly(p2, :fill, close=true))
+    end
 
-axes3D(160)
+    axes3D(160)
 
-square = [Point3D(0, 0, 0), Point3D(100, 0, 0), Point3D(100, 100, 0), Point3D(0, 100, 0)] # hide
+    square = [
+        Point3D(0, 0, 0),
+        Point3D(100, 0, 0),
+        Point3D(100, 100, 0),
+        Point3D(0, 100, 0)
+    ]
 
-sethue("red")
-drawsquare(square)
+    sethue("red")
+    drawsquare(square)
 
-sethue("blue")
-scaleby!(square, .5, 2, 1)
-moveby!(square, Point3D(0, 0, 30))
-drawsquare(square)
-
-finish() # hide
-nothing #hide
+    sethue("blue")
+    scaleby!(square, 0.5, 2, 1)
+    moveby!(square, Point3D(0, 0, 30))
+    drawsquare(square)
+end 800 350
 ```
-
-![basic scale](assets/figures/basic-scale.svg)
 
 ```@docs
 moveby!
@@ -289,6 +298,18 @@ scaleby!
 ```
 
 ## Coordinates
+
+A useful function is `sphericaltocartesian()`. This takes three values using spherical coordinates - radius, azimuthal angle, polar angle - and converts them to Cartesian coordinates - x, y, and z.
+
+!!! note
+    
+    One way to find out whether someone is a mathematician or a physicist is to ask them the order and meaning of the arguments `(ρ, θ, φ)` in a `sphericaltocartesian()` function. If `ρ` is the radius, is `θ` the azimuthal angle or the polar angle, and is `φ` the polar angle or the azimuthal angle?
+
+The `sphericaltocartesian()` function accepts three arguments: `(ρ, θ, φ)` - a radius, azimuthal angle, and a polar angle, in that order (the mathematicians’ order!), and converts it to a 3D point in Cartesian coordinates.
+
+This animation shows the green semicircle changing its azimuthal angle from 0° through 360° while the the orange dot changes its polar angle from 0° to 180°.
+
+![spherical coordinates animation](assets/figures/sphericalcoordinateanimation.gif)
 
 ```@docs
 sphericaltocartesian

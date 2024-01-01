@@ -6,20 +6,22 @@ DocTestSetup = quote
 
 # Text
 
-Thebes provides a `text3D()` function that draws text in a 3D environment. For more information about using fonts and font selection, refer to the chapter in the Luxor documentation.
+Thebes provides a `text3D()` function that draws text on a 2D plane in 3D space. 
 
-You specify the 3D location of the text, and optionally supply rotations and text alignment (`halign` etc.). By default the text in Thebes (as in Luxor) runs along the x-axis, and it lies in the xy plane.
+!!! note
+    
+    For more information about using fonts and font selection, refer to the "Text" chapter in the Luxor documentation.
+
+You specify the 3D location of the text's 'anchor' point, and optionally supply rotations and text alignment (`halign` etc.). By default, the text in Thebes (as in Luxor) runs along the x-axis, and lies in the xy plane.
 
 Use Rotations.jl to specify rotations.
 
 ```@example
 using Thebes, Luxor, Rotations # hide
-Drawing(600, 500, "assets/figures/text1.svg") # hide
 
+@drawsvg begin
 fontsize(50)
-
-background("black")
-origin()
+background("grey20")
 setlinejoin("bevel")
 eyepoint(Point3D(250, 250, 250))
 perspective(400)
@@ -30,27 +32,25 @@ fontsize(40)
 fontface("Georgia-Italic")
 
 text3D("the x-axis", Point3D(0, 0, 0))
-text3D("the y-axis", Point3D(0, 0, 0), rotation=RotZ(π/2))
-text3D("the z-axis", Point3D(0, 0, 0), rotation=RotX(-π/2) * RotZ(π/2), halign=:right)
+text3D("the y-axis", Point3D(0, 0, 0), 
+    rotation=RotZ(deg2rad(90)))
+text3D("the z-axis", Point3D(0, 0, 0), 
+    rotation=RotX(-deg2rad(90)) * RotZ(deg2rad(90)), halign=:right)
 
-finish() # hide
-nothing # hide
+end 800 600
 ```
 
-![text ](assets/figures/text1.svg)
+The three main differences between `Luxor.text()` and `Thebes.text3D()` are the anchor position (a Point3D), the `about` keyword, and the `rotation` keyword. You can see above that the `the y-axis` text has been rotated around the Z axis by 90°. The `the z-axis` text is aligned right, so the first rotation - in the z-axis - sends the text to be aligned with the y-axis, such that the 's' is almost touching the origin. Then the 90° clockwise rotation about the x-axis lifts the text up to run along the z-axis. In the construction `RotX(...) * RotZ(...)`, the z-axis rotation is applied first.
 
 You can also use some of Luxor's text functions, such as `textextents()`, which helps you get the (2D) dimensions of text.
 
 ```@example
 using Thebes, Luxor, Colors, Rotations
-Drawing(800, 600, "assets/figures/text2.svg") # hide
-background("black") # hide
-origin() # hide
+background("grey20") # hide
+@drawsvg begin
 eyepoint(Point3D(250, 250, 550))
 perspective(500)
-
 fontsize(50)
-
 te = textextents("Julia")
 
 for y in -1200:te[3]:1200
@@ -59,11 +59,9 @@ for y in -1200:te[3]:1200
             text3D("Julia", Point3D(x, y, 0), about=Point3D(x, y, 0), rotation=RotZ(π/2))
         end
     end
-finish() # hide
-nothing # hide
-```
 
-![text ](assets/figures/text2.svg)
+end 800 800
+```
 
 It's also possible to write math equations in ``\LaTeX`` by
 passing a `LaTeXString` to the `text` function. Thebes and
@@ -79,25 +77,28 @@ using MathTeXEngine
 using Rotations
 using LaTeXStrings
 
-@drawsvg begin
+@svg begin
     background(0.0, 0.05, 0.1)
     helloworld()
-    perspective(300)
-    eyepoint(200, 200, 200)
+    perspective(500)
+    eyepoint(300, 300, 250)
     sethue("white")
-    fontsize(40)
+    fontsize(30)
     setline(1)
-    e = L"e^{i\pi} + 1 = 0"
-    for i in 0:π/10:2π - π/10
-        text3D(e,
-            sphericaltocartesian(50, i, π/2),
-            about=sphericaltocartesian(50, i, π/2),
-            rotation=RotZ(i))
+    for z in -150:10:50
+        setopacity(z < 50 ? 0.2 : 1)
+        e = L"e^{i\pi} + 1 = 0"
+        for i in 0:π/12:2π-π/12
+            text3D(e,
+                sphericaltocartesian(100, i, π / 2) + Point3D(0, 0, z),
+                about=sphericaltocartesian(100, i, π / 2),
+                rotation= RotZ(i))
+        end
     end
-end
+end 800 600 "/tmp/text3.svg"
 ```
 
-![LaTeX text](assets/figures/text3.svg)
+![LaTeX 3D text](assets/figures/text3.svg)
 
 ```@docs
 text3D
