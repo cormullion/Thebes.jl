@@ -1,5 +1,21 @@
 # Changelog
 
+## [v1.1.0] - forthcoming
+
+### Added
+
+- `convert(Point3D, pt::Point, z)`
+
+### Changed
+
+- signatures for `rotateby!`
+
+### Removed
+
+### Deprecated
+
+──────────────────────────────────────────
+
 ## [v1.0.0] - 2024-01-01
 
 ### Added

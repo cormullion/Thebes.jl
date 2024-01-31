@@ -268,6 +268,16 @@ convert(Point3D, Point(10, 30))
   0.0
 ```
 
+or
+
+```julia
+convert(Point3D, Point(10, 30), 20)
+3-element Point3D:
+ 10.0
+ 30.0
+ 20.0
+```
+
 If you can generate your graphics in 2D, you can convert them to 3D, and then use `pin()` to project them back into two dimensions.
 
 This example shows how to draw the familiar Julia coloured circles. We can't use real circles (because there are no Bézier paths in Thebes yet), so we use `ngon()` with plenty of sides - 60 is probably good enough if your output is high-quality SVG.

@@ -13,18 +13,18 @@ Base.broadcastable(x::Point3D) = Ref(x)
 function +(p1::Point3D, p2::Point3D)
     Point3D((p2.x + p1.x), (p2.y + p1.y), (p2.z + p1.z))
 end
-+(p1::Point3D, k::Number)              = Point3D(p1.x + k, p1.y + k, p1.z + k)
-+(k::Number, p2::Point3D)              = +(p2::Point3D, k::Number)
++(p1::Point3D, k::Real)              = Point3D(p1.x + k, p1.y + k, p1.z + k)
++(k::Real, p2::Point3D)              = +(p2::Point3D, k::Real)
 
 function -(p1::Point3D, p2::Point3D)
     Point3D((p1.x - p2.x), (p1.y - p2.y), (p1.z - p2.z))
 end
 -(p::Point3D)                          = Point3D(-p.x, -p.y, -p.z)
--(k::Number, p1::Point3D)              = Point3D(p1.x - k, p1.y - k, p1.z - k)
--(p1::Point3D, k::Number)              = Point3D(p1.x - k, p1.y - k, p1.z - k)
+-(k::Real, p1::Point3D)              = Point3D(p1.x - k, p1.y - k, p1.z - k)
+-(p1::Point3D, k::Real)              = Point3D(p1.x - k, p1.y - k, p1.z - k)
 
-*(k::Number, p2::Point3D)              = Point3D(k * p2.x, k * p2.y, k * p2.z)
-*(p2::Point3D, k::Number)              = Point3D(k * p2.x, k * p2.y, k * p2.z)
+*(k::Real, p2::Point3D)              = Point3D(k * p2.x, k * p2.y, k * p2.z)
+*(p2::Point3D, k::Real)              = Point3D(k * p2.x, k * p2.y, k * p2.z)
 *(p1::Point3D, p2::Point3D)            = Point3D(p1.x * p2.x, p1.y * p2.y, p1.z * p2.z)
 
 """
@@ -58,12 +58,25 @@ function between(couple::NTuple{2, Point3D}, x=0.5)
     return p1 + (x * (p2 - p1))
 end
 
-/(p2::Point3D, k::Number)              = Point3D(p2.x/k, p2.y/k, p2.z/k)
+/(p2::Point3D, k::Real)              = Point3D(p2.x/k, p2.y/k, p2.z/k)
 ^(p::Point3D, e::Integer)              = Point3D(p.x^e,  p.y^e, p.z^e)
 ^(p::Point3D, e::Float64)              = Point3D(p.x^e,  p.y^e, p.z^e)
 
 # conversion
+"""
+    convert(Point3D, pt::Point, z)
 
+Convert `pt` to a Point3D(pt.x, pt.y, z).
+"""
+function Base.convert(type::Type{Point3D}, pt::Point, zheight)
+    return Point3D(pt.x, pt.y, zheight)
+end
+
+"""
+    convert(Point3D, pt::Point)
+
+Convert `pt` to a Point3D(pt.x, pt.y, 0).
+"""
 function Base.convert(type::Type{Point3D}, pt::Point)
     return Point3D(pt.x, pt.y, 0.0)
 end
@@ -243,11 +256,11 @@ axis by theta3, followed by a rotation about
 the Y axis by theta2, and finally a rotation
 about the X axis by theta1.
 """
-function rotateby(point::Point3D, angleX::Float64, angleY::Float64, angleZ::Float64)
+function rotateby(point::Point3D, angleX, angleY, angleZ)
     return RotXYZ(angleX, angleY, angleZ) * point
 end
 
-function rotateby(ptlist::Array{Point3D, 1}, angleX::Float64, angleY::Float64, angleZ::Float64)
+function rotateby(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
     return rotateby.(ptlist, angleX, angleY, angleZ)
 end
 
@@ -266,7 +279,7 @@ end
 Modify a list of points by rotating each one around the
 x, y, and z axes by angleX, angleY, angleZ.
 """
-function rotateby!(ptlist::Array{Point3D, 1}, angleX::Float64, angleY::Float64, angleZ::Float64)
+function rotateby!(ptlist::Array{Point3D, 1}, angleX, angleY, angleZ)
     for i in eachindex(ptlist)
         ptlist[i] = rotateby(ptlist[i], angleX, angleY, angleZ)
     end
@@ -282,7 +295,7 @@ end
     rotateby(point::Point3D, about::Point3D, r::Rotation)
     rotateby(ptlist::Array{Point3D, 1}, about::Point3D, r::Rotation)
 """
-function rotateby(point::Point3D, about::Point3D, angleX::Float64, angleY::Float64, angleZ::Float64)
+function rotateby(point::Point3D, about::Point3D, angleX, angleY, angleZ)
     return RotXYZ(angleX, angleY, angleZ) * (point - about) + about
 end
 function rotateby(point::Point3D, about::Point3D, r::Rotation)
@@ -301,7 +314,7 @@ end
 
 Rotate each point in the list by rotation (or angleX, angleY, angleZ) around another point (or origin).
 """
-function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, angleX::Float64, angleY::Float64, angleZ::Float64)
+function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, angleX, angleY, angleZ)
     for i in eachindex(ptlist)
         ptlist[i] = rotateby(ptlist[i], existingpt, angleX, angleY, angleZ)
     end
