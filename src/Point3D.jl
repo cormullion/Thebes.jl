@@ -154,17 +154,17 @@ Return `Point3D(x, y, z)` corresponding to `(ρ, θ, ϕ)`:
 
 - θ is the azimuthal angle (the longitude) 0 is +x, π is -x, 2π is +x
 
-- ϕ is the polar angle (the latitude) 0 is North Pole, π is South Pole
+- ϕ is the polar angle (the colatitude) 0 is North Pole, π is South Pole
 
 There are two major conventions for spherical coordinate notation.
 
 In physics books:
 
-(ρ, θ, φ) gives the radial distance, polar angle (latitude), and azimuthal angle (longitude)
+(ρ, θ, φ) gives the radial distance, polar angle (colatitude), and azimuthal angle (longitude)
 
 In mathematics books:
 
-(ρ, θ , φ ) gives the radial distance, azimuthal angle (longitude), and polar angle (latitude)
+(ρ, θ , φ ) gives the radial distance, azimuthal angle (longitude), and polar angle (colatitude)
 
 So we're using the mathematics one here.
 """
@@ -185,7 +185,7 @@ sphericaltocartesian((ρ, θ, ϕ)) = sphericaltocartesian(ρ, θ, ϕ)
 """
     cartesiantospherical(x, y, z)
 
-Return `(ρ, θ, ϕ)` (radius, longitude, latitude) of the Point3D(x, y, z).
+Return `(ρ, θ, ϕ)` (radius, longitude, colatitude) of the Point3D(x, y, z).
 """
 function cartesiantospherical(x, y, z)
     ρ = sqrt(x^2 + y^2 + z^2)
@@ -197,7 +197,7 @@ end
 """
     cartesiantospherical(pt::Point3D)
 
-Return `(ρ, θ, ϕ)` (radius, longitude, latitude) of `pt`.
+Return `(ρ, θ, ϕ)` (radius, longitude, colatitude) of `pt`.
 """
 cartesiantospherical(pt::Point3D) = cartesiantospherical(pt.x, pt.y, pt.z)
 
