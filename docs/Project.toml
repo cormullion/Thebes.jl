@@ -9,5 +9,5 @@ Thebes = "8b424ff8-82f5-59a4-86a6-de3761897198"
 Documenter = "1"
 Rotations = "1"
 Colors = "0.7, 0.8, 0.9, 0.10, 0.11, 0.12, 0.13, 0.14"
-Luxor = "3"
+Luxor = "3, 4"
 

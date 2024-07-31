@@ -1,7 +1,11 @@
 using Test
 using Thebes
+using Aqua
 
 mktempdir() do tmpdir
+
+    Aqua.test_all(Thebes)
+
     cd(tmpdir) do
 
         m = make(Cube)

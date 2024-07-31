@@ -1,6 +1,6 @@
 # Changelog
 
-## [v1.1.0] - forthcoming
+## [v1.1.0] - 2024-07-31
 
 ### Added
 
