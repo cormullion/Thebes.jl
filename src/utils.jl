@@ -194,21 +194,36 @@ function import_off_file(fname)
          startswith(infile[1], "COFF"))
         error("not an OFF file")
     end
-    nverts, nfaces, nedges = map(Meta.parse, split(infile[2]))
+    i = 2
+    while first(strip(infile[i])) == '#'
+        i += 1
+    end 
+    nverts, nfaces, nedges = map(Meta.parse, split(infile[i]))
+    @info "reading $nverts vertices, $nfaces faces, $nedges edges"
     vertices = Point3D[]
-    for i in 3:(nverts+2)
+    i += 1
+    while length(vertices) < nverts
+        if first(strip(infile[i])) == '#'
+            i += 1
+            continue
+        end
         a, b, c = map(Meta.parse, split(strip(infile[i])))
         push!(vertices, Point3D(a, -b, c))
+        i += 1
     end
-
     faces = Array{Int64,1}[]
-    for i in (nverts+2+1):(nverts+2+nfaces)
-        vals = map(Meta.parse, split(strip(infile[i]), r" |\t"))
+    while i <= (nverts + 2 + nfaces) && i <= length(infile)
+        vals = map(Meta.parse, split(strip(infile[i]), r"( )+|\t|\#"))
         ta = Int64[]
         for j in 2:(vals[1]+1)
-            push!(ta, vals[j] + 1)
+            if !isnothing(j)
+                push!(ta, vals[j] + 1)
+            end
         end
-        push!(faces, ta)
+        if length(ta) > 1
+            push!(faces, ta)
+        end
+        i += 1
     end
     return (vertices, faces)
 end

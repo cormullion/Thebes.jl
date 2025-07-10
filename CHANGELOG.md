@@ -1,5 +1,19 @@
 # Changelog
 
+## [v1.2.0] - 2024-07-31
+
+### Added
+
+### Changed
+
+- import_off_files() modified
+
+### Removed
+
+### Deprecated
+
+──────────────────────────────────────────
+
 ## [v1.1.0] - 2024-07-31
 
 ### Added
