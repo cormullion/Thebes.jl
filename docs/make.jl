@@ -23,7 +23,7 @@ makedocs(
     )
 
 deploydocs(
-    repo = "github.com/cormullion/Thebes.jl",
+    repo = "github.com/cormullion/Thebes.jl.git",
     target="build",
     push_preview=true,
     forcepush=true,
