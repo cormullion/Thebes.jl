@@ -10,7 +10,7 @@ on:
 # needed for julia-actions/cache to delete old caches
 permissions:
   actions: write
-  contents: read
+  contents: write
 jobs:
   test:
     name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
