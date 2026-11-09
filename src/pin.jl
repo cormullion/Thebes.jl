@@ -22,7 +22,7 @@ Returns the 2D point.
 function pin(p3::Point3D;
         gfunction = (p3, p2) -> circle(p2, 1, :stroke))
     p2 = project(p3)
-    if !(p2 == nothing)
+    if !(p2 === nothing)
         gfunction(p3, p2)
     end
     return p2
@@ -54,7 +54,7 @@ function pin(p3_1::Point3D, p3_2::Point3D;
         gfunction = ((p3_1, p3_2), (p2_1, p2_2)) ->
             line(p2_1, p2_2, :stroke))
     p2_1, p2_2 = project.([p3_1, p3_2])
-    if !(p2_1 == nothing) && !(p2_2 == nothing)
+    if !(p2_1 === nothing) && !(p2_2 === nothing)
         gfunction((p3_1, p3_2), (p2_1, p2_2))
     end
     return p2_1, p2_2
@@ -87,11 +87,11 @@ function pin(p3list::Array{Point3D, 1};
             poly(p2list, :stroke, close=true))
     p2list = project.(p3list)
 
-    if all(p -> !(p == nothing), p2list)
+    if all(p -> !(p === nothing), p2list)
         gfunction(p3list, p2list)
     else
         for n in eachindex(p2list)
-            if p2list[n] == nothing
+            if p2list[n] === nothing
             else
                 gfunction([p3list[n]], [p2list[n]])
             end

@@ -1,10 +1,10 @@
-mutable struct Projection
-    U::Point3D     #
-    V::Point3D     #
-    W::Point3D     #
-    ue::Float64    #
-    ve::Float64    #
-    we::Float64    #
+struct Projection
+    U::Point3D     # unit vector: the x axis of the 2D image
+    V::Point3D     # unit vector: the y axis of the 2D image
+    W::Point3D     # unit vector: the line of sight
+    ue::Float64    # eye position projected onto U
+    ve::Float64    # eye position projected onto V
+    we::Float64    # eye position projected onto W
     eyepoint::Point3D
     centerpoint::Point3D
     uppoint::Point3D
@@ -13,52 +13,58 @@ end
 
 Base.broadcastable(p::Projection) = Ref(p)
 
+# Vectors shorter than this (relative to the size of the scene) are treated as
+# zero when building a projection.
+const _DEGENERATE_TOL = 1.0e-9
+
 """
    newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=0.0)
 
 Define a new Projection:
 
-- ipos is the eye position
-- center is the 3D point to appear in the center of the 2D image
-- up is a point that is to appear vertically above the center
+- `ipos` is the eye position
+- `center` is the 3D point to appear in the center of the 2D image
+- `up` is a point that is to appear vertically above the center
 
 If `perspective` is 0.0 (the default) the projection is parallel. Otherwise it's
 a vague magnification factor for perspective projections.
 
-The three vectors U, V, W, and the three scalar products, ue, ve, and we:
+The three unit vectors `U`, `V`, `W`, and the three scalar products, `ue`, `ve`, and `we`:
 
-- U is at right angles to line of sight w, and to t-e, so it corresponds to
+- `U` is at right angles to line of sight `w` so it corresponds to
 the x axis of the 2D image
 
-- V is at right angles to u and to the line of sight, so it's the y axis of the
+- `V` is at right angles to `u` and to the line of sight, so it's the y axis of the
 2D image
 
-- W is the line of sight
+- `W` is the line of sight
 
-- we is the projection of the eye position onto w
+- `we` is the projection of the eye position onto `w`
 
-- ue is the projection of the eye position onto that x-axis
+- `ue` is the projection of the eye position onto that x-axis
 
-- ve is the projection of the eye position onto that y axis
+- `ve` is the projection of the eye position onto that y axis
+
+If the `up` point lies on the line through the eye and the center, there's no
+way to tell which way is up, so the world `z` axis is used instead (or the y axis,
+if you're looking along the z axis). If the eye and the center are the same
+point there's no line of sight, and a degenerate projection is returned.
 """
-function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=0.0)
-
-    if iszero(ipos.x)
-        ipos = Point3D(10e-9, ipos.y, ipos.z)
-    end  
-    if iszero(ipos.y)
-        ipos = Point3D(ipos.x, 10e-9, ipos.z)
-    end  
-    if iszero(ipos.z)
-        ipos = Point3D(ipos.x, ipos.y, 10e-9)
-    end  
+function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective = 0.0)
+    sight = center - ipos
+    d = distance(Point3D(0, 0, 0), sight)
+    extent = max(1.0, distance(Point3D(0, 0, 0), ipos), distance(Point3D(0, 0, 0), center))
+    if d <= _DEGENERATE_TOL * extent
+        @warn "eye position and center are the same, so there's no line of sight" maxlog = 1
+        zero3 = Point3D(0.0, 0.0, 0.0)
+        return Projection(zero3, zero3, zero3, 0.0, 0.0, 0.0, ipos, center, up, perspective)
+    end
 
     # w is the line of sight
     W = Point3D(center.x - ipos.x, center.y - ipos.y, center.z - ipos.z)
     r = (W.x * W.x) + (W.y * W.y) + (W.z * W.z)
-    if r < eps()
+    if r < _DEGENERATE_TOL
         @info("eye position and center are the same")
-        
         W = Point3D(0.0, 0.0, 0.0)
     else
         # distancealise w to unit length
@@ -66,12 +72,14 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
         W = Point3D(W.x * rinv, W.y * rinv, W.z * rinv)
     end
     we = W.x * ipos.x + W.y * ipos.y + W.z * ipos.z # project e on to w
-    U = Point3D(W.y * (up.z - ipos.z) - W.z * (up.y - ipos.y),      # u is at right angles to t - e
+    U = Point3D(
+        W.y * (up.z - ipos.z) - W.z * (up.y - ipos.y),      # u is at right angles to t - e
         W.z * (up.x - ipos.x) - W.x * (up.z - ipos.z),      # and w ., its' the pictures x axis
-        W.x * (up.y - ipos.y) - W.y * (up.x - ipos.x))
+        W.x * (up.y - ipos.y) - W.y * (up.x - ipos.x)
+    )
     r = (U.x * U.x) + (U.y * U.y) + (U.z * U.z)
 
-    if r < eps()
+    if r < _DEGENERATE_TOL
         @info("struggling to make a valid projection with these parameters")
         U = Point3D(0.0, 0.0, 0.0)
     else
@@ -81,13 +89,15 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective=
 
     ue = U.x * ipos.x + U.y * ipos.y + U.z * ipos.z # project e onto u
 
-    V = Point3D(U.y * W.z - U.z * W.y, # v is at right angles to u and w
+    V = Point3D(
+        U.y * W.z - U.z * W.y, # v is at right angles to u and w
         U.z * W.x - U.x * W.z, # it's the world's y axis
-        U.x * W.y - U.y * W.x)
+        U.x * W.y - U.y * W.x
+    )
 
     ve = V.x * ipos.x + V.y * ipos.y + V.z * ipos.z # project e onto v
 
-    Projection(U, V, W, ue, ve, we, ipos, center, up, perspective)
+    return Projection(U, V, W, ue, ve, we, ipos, center, up, perspective)
 end
 """
    project(P::Point3D)
@@ -122,25 +132,24 @@ end
 """
 function project(P::Point3D)
     proj = CURRENTPROJECTION[1]
-    # use default value for perspectiveness if not specified
     r = proj.W.x * P.x + proj.W.y * P.y + proj.W.z * P.z - proj.we
-    if r < eps()
-        # "point $P is behind eye"
-        result = nothing
+    # use default value for perspectiveness if not specified
+    if proj.perspective == 0.0
+        depth = 1.0
+    elseif r <= eps()
+        # the point is behind the eye
+        return nothing
     else
-        if proj.perspective == 0.0
-            depth = 1
-        else
-            depth = proj.perspective * (1 / r)
-        end
-        uq = depth * (proj.U.x * P.x + proj.U.y * P.y + proj.U.z * P.z - proj.ue)
-        vq = depth * (proj.V.x * P.x + proj.V.y * P.y + proj.V.z * P.z - proj.ve)
-        result = Point(uq, -vq) # because Y is down the page in Luxor (?!)
+        depth = proj.perspective / r
     end
-    return result
+    uq = depth * (proj.U.x * P.x + proj.U.y * P.y + proj.U.z * P.z - proj.ue)
+    vq = depth * (proj.V.x * P.x + proj.V.y * P.y + proj.V.z * P.z - proj.ve)
+    return Point(uq, -vq) # Y is down the page in Luxor
 end
 
 project(px, py, pz, proj::Projection) = project(Point3D(px, py, pz), proj)
+
+project(P::Point3D, proj) = project(Point3D(px, py, pz), CURRENTPROJECTION[1])
 
 # functions to update the projection
 
@@ -151,7 +160,7 @@ project(px, py, pz, proj::Projection) = project(Point3D(px, py, pz), proj)
 Get or set the current eye position.
 """
 function eyepoint()
-    CURRENTPROJECTION[1].eyepoint
+    return CURRENTPROJECTION[1].eyepoint
 end
 
 
@@ -162,7 +171,7 @@ end
 Get or set the current center position.
 """
 function centerpoint()
-    CURRENTPROJECTION[1].centerpoint
+    return CURRENTPROJECTION[1].centerpoint
 end
 
 """
@@ -173,7 +182,7 @@ The "up" direction for the world: a line from the
 centerpoint to the uppoint defines the up direction.
 """
 function uppoint()
-    CURRENTPROJECTION[1].uppoint
+    return CURRENTPROJECTION[1].uppoint
 end
 
 """
@@ -183,7 +192,7 @@ end
 Get or set the current  perspective.
 """
 function perspective()
-    CURRENTPROJECTION[1].perspective
+    return CURRENTPROJECTION[1].perspective
 end
 
 function eyepoint(pt::Point3D)
@@ -220,12 +229,39 @@ end
 
 eyepoint(x, y, z) = eyepoint(Point3D(x, y, z))
 centerpoint(x, y, z) = centerpoint(Point3D(x, y, z))
+
+"""
+    uppoint(x, y, z)
+
+Specify the "up" direction for the world: a line from the
+centerpoint to the `uppoint` defines the up direction.
+"""
 uppoint(x, y, z) = uppoint(Point3D(x, y, z))
+
+
+"""
+    setprojection!(;
+        eye=eyepoint(),
+        center=centerpoint(),
+        up=uppoint(),
+        persp=perspective()
+        )
+
+Replace the current projection.
+"""
+function setprojection!(;
+        eye=eyepoint(),
+        center=centerpoint(),
+        up=uppoint(),
+        persp=perspective())
+    CURRENTPROJECTION[1] = newprojection(eye, center, up, persp)
+    return CURRENTPROJECTION[1]
+end
 
 """
     helloworld()
 
-Reset all the things. The equivalent of typing:
+Reset all the things to a sensible default. The equivalent of typing:
 
 ```
 eyepoint(100, 100, 100)
@@ -235,8 +271,10 @@ perspective(0)
 ```
 """
 function helloworld()
-    eyepoint(100, 100, 100)
-    centerpoint(0, 0, 0)
-    uppoint(0, 0, 10)
-    perspective(0)
+    setprojection!(
+        eye = Point3D(100, 100, 100),
+        center = Point3D(0, 0, 0),
+        up = Point3D(0, 0, 10),
+        persp = 0)
+    return perspective()
 end

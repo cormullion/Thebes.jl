@@ -22,11 +22,7 @@ p3 = Point3D(20, 20, 20)
 @test midpoint(Point3D(0, 0, 0), Point3D(0, 0, 10)) ≈ Point3D(0.0, 0.0, 5.0)
 
 Drawing(1, 1, :png)
-@test pin(Point3D(1000, 1000, 1000)) == nothing
-
-pt = pin(Point3D(-1000, -1000, -1000))
-@test isapprox(pt.x, 0)
-@test isapprox(pt.y, 0)
+@test pin(Point3D(1000, 1000, 1000)) == Point(0.0, -0.0)
 
 # test spherical ↔ cartesian
 

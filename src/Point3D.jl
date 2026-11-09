@@ -294,13 +294,17 @@ end
     rotateby(point::Point3D, about::Point3D, angleX, angleY, angleZ)
     rotateby(point::Point3D, about::Point3D, r::Rotation)
     rotateby(ptlist::Array{Point3D, 1}, about::Point3D, r::Rotation)
+
+Rotate point.
 """
 function rotateby(point::Point3D, about::Point3D, angleX, angleY, angleZ)
     return RotXYZ(angleX, angleY, angleZ) * (point - about) + about
 end
+
 function rotateby(point::Point3D, about::Point3D, r::Rotation)
     return r * (point - about) + about
 end
+
 function rotateby(ptlist::Array{Point3D, 1}, about::Point3D, r::Rotation)
     return rotateby.(ptlist, about, r)
 end
@@ -309,10 +313,8 @@ end
 ## update an array of points
 """
     rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, angleX, angleY, angleZ)
-    rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, r::Rotation)
-    rotateby!(ptlist::Array{Point3D, 1}, r::Rotation=RotXYZ{Float64})
 
-Rotate each point in the list by rotation (or angleX, angleY, angleZ) around another point (or origin).
+Rotate each point in the list by angleX, angleY, angleZ around another point (or origin).
 """
 function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, angleX, angleY, angleZ)
     for i in eachindex(ptlist)
@@ -320,6 +322,12 @@ function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, angleX, angle
     end
     return ptlist
 end
+
+"""
+    rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, r::Rotation)
+
+Rotate each point in the list by rotation around another point (or origin).
+"""
 function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, r::Rotation)
     for i in eachindex(ptlist)
         ptlist[i] = rotateby(ptlist[i], existingpt, r)
@@ -327,6 +335,11 @@ function rotateby!(ptlist::Array{Point3D, 1}, existingpt::Point3D, r::Rotation)
     return ptlist
 end
 
+"""
+    rotateby!(ptlist::Array{Point3D, 1}, r::Rotation=RotXYZ{Float64})
+
+Rotate each point in the list by rotation (or angleX, angleY, angleZ) around another point (or origin).
+"""
 rotateby!(ptlist::Array{Point3D, 1}, r::Rotation=RotXYZ{Float64}) = rotateby!(ptlist, Point3D(0.0, 0.0, 0.0), r)
 
 """

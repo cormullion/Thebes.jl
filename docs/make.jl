@@ -1,8 +1,21 @@
-using Documenter, Thebes, Luxor, Rotations
+using Documenter 
+using Thebes
+using Luxor
+using Rotations
+using DocumenterTools: Themes
+using DocumenterLandingPage
+using DocumenterCodeBlocks
+
+# Setup for doctests in docstrings
+DocMeta.setdocmeta!(Thebes, :DocTestSetup, :(using Thebes))
 
 makedocs(
     modules  = [Thebes],
     sitename = "Thebes",
+        plugins = [
+        LandingPage(),
+        CodeBlocks()
+        ],
     warnonly = true,
     format   = Documenter.HTML(
         size_threshold = nothing,

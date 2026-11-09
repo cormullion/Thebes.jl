@@ -102,7 +102,7 @@ function objecttopoly(o::Object)
     vertices2D = Point[]
     for v in o.vertices
         r = project(v)
-        if r != nothing
+        if r !== nothing
             push!(vertices2D, r)
         else
             push!(vertices2D, Point(NaN, NaN))
@@ -275,9 +275,8 @@ end
 
 """
     moveby(o::Object, x, y, z)
-    moveby(o::Object, pt::Point3D)
 
-Set the position of a copy of the object to Point3D(x, y, z).
+Set the position of a copy of the object to `Point3D(x, y, z)`.
 """
 function moveby(o::Object, x, y, z)
     ocopy = deepcopy(o)
@@ -285,6 +284,12 @@ function moveby(o::Object, x, y, z)
 end
 
 moveby(o::Object, pt::Point3D) = moveby(o::Object, pt.x, pt.y, pt.z)
+
+"""
+    moveby!(o::Object, pt::Point3D)
+
+Set the position of the object to `pt`.
+"""
 moveby!(o::Object, pt::Point3D) = moveby!(o::Object, pt.x, pt.y, pt.z)
 
 """
@@ -309,6 +314,9 @@ scaleby!(o::Object, d) = scaleby!(o, d, d, d)
 
 """
     face(o::Object, n)
+
+Return a vector of the 3D points that describe the `n`th face 
+of the object.
 """
 function face(o::Object, n)
     facepoints = Point3D[]
@@ -321,10 +329,9 @@ function face(o::Object, n)
 end
 
 """
-    rotateby!(o::Object, r::Rotation)
     rotateby!(o::Object, angleX, angleY, angleZ)
 
-Rotate an object through rotation `r`, or around the x, y,
+Rotate an object through rotation `r` around the x, y,
 and/or z axis by `angleX`, `angleY`, `angleZ`.
 """
 function rotateby!(o::Object, angleX, angleY, angleZ)
@@ -334,6 +341,11 @@ function rotateby!(o::Object, angleX, angleY, angleZ)
     return o
 end
 
+"""
+    rotateby!(o::Object, r::Rotation)
+
+Rotate an object through rotation `r`.
+"""
 function rotateby!(o::Object, r::Rotation)
     for n in eachindex(o.vertices)
         o.vertices[n] = r * o.vertices[n]
@@ -351,6 +363,11 @@ function rotateby(o::Object, angleX, angleY, angleZ)
     return rotateby!(ocopy, angleX, angleY, angleZ)
 end
 
+"""
+    rotateby(o::Object, r:Rotation)
+
+Rotate a copy of the object by the Rotation `r`.
+"""
 function rotateby(o::Object, r::Rotation)
     ocopy = deepcopy(o)
     return rotateby!(ocopy, r)
@@ -358,9 +375,8 @@ end
 
 """
     rotateby!(o::Object, pt::Point3D, angleX, angleY, angleZ)
-    rotateby!(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
 
-Rotate an object around a point by rotation r, or angleX, angleY, angleZ.
+Rotate an object around a point by angleX, angleY, angleZ.
 """
 function rotateby!(o::Object, pt::Point3D, angleX, angleY, angleZ)
     for n in eachindex(o.vertices)
@@ -373,6 +389,11 @@ function rotateby!(o::Object, pt::Point3D, angleX, angleY, angleZ)
     return o
 end
 
+"""
+    rotateby!(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
+
+Rotate an object around a point by rotation r, or angleX, angleY, angleZ.
+"""
 function rotateby!(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
     for n in eachindex(o.vertices)
         v = o.vertices[n] * r
@@ -383,7 +404,6 @@ end
 
 """
     rotateby(o::Object, pt::Point3D, angleX, angleY, angleZ)
-    rotateby(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
 
 Rotate a copy of the object around a point by rotation r, or angleX, angleY, angleZ.
 """
@@ -392,6 +412,11 @@ function rotateby(o::Object, pt::Point3D, angleX, angleY, angleZ)
     return rotateby!(ocopy, pt, angleX, angleY, angleZ)
 end
 
+"""
+    rotateby(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
+
+Rotate a copy of the object around a point by rotation r, or angleX, angleY, angleZ.
+"""
 function rotateby(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
     ocopy = deepcopy(o)
     return rotateby!(ocopy, pt, r)
