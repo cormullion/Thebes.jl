@@ -97,9 +97,7 @@ function Base.isapprox(p1::Point3D, p2::Point3D; atol=1e-6, kwargs...)
 end
 
 isless(p1::Point3D, p2::Point3D)          = (p1.x < p2.x) && (p1.y < p2.y) && (p1.z < p2.z)
-!=(p1::Point3D, p2::Point3D)              = !isequal(p1, p2)
 <(p1::Point3D, p2::Point3D)               = isless(p1,p2)
->(p1::Point3D, p2::Point3D)               = p2 < p1
 ==(p1::Point3D, p2::Point3D)              = isequal(p1, p2)
 
 """
