@@ -1,39 +1,46 @@
 using Thebes, Luxor
 
-function mygfunction(vertices, faces, labels; action=:fill)
-    if !isempty(faces)
+function mygfunction(o::Object)
+    sortfaces!(o)
+    return if !isempty(o.faces)
         @layer begin
-            for (n, p) in enumerate(faces)
+            for (n, face) in enumerate(o.faces)
                 @layer begin
-                    setopacity(0.5)
-                    randomhue()
-                    poly(p, action)
+                    vertices = o.vertices[face]
+                    sn = surfacenormal(vertices)
+                    ang = anglebetweenvectors(sn, eyepoint())
+                    setgrey(rescale(ang, 0, π, 0, 1))
+                    pin(vertices, gfunction = (p3, p2) -> poly(p2, :fill))
                 end
-
-                sethue("black")
-                setline(0.5)
-                poly(p, :stroke, close=true)
-
             end
         end
     end
 end
 
-@svg begin
+@drawsvg begin
     background("black")
     setlinejoin("bevel")
-    eyepoint(Point3D(150, 150, 20))
-    sethue("pink")
-    carpet(200)
-    axes3D(20)
-
-    #object = make(Cube, "Cube")
-    #object = make(Tetrahedron, "Tetrahedron")
-    object = make(Pyramid, "Pyramid")
-
-    scaleby!(object, 100, 100, 100)
-    rotateby!(object, Point3D(0, 0, 0), 0, 0, rand())
-    sortfaces!(object)
-    sethue("orange")
-    pin(object, gfunction= mygfunction)
-end 500 500 "/tmp/cube.svg"
+    helloworld()
+    perspective(500)
+    eyepoint(30, 30, 1000)
+    sethue("maroon")
+    carpet(700)
+    axes3D(300)
+    setopacity(0.9)
+    objects = [boxcube, boxtorus, concave, cone, crossshape, cube, cuboctahedron, dodecahedron, geodesic, helix2,
+    icosahedron, icosidodecahedron, octahedron, octtorus, rhombicosidodecahedron,
+    rhombicuboctahedron, rhombitruncated_cubeoctahedron, rhombitruncated_icosidodecahedron,
+    snub_cube, snub_dodecahedron, sphere2, tet3d, tetrahedron, triangle, truncated_cube, 
+    truncated_dodecahedron, truncated_icosahedron, truncated_octahedron, truncated_tetrahedron]
+    
+    tbl = Table(6, 6)
+    for (i, o) in enumerate(objects)
+        object = make(o, "a primitive shape")
+        scaleby!(object, 20, 20, 20)
+        rotateby!(object, Point3D(0, 0, 0), 0, 0, 0.4)
+        @layer begin
+            translate(tbl[i])
+            pin(object, gfunction = mygfunction)
+        end
+    end 
+end

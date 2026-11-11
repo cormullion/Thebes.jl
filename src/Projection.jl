@@ -130,8 +130,7 @@ using Thebes, Luxor
 end
 ```
 """
-function project(P::Point3D)
-    proj = CURRENTPROJECTION[1]
+function project(P::Point3D; proj=CURRENTPROJECTION[1])
     r = proj.W.x * P.x + proj.W.y * P.y + proj.W.z * P.z - proj.we
     # use default value for perspectiveness if not specified
     if proj.perspective == 0.0
@@ -147,9 +146,9 @@ function project(P::Point3D)
     return Point(uq, -vq) # Y is down the page in Luxor
 end
 
-project(px, py, pz, proj::Projection) = project(Point3D(px, py, pz), proj)
+project(px, py, pz, proj::Projection) = project(Point3D(px, py, pz), proj=proj)
 
-project(P::Point3D, proj) = project(Point3D(px, py, pz), CURRENTPROJECTION[1])
+project(P::Point3D, proj) = project(P.px, P.py, P.pz, proj=proj)
 
 # functions to update the projection
 

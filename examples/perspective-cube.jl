@@ -31,7 +31,7 @@ function frame(scene, framenumber)
     axes3D()
     fontsize(30)
     p = rescale(framenumber, 1, scene.framerange.stop, 0, 1500)
-    if p < 300
+    if p < 10
         p = 0
     end
     perspective(p)
@@ -47,5 +47,5 @@ animate(perspectivemovie, [
     Scene(perspectivemovie, frame, 1:150)
     ],
     creategif=true,
-    framerate=24,
+    framerate=12,
     pathname="/tmp/perspectivemovie-animation.gif")

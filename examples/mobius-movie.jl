@@ -1,21 +1,25 @@
 using Thebes, Luxor, ColorSchemes
 
-function makemobius()
+function makemobius(;
+        w = π/10, # "width"
+        stepsacross=4, # steps across the band
+        stepsaround=150) # steps round the band
     x(u, v) = (1 + (v/2 * cos(u/2))) * cos(u)
     y(u, v) = (1 + (v/2 * cos(u/2))) * sin(u)
     z(u, v) = v/2 * sin(u/2)
-    # v goes across
+     # v goes across
     # u goes round
-    w = 1
-    st = 2π/50
-    Δ = .05
-    result = []
-    for u in 0:st:2π# -st
-        for v in -w:Δ:w
-            p1 = Point3D(x(u,      v + Δ),   y(u,      v + Δ),     z(u,       v + Δ))
-            p2 = Point3D(x(u + st, v + Δ),   y(u + st, v + Δ),     z(u  + st, v + Δ))
-            p3 = Point3D(x(u + st, v),       y(u + st, v),         z(u + st,  v))
-            p4 = Point3D(x(u,      v),       y(u,      v),         z(u,       v))
+    st = 2π/stepsaround
+    Δ  = 2w/stepsacross
+    result = Vector{Vector{Point3D}}()
+    for i in 1:stepsaround
+        u = (i - 1) * st
+        for j in 1:stepsacross
+            v = -w + (j - 1) * Δ
+            p1 = Point3D(x(u,      v + Δ), y(u,      v + Δ), z(u,      v + Δ))
+            p2 = Point3D(x(u + st, v + Δ), y(u + st, v + Δ), z(u + st, v + Δ))
+            p3 = Point3D(x(u + st, v),     y(u + st, v),     z(u + st, v))
+            p4 = Point3D(x(u,      v),     y(u,      v),     z(u,      v))
             push!(result, [p1, p2, p3, p4])
         end
     end
@@ -41,7 +45,7 @@ function  main()
     width, height = (800, 400)
     mobiusmovie = Movie(width, height, "mobiusmovie")
 
-    mb = makemobius()
+    mb = makemobius(w=π/4)
     gif = animate(mobiusmovie, [
         Scene(mobiusmovie, (s, f) -> frame(s, f, mb), 1:100)
         ],

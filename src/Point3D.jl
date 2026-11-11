@@ -19,8 +19,8 @@ end
 function -(p1::Point3D, p2::Point3D)
     Point3D((p1.x - p2.x), (p1.y - p2.y), (p1.z - p2.z))
 end
--(p::Point3D)                          = Point3D(-p.x, -p.y, -p.z)
--(k::Real, p1::Point3D)              = Point3D(p1.x - k, p1.y - k, p1.z - k)
+-(p::Point3D)                        = Point3D(-p.x, -p.y, -p.z)
+-(k::Real, p::Point3D)               =  Point3D(k - p.x, k - p.y, k - p.z)
 -(p1::Point3D, k::Real)              = Point3D(p1.x - k, p1.y - k, p1.z - k)
 
 *(k::Real, p2::Point3D)              = Point3D(k * p2.x, k * p2.y, k * p2.z)

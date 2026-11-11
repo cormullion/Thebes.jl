@@ -24,7 +24,7 @@ function drawpath(path::Path, k::Real, anchor::Point3D;
        pathlength = Luxor.pathlength(path)
     end
     requiredlength = k * pathlength # we'll stop when we get past this
-    currentlength = 0
+    currentlength = 0.0
     startnewpath && newpath()
     # firstpoint₂ is the point we will return to for a Close
     # currentpoint₂ is Cairo's current point

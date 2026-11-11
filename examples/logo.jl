@@ -10,8 +10,8 @@ end
 function main()
     cols = [Luxor.julia_blue, Luxor.julia_purple, Luxor.julia_green, Luxor.julia_red]
     eyepoint(0, 100, 300)
-    perspective(320)
-    Drawing(500, 500, "/tmp/thebeslogo.png")
+    perspective(300)
+    Drawing(500, 500, dirname(pathof(Thebes)) * "/../docs/src/assets/logo.svg")
     origin()
     squircle(O, 240, 240, :clip, rt = 0.3)
     background("midnightblue")
@@ -21,8 +21,9 @@ function main()
 
     object = make(rhombitruncated_icosidodecahedron, "solid")
     scaleby!(object, 180, 180, 180)
-    rotateby!(object, π / 3, 0, 0)
+    rotateby!(object, π / 3.1, 0, 0)
     sortfaces!(object, eyepoint = eyepoint())
+
 
     for (n, f) in enumerate(object.faces)
         pts3D = object.vertices[f]
@@ -32,32 +33,32 @@ function main()
         setblend(
             blend(
                 pc, 0,
-                pc, 80,
-                lighten(getcolor(), 1.5),
-                getcolor(),
+                pc, 90,
+                lighten(getcolor(), 1.8),
+                lighten(getcolor(), 0.7),
             )
         )
-
-        mesh1 = mesh(
-            box(BoundingBox(pts2D)), [
-                RGBA(0.8, 0.2, 0.5, 0.9),
-                RGBA(0.8, 0.7, 0.5, 0.5),
-                RGBA(0.8, 0.4, 0.4, 0.6),
-                RGBA(0.8, 0.3, 0.9, 0.99),
-            ]
-        )
-        setmesh(mesh1)
 
         poly(pts2D, :fillpreserve, close = true)
 
         # lines
-        setline(2)
+        setline(1)
         sethue("gold")
         strokepreserve()
 
-        setline(1)
+        setline(0.5)
         sethue("white")
         strokepath()
+    end
+
+    setline(3)
+    sethue("white")
+    setopacity(0.1)
+    for (n, f) in enumerate(object.faces)
+        pts3D = object.vertices[f]
+        pts2D = project.(pts3D)
+        pc = polycentroid(pts2D)
+        poly(pts2D, :stroke, close = true)
     end
     finish()
     return preview()

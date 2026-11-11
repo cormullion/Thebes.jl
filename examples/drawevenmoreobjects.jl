@@ -7,11 +7,20 @@ evenmoreobjects = [:Apple, :Sword01, :asu, :dragon, :goblet,
 :seashell, :space_shuttle, :space_station, :teapot, :volks,
 :x29_plane]
 
-function anothergfunction(vertices, faces, labels, action=:fill)
-    if !isempty(faces)
+function anothergfunction(o; action=:fill)
+    sortfaces!(o)
+    if !isempty(o.faces)
         @layer begin
-            for (n, p) in enumerate(faces)
-                poly(p, action)
+            for (n, face) in enumerate(o.faces)
+                @layer begin
+                    vertices = o.vertices[face]
+                    sn = surfacenormal(vertices)
+                    ang = anglebetweenvectors(sn, eyepoint())
+                    setgrey(rescale(ang, 0, π, 0.5, 1))
+                    pin(vertices, gfunction=(p3, p2) -> poly(p2, action))
+                    sethue("grey60")
+                    pin(vertices, gfunction=(p3, p2) -> poly(p2, :stroke))
+                end
             end
         end
     end
@@ -21,13 +30,12 @@ function main()
     Drawing(1200, 1200, "/tmp/evenmoreobjects.png")
     origin()
     background("grey20")
-    setopacity(0.75)
 
     axes3D()
     eyepoint(Point3D(500, 500, 500))
     centerpoint(Point3D(0, 0, 0))
-    perspective(1000)
-    setline(1)
+    perspective(600)
+    setline(2)
 
     K = 120
 
@@ -43,9 +51,8 @@ function main()
             moveby!(object, loc)
 
             scaleby!(object, 1/scalefactor * K, 1/scalefactor * K, 1/scalefactor * K)
-            randomhue()
-            setopacity(0.5)
-            pin(object, gfunction= anothergfunction)
+            setopacity(0.85)
+            pin(object, gfunction = anothergfunction)
             m += 1
         end
     end

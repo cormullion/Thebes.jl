@@ -1,16 +1,16 @@
 mutable struct Object
     vertices::Vector{Point3D}
-    faces::Array{Array{Int64,1},1}
-    labels::Array{Int64,1}
+    faces::Array{Array{Int64, 1}, 1}
+    labels::Array{Int64, 1}
     name::String
 end
 
 function Base.size(o::Object)
-    length(o.vertices)
+    return length(o.vertices)
 end
 
 function Base.length(o::Object)
-    length(o.vertices)
+    return length(o.vertices)
 end
 
 Base.lastindex(o::Object) = length(o)
@@ -24,6 +24,14 @@ Base.broadcastable(o::Object) = Ref(o)
 where each face is a list of vertex numbers.
 
 Returns a Object.
+
+The following objects are defined (stored in the file `("/data/objects.jl")`:
+
+    boxcube, boxtorus, concave, cone, crossshape, cube, cuboctahedron, dodecahedron, geodesic, helix2,
+    icosahedron, icosidodecahedron, octahedron, octtorus, rhombicosidodecahedron,
+    rhombicuboctahedron, rhombitruncated_cubeoctahedron, rhombitruncated_icosidodecahedron,
+    snub_cube, snub_dodecahedron, sphere2, tet3d, tetrahedron, triangle, truncated_cube, 
+    truncated_dodecahedron, truncated_icosahedron, truncated_octahedron, truncated_tetrahedron
 
 Example
 
@@ -52,7 +60,7 @@ end
 
 The default gfunction expects faces - if there aren't any, use a gfunction that draws vertices.
 """
-function make(vf, name="unnamed")
+function make(vf, name = "unnamed")
     # don't redefine when passed an array
     vertices = deepcopy(vf[1])
     faces = deepcopy(vf[2])
@@ -118,35 +126,59 @@ function objecttopoly(o::Object)
     return (vertices2D, facepolys)
 end
 
+@inline function _ndistinct(vs, f)
+    c = 0
+    @inbounds for i in eachindex(f)
+        dup = false
+        for j in 1:(i - 1)
+            if vs[f[j]] == vs[f[i]]
+                dup = true
+                break
+            end
+        end
+        c += !dup
+    end
+    return c
+end
+
 """
     sortfaces!(o::Object;
         eyepoint::Point3D=eyepoint())
 
 Find the averages of the z values of the faces in Object, and sort the faces
 of o so that the faces are in order of nearest (highest) z relative to eyepoint...
-
-or something like that ? not sure how this works
 """
-function sortfaces!(o::Object;
-    eyepoint::Point3D=eyepoint())
-    avgs = Float64[]
-    for f in o.faces
-        vs = o.vertices[f]
+function sortfaces!(o::Object; eyepoint::Point3D = eyepoint())
+    vs = o.vertices
+    avgs = Vector{Float64}(undef, length(o.faces))
+    @inbounds for (k, f) in enumerate(o.faces)
         s = 0.0
-        for v in vs
-            s += distance(v, eyepoint)
+        for i in f
+            s += distance(vs[i], eyepoint)
         end
-        avg = s / length(unique(vs))
-        push!(avgs, avg)
+        avgs[k] = s / _ndistinct(vs, f)
     end
-    neworder = reverse(sortperm(avgs))
+    neworder = reverse!(sortperm(avgs))   # reverse!(sortperm) keeps the original tie order
     o.faces = o.faces[neworder]
     o.labels = o.labels[neworder]
     return o
 end
 
-sortfaces!(o::Array{Object,1}; kwargs...) =
+sortfaces!(o::Array{Object, 1}; kwargs...) =
     map(sortfaces!, o)
+
+function _normal_idx(vs, face)          # surfacenormal without the copy or the extra /l
+    nx = ny = nz = 0.0
+    n = length(face)
+    @inbounds for i in 1:n
+        c = vs[face[i]]
+        d = vs[face[i == n ? 1 : i + 1]]
+        nx += (c.y - d.y) * (c.z + d.z)
+        ny += (c.z - d.z) * (c.x + d.x)
+        nz += (c.x - d.x) * (c.y + d.y)
+    end
+    return Point3D(nx, ny, nz)
+end
 
 """
     hiddensurface(o::Object)
@@ -154,26 +186,54 @@ sortfaces!(o::Array{Object,1}; kwargs...) =
 Given an object `o`, sort the faces in `o.faces`, 
 then draw filled grey polygons for each face.
 """
+
 function hiddensurface(o::Object)
-    if !isempty(o.faces)
-        sortfaces!(o)
-        @layer begin
-            for (n, face) in enumerate(o.faces)
-                @layer begin
-                    vertices = o.vertices[face]
-                    sn = surfacenormal(vertices)
-                    ang = anglebetweenvectors(sn, eyepoint())
-                    setgrey(rescale(ang, 0, π, 1, 0))
-                    pin(vertices, gfunction=(p3, p2) ->
-                        begin
-                            poly(p2, :fill)
-                            sethue("white")
-                            poly(p2, :stroke, close=true)
-                        end)
-                end
+    isempty(o.faces) && return nothing
+    sortfaces!(o)
+    nv = length(o.vertices)
+    pts = Vector{Point}(undef, nv)
+    vis = Vector{Bool}(undef, nv)
+    @inbounds for i in 1:nv
+        r = project(o.vertices[i])
+        vis[i] = r !== nothing
+        pts[i] = r === nothing ? Point(NaN, NaN) : r
+    end
+    eye = eyepoint()
+    buf = Point[]
+    @layer begin                                  # one save/restore for the whole object
+        @inbounds for face in o.faces
+            ang = anglebetweenvectors(_normal_idx(o.vertices, face), eye)
+            setgrey(rescale(ang, 0, π, 1, 0))
+            ok = true
+            for i in face
+                ok &= vis[i]
             end
+            ok || continue                        # original drew nothing visible for these either
+            resize!(buf, length(face))
+            for k in eachindex(face)
+                buf[k] = pts[face[k]]
+            end
+            poly(buf, :none, close = true)
+            fillpreserve()
+            sethue(1.0, 1.0, 1.0)
+            strokepath()
         end
     end
+    return nothing
+end
+
+function _projectvertices(o::Object)
+    # Project every vertex once; 
+    # shared by hiddensurface() and wireframe()
+    nv = length(o.vertices)
+    pts = Vector{Point}(undef, nv)
+    vis = Vector{Bool}(undef, nv)
+    @inbounds for i in 1:nv
+        r = project(o.vertices[i])
+        vis[i] = r !== nothing
+        pts[i] = r === nothing ? Point(NaN, NaN) : r
+    end
+    return pts, vis
 end
 
 """
@@ -181,22 +241,28 @@ end
 
 Given an object `o`, sort the faces in `o.faces`, 
 then draw grey stroked polygons for each face.    
+
 """
 function wireframe(o::Object)
-    if !isempty(o.faces)
-        sortfaces!(o)
-        @layer begin
-            for (n, face) in enumerate(o.faces)
-                @layer begin
-                    vertices = o.vertices[face]
-                    pin(vertices, gfunction=(p3, p2) ->
-                        begin
-                            poly(p2, :stroke, close=true)
-                        end)
-                end
+    isempty(o.faces) && return nothing
+    sortfaces!(o)
+    pts, vis = _projectvertices(o)
+    buf = Point[]
+    @layer begin
+        for face in o.faces
+            ok = true
+            for i in face
+                ok &= vis[i]
             end
+            ok || continue # original drew nothing visible
+            resize!(buf, length(face))
+            for k in eachindex(face)
+                buf[k] = pts[face[k]]
+            end
+            poly(buf, :stroke, close=true)
         end
     end
+    return nothing
 end
 
 """
@@ -254,10 +320,20 @@ function a_rendering_function(o::Object)
 end
 ```
 """
-function pin(o::Object;
-    gfunction=(o) -> hiddensurface(o))
-    gfunction(o)
+function pin(
+        o::Object;
+        gfunction = (o) -> hiddensurface(o)
+    )
+    return gfunction(o)
 end
+
+"""
+    copyobject(o)
+
+Copy an object. Only the vertices and labels have to be copied.
+"""
+copyobject(o::Object) =
+    Object(copy(o.vertices), [copy(f) for f in o.faces], copy(o.labels), o.name)
 
 """
     moveby!(o::Object, x, y, z)
@@ -359,7 +435,7 @@ end
 Rotate a copy of the object by angleX, angleY, angleZ.
 """
 function rotateby(o::Object, angleX, angleY, angleZ)
-    ocopy = deepcopy(o)
+    ocopy = copyobject(o)
     return rotateby!(ocopy, angleX, angleY, angleZ)
 end
 
@@ -369,7 +445,7 @@ end
 Rotate a copy of the object by the Rotation `r`.
 """
 function rotateby(o::Object, r::Rotation)
-    ocopy = deepcopy(o)
+    ocopy = copyobject(o)
     return rotateby!(ocopy, r)
 end
 
@@ -396,8 +472,7 @@ Rotate an object around a point by rotation r, or angleX, angleY, angleZ.
 """
 function rotateby!(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
     for n in eachindex(o.vertices)
-        v = o.vertices[n] * r
-        o.vertices[n] = v
+        o.vertices[n] = r * (o.vertices[n] - pt) + pt
     end
     return o
 end
@@ -408,7 +483,7 @@ end
 Rotate a copy of the object around a point by rotation r, or angleX, angleY, angleZ.
 """
 function rotateby(o::Object, pt::Point3D, angleX, angleY, angleZ)
-    ocopy = deepcopy(o)
+    ocopy = copyobject(o)
     return rotateby!(ocopy, pt, angleX, angleY, angleZ)
 end
 
@@ -417,7 +492,7 @@ end
 
 Rotate a copy of the object around a point by rotation r, or angleX, angleY, angleZ.
 """
-function rotateby(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
-    ocopy = deepcopy(o)
+function rotateby(o::Object, pt::Point3D, r::Rotation = RotXYZ(0, 0, 0))
+    ocopy = copyobject(o)
     return rotateby!(ocopy, pt, r)
 end

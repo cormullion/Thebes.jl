@@ -1,6 +1,5 @@
 using Thebes, Luxor, Random
 
-
 function cuboid(cpos::Point3D, w, h, d)
     pin(cpos + (w/2, h/2, d/2), cpos + (-w/2, h/2, d/2))
 end
@@ -13,8 +12,8 @@ function frame(scene, framenumber)
     eased_n = scene.easingfunction(framenumber, 0, 1, scene.framerange.stop)
     eased_n_2π = eased_n * 2π
 
-    perspective(0)
-    eyepoint(Point3D(100 * cos(eased_n_2π), 100 * sin(eased_n_2π), 50 + 20sin(eased_n_2π)))
+    perspective(200)
+    eyepoint(Point3D(60 * cos(eased_n_2π), 100 * sin(eased_n_2π), 50 + 20sin(eased_n_2π)))
 
     carpet()
     axes3D()
@@ -43,6 +42,6 @@ animation = Movie(400, 400, "thebes")
 Random.seed!(42)
 
 animate(animation, [Scene(animation, frame, 1:100)],
-    framerate=15,
+    framerate=10,
     creategif=true,
     pathname="animation.gif")

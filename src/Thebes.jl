@@ -44,6 +44,8 @@ export project, Projection, newprojection,
        surfacenormal, face, crossproduct3D, pointsperpendicular,
 
        text3D,
+       
+       copyobject,
 
        import_off_file
 

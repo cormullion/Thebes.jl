@@ -29,7 +29,7 @@ function makecube()
     return r
 end
 
-@draw begin
+@drawsvg begin
     setline(1.5)
     background("midnightblue")
     sethue("darkorange")

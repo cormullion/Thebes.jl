@@ -19,9 +19,9 @@ hero:
       text: View on GitHub
       link: https://github.com/cormullion/Thebes.jl
   image:
-    src: /assets/logo.png
+    src: /assets/logo.svg
     alt: Thebes.jl
-    dark: /assets/logo.png # optional: a variant for dark themes
+    dark: /assets/logo.svg # optional: a variant for dark themes
 
 features:
   - icon:
@@ -35,18 +35,18 @@ features:
   - icon:
       light: /figures/icon-2.svg
       dark: /figures/icon-2.svg
-      alt: colorful graphic
+      alt: colorful graphics
       wrap: true
     title: Project 3D points onto a drawng
-    details: "Thebes projects points from the 3D world onto a 2D luxor drawing. All the graphics are drawn using Luxor drwing functions."
+    details: "Thebes projects points from the 3D world onto a 2D Luxor drawing. All the graphics are drawn using Luxor drawing functions."
     link: /polys
   - icon:
-      light: /figures/icon-3.svg
-      dark: /figures/icon-3.svg
+      light: /figures/icon-3.png
+      dark: /figures/icon-3.png
       alt: text handling
       wrap: true
     title: Load object data in OFF format
-    details: "Thebes.jl knows how to load data in the Object File Format (.OFF)."
+    details: "Thebes.jl knows how to load some objects in the Object File Format (.OFF)."
     link: /objects
 ---
 ```

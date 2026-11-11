@@ -1,12 +1,27 @@
 # Changelog
 
+## [v1.3.0] - 2026-11-11
+
+### Added
+
+### Changed
+
+- small bug fixes and tweaks
+- dependencies
+
+### Removed
+
+### Deprecated
+
+──────────────────────────────────────────
+
 ## [v1.2.0] - 2025-07-10
 
 ### Added
 
 ### Changed
 
-- import_off_files() modified
+- bug fixes
 
 ### Removed
 

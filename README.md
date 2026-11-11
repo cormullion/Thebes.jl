@@ -1,9 +1,9 @@
 ![thebes](docs/src/assets/figures/repository-open-graph-template.png)
 
-| **Documentation**                                    | **Build Status**                          | **Code Coverage**               |
-|:----------------------------------------------------:|:-----------------------------------------:|:-------------------------------:|
-| [![][docs-stable-img]][docs-stable-url]              | [![Build Status][ci-img]][ci-url]         | [![][codecov-img]][codecov-url] |
-| [![][docs-development-img]][docs-development-url]    | [![Build Status][appvey-img]][appvey-url] |                                 |
+| **Documentation**                                  | **Build Status**                          | **Tests and Coverage**          |
+|:--------------------------------------------------:|:-----------------------------------------:|:-------------------------------:|
+| [![][docs-stable-img]][docs-stable-url]            | [![Build Status][ci-img]][ci-url]         | [![][codecov-img]][codecov-url] |
+| [![][docs-development-img]][docs-development-url]  | [![PkgEval][pkgeval-img]][pkgeval-url]    | [![Aqua QA](https://juliatesting.github.io/Aqua.jl/dev/assets/badge.svg)](https://github.com/JuliaTesting/Aqua.jl) |
 
 # Thebes
 
@@ -25,14 +25,11 @@ Many thanks to @c42f who helped me implement the rotations using Rotations.jl!
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]: http://cormullion.github.io/Thebes.jl/dev/
 
-[travis-img]: https://travis-ci.com/cormullion/Thebes.jl.svg?branch=master
-[travis-url]: https://travis-ci.com/cormullion/Thebes.jl
-
-[appvey-img]: https://ci.appveyor.com/api/projects/status/yhslnuoo8803e2pe?svg=true
-[appvey-url]: https://ci.appveyor.com/project/cormullion/thebes-jl/branch/master
-
 [codecov-img]: https://codecov.io/gh/cormullion/Thebes.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/cormullion/Thebes.jl
 
 [ci-img]: https://github.com/cormullion/Thebes.jl/workflows/CI/badge.svg
 [ci-url]: https://github.com/cormullion/Thebes.jl/actions?query=workflow%3ACI
+
+[pkgeval-img]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/T/Thebes.svg
+[pkgeval-url]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/T/Thebes.html
