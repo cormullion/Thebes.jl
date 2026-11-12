@@ -8,8 +8,20 @@ struct Projection
     eyepoint::Point3D
     centerpoint::Point3D
     uppoint::Point3D
-    perspective::Float64 #
+    perspective::Float64
 end
+
+"""
+    projection()
+
+Define a new Projection:
+
+- the eye position is `Point3D(100, 100, 100)``
+- the center point is `Point3D(0, 0, 0)`
+- the "up" point is `Point3D(0, 0, 1)`
+- perspective is 0 (parallel projection)
+"""
+projection() = newprojection(Point3D(100, 100, 100), Point3D(0, 0, 0), Point3D(0, 0, 1))
 
 Base.broadcastable(p::Projection) = Ref(p)
 
@@ -29,22 +41,6 @@ Define a new Projection:
 If `perspective` is 0.0 (the default) the projection is parallel. Otherwise it's
 a vague magnification factor for perspective projections.
 
-The three unit vectors `U`, `V`, `W`, and the three scalar products, `ue`, `ve`, and `we`:
-
-- `U` is at right angles to line of sight `w` so it corresponds to
-the x axis of the 2D image
-
-- `V` is at right angles to `u` and to the line of sight, so it's the y axis of the
-2D image
-
-- `W` is the line of sight
-
-- `we` is the projection of the eye position onto `w`
-
-- `ue` is the projection of the eye position onto that x-axis
-
-- `ve` is the projection of the eye position onto that y axis
-
 If the `up` point lies on the line through the eye and the center, there's no
 way to tell which way is up, so the world `z` axis is used instead (or the y axis,
 if you're looking along the z axis). If the eye and the center are the same
@@ -60,11 +56,19 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective 
         return Projection(zero3, zero3, zero3, 0.0, 0.0, 0.0, ipos, center, up, perspective)
     end
 
-    # w is the line of sight
+    # Calculate the three unit vectors `U`, `V`, `W`, and the three scalar products, `ue`, `ve`, and `we`:
+
+    # - `U` is at right angles to line of sight `w` so it corresponds to the x axis of the 2D image
+    # - `V` is at right angles to `u` and to the line of sight, so it's the y axis of the 2D image
+    # - `W` is the line of sight
+    # - `we` is the projection of the eye position onto `w`
+    # - `ue` is the projection of the eye position onto that x-axis
+    # - `ve` is the projection of the eye position onto that y axis
+
     W = Point3D(center.x - ipos.x, center.y - ipos.y, center.z - ipos.z)
     r = (W.x * W.x) + (W.y * W.y) + (W.z * W.z)
     if r < _DEGENERATE_TOL
-        @info("eye position and center are the same")
+        @info("...eye position and center are the same")
         W = Point3D(0.0, 0.0, 0.0)
     else
         # distancealise w to unit length
@@ -80,7 +84,7 @@ function newprojection(ipos::Point3D, center::Point3D, up::Point3D, perspective 
     r = (U.x * U.x) + (U.y * U.y) + (U.z * U.z)
 
     if r < _DEGENERATE_TOL
-        @info("struggling to make a valid projection with these parameters")
+        @info("...struggling to make a valid projection with these parameters")
         U = Point3D(0.0, 0.0, 0.0)
     else
         rinv = 1 / sqrt(r) # distancealise u

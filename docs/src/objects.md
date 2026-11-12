@@ -8,7 +8,9 @@ DocTestSetup = quote
 
 So far we’ve been drawing individual points, lines, and polygons. `pin()` has been projecting them all onto the current drawing. 
 
-You can also draw an `object`. This lets us complete the pin-table:
+You can also draw `object`s. In Thebes, an object is a collection of vertices and a list of faces - polygons that join vertices together. 
+
+Here's the completed "`pin`-table":
 
 |         | `pin()` arguments               | the gfunction arguments                                      |
 |---------|---------------------------------|----------------------------------------------------------|
@@ -21,7 +23,7 @@ An object is a collection of 3D points and a list of faces - which vertices are 
 
 ## Making objects with `make`
 
-You can make a 3D object using `make()`, and then use `pin()` to project it onto the 2D drawing.
+You can make a 3D object using `make()`. You use `pin()` to project it onto the 2D drawing.
 
 `make()` expects an array of 3D points, an (optional) array of face definitions, and an (optional) array of labels, plus an (optional) name. These arrays let you link faces with vertices. It returns an Object.
 
@@ -31,7 +33,7 @@ Information about cubes is already defined in Thebes (we needn't have made one e
 cube = make(Cube, "cube")
 ```
 
-Now the `cube` variable contains:
+Now the `cube` object contains:
 
 ```
 Object(
@@ -58,7 +60,8 @@ Object(
      "cube")
 ```
 
-There are 8 3D points. And there are 6 faces defined. Face 1 is formed by vertices 1, 2, 3, and 4, face 2 is formed by vertices 2, 6, 7, and 3, and so on.
+There are 8 3D points. And there are 6 faces defined, where face 1 is formed by vertices 1, 2, 3, and 4, face 2 is formed by vertices 2, 6, 7, and 3, and so on.
+
 The default rendering applied by `pin(o::Object)` is an attempt at a simple hidden-surface display. 
 
 ```@example
@@ -78,7 +81,7 @@ end 800 400
     
     In real 3D software such as Makie.jl, the rendering is much more sophisticated!
 
-The default gfunction for this method of `pin` is `hiddensurface`, which is built in to Thebes as `Thebes.hiddensurface(o::Object)`. 
+The default `gfunction` for this method of `pin` is `hiddensurface`, which is built in to Thebes as `Thebes.hiddensurface(o::Object)`. 
 We could call:
 
 ```julia
@@ -249,7 +252,7 @@ include(dirname(pathof(Thebes)) * "/../data/moreobjects.jl")
 
 object = make(geodesic, "geodesic")
 
-@draw begin
+@drawsvg begin
     background("grey20") # hide
     helloworld() # hide
     setlinejoin("bevel")
@@ -337,12 +340,12 @@ end 800 600
 The object on the left has had its frontfacing faces removed. The one on the right is intact.
 
 !!! note
-   
-   There are probably better ways to do this...!
+    
+    There are probably better ways to do this...!
 
 ## OFF the shelf objects
 
-There are many formats for exchanging 3D data between software applications. Thebes.jl knows about one of these formats, the [Object File Format (.OFF)](https://en.wikipedia.org/wiki/OFF_(file_format)). You'll find a few objects already made for you to use directly.
+There are many formats for exchanging 3D data between software applications. Thebes.jl only knows about one of these formats, the [Object File Format (.OFF)](https://en.wikipedia.org/wiki/OFF_(file_format)). You'll find a few objects already made for you to use directly.
 
 Here's what a typical OFF file, "cube.off", looks like:
 
@@ -365,7 +368,7 @@ OFF
 4 6 0 2 4
 ```
 
-The file contains 8 3D points, defined as three numbers, followed by the definitions of 6 faces. The first face `4 0 1 3 2` has 4 vertices, and joins vertices 0 (on line 3), 1, 3, and 2.
+After the first two lines, the data consists of 8 3D points (numbered from 0!), each defined as three numbers, followed by the definitions of each of the six faces: the first face `4 0 1 3 2` has 4 vertices, and joins vertex 0, 1, 3, and 2.
 
 To load the contents of the OFF file into an object, use `import_off_file()`.
 
@@ -392,7 +395,7 @@ function main()
     amovie = Movie(800, 600, "tut")
     animate(amovie,
         Scene(amovie, (s, f) -> frame(s, f, o), 1:100),
-        framerate=15,
+        framerate=10,
         creategif=true)
 end
 

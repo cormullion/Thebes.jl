@@ -6,11 +6,6 @@ DocumenterLandingPage = "1c52b33b-3e2f-4e99-b3b5-a6ad63f0d6d2"
 DocumenterTools = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
 Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
 Rotations = "6038ab10-8711-5258-84ad-4b1120ba62dc"
-Thebes = "8b424ff8-82f5-59a4-86a6-de3761897198"
-
-[sources]
-DocumenterLandingPage = {rev = "main", url = "https://github.com/csvance/DocumenterLandingPage.jl"}
-Thebes = {path = "/Users/pete/.julia/dev/Thebes"}
 
 [compat]
 Colors = "0.13, 0.14"

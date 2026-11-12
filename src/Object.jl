@@ -330,16 +330,16 @@ end
 """
     copyobject(o)
 
-Copy an object. Only the vertices and labels have to be copied.
+Make a copy of an object.
 """
 copyobject(o::Object) =
-    Object(copy(o.vertices), [copy(f) for f in o.faces], copy(o.labels), o.name)
+    Object(copy(o.vertices), [copy(f) for f in o.faces], copy(o.labels), o.name * " copy")
 
 """
     moveby!(o::Object, x, y, z)
     moveby!(o::Object, pt::Point3D)
 
-Set the position of object to Point3D(x, y, z).
+Set the position of object to `Point3D(x, y, z)`.
 """
 function moveby!(o::Object, x, y, z)
     for n in eachindex(o.vertices)
@@ -371,7 +371,7 @@ moveby!(o::Object, pt::Point3D) = moveby!(o::Object, pt.x, pt.y, pt.z)
 """
     scaleby!(o::Object, x, y, z)
 
-Scale object by x in x, y in y, and z in z.
+Scale object by `x` in x, `y` in y, and `z` in z.
 """
 function scaleby!(o::Object, x, y, z)
     for n in eachindex(o.vertices)
@@ -432,7 +432,7 @@ end
 """
     rotateby(o::Object, angleX, angleY, angleZ)
 
-Rotate a copy of the object by angleX, angleY, angleZ.
+Rotate a copy of the object by `angleX`, `angleY`, `angleZ`.
 """
 function rotateby(o::Object, angleX, angleY, angleZ)
     ocopy = copyobject(o)
@@ -452,7 +452,7 @@ end
 """
     rotateby!(o::Object, pt::Point3D, angleX, angleY, angleZ)
 
-Rotate an object around a point by angleX, angleY, angleZ.
+Rotate an object around a point by `angleX`, `angleY`, `angleZ`.
 """
 function rotateby!(o::Object, pt::Point3D, angleX, angleY, angleZ)
     for n in eachindex(o.vertices)
@@ -468,7 +468,7 @@ end
 """
     rotateby!(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
 
-Rotate an object around a point by rotation r, or angleX, angleY, angleZ.
+Rotate an object around a point by rotation `r`, or `angleX`, `angleY`, `angleZ`.
 """
 function rotateby!(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
     for n in eachindex(o.vertices)
@@ -480,7 +480,7 @@ end
 """
     rotateby(o::Object, pt::Point3D, angleX, angleY, angleZ)
 
-Rotate a copy of the object around a point by rotation r, or angleX, angleY, angleZ.
+Rotate a copy of the object around a point by rotation `r`, or `angleX`, `angleY`, `angleZ`.
 """
 function rotateby(o::Object, pt::Point3D, angleX, angleY, angleZ)
     ocopy = copyobject(o)
@@ -490,7 +490,7 @@ end
 """
     rotateby(o::Object, pt::Point3D, r::Rotation=RotXYZ(0, 0, 0))
 
-Rotate a copy of the object around a point by rotation r, or angleX, angleY, angleZ.
+Rotate a copy of the object around a point by rotation `r`.
 """
 function rotateby(o::Object, pt::Point3D, r::Rotation = RotXYZ(0, 0, 0))
     ocopy = copyobject(o)

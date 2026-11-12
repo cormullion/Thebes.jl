@@ -2,7 +2,7 @@
 
 julia_version = "1.13.3"
 manifest_format = "2.1"
-project_hash = "198eda6d9e395b54a8c64412d037731cf2155fef"
+project_hash = "535a0f363493063ff819e30947870c5dba0296ba"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -117,9 +117,8 @@ version = "1.5.1"
 
 [[deps.DocumenterLandingPage]]
 deps = ["Documenter", "Markdown", "YAML"]
-git-tree-sha1 = "b71f90424e71dc10765f2946b0efa136b99ddf84"
-repo-rev = "main"
-repo-url = "https://github.com/csvance/DocumenterLandingPage.jl"
+git-tree-sha1 = "9dff76559edc376ab6876b2f189fdac9eda68d12"
+registries = "General"
 uuid = "1c52b33b-3e2f-4e99-b3b5-a6ad63f0d6d2"
 version = "0.2.2"
 
@@ -532,13 +531,6 @@ deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.47.0+0"
 
-[[deps.PackageExtensionCompat]]
-git-tree-sha1 = "fb28e33b8a95c4cee25ce296c817d89cc2e53518"
-registries = "General"
-uuid = "65ce6f38-6b18-4e1d-a461-8949797d7930"
-version = "1.0.2"
-weakdeps = ["Requires", "TOML"]
-
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "1912a9f1b9ca55005b03ba075f8e19993583e237"
@@ -752,19 +744,6 @@ version = "1.10.0"
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 version = "1.11.0"
-
-[[deps.Thebes]]
-deps = ["Colors", "Luxor", "PackageExtensionCompat", "Random", "Rotations", "StaticArrays"]
-path = "/Users/pete/.julia/dev/Thebes"
-uuid = "8b424ff8-82f5-59a4-86a6-de3761897198"
-version = "1.3.0"
-
-    [deps.Thebes.extensions]
-    LaTeXExt = ["LaTeXStrings", "MathTeXEngine"]
-
-    [deps.Thebes.weakdeps]
-    LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
-    MathTeXEngine = "0a4f8689-d25c-4efe-a92b-7142dfc1aa53"
 
 [[deps.TranscodingStreams]]
 git-tree-sha1 = "0c45878dcfdcfa8480052b6ab162cdd138781742"

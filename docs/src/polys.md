@@ -13,36 +13,28 @@ The `pin()` function accepts an array of 3D points as well as singletons and pai
 ```@example
 using Thebes, Luxor # hide
 
-function makemobius()
-    x(u, v) = (1 + (v / 2 * cos(u / 2))) * cos(u)
-    y(u, v) = (1 + (v / 2 * cos(u / 2))) * sin(u)
-    z(u, v) = v / 2 * sin(u / 2)
-    w = 1
-    st = 2π / 150
-    Δ = 0.1
-    result = Array{Point3D,1}[]
-    for u in 0:st:2π-st
-        for v in -w:Δ:w
-            p1 = Point3D(
-                x(u, v + Δ / 2),
-                y(u, v + Δ / 2),
-                z(u, v + Δ / 2))
-            p2 = Point3D(
-                x(u + st, v + Δ / 2),
-                y(u + st, v + Δ / 2),
-                z(u + st, v + Δ / 2))
-            p3 = Point3D(
-                x(u + st, v - Δ / 2),
-                y(u + st, v - Δ / 2),
-                z(u + st, v - Δ / 2))
-            p4 = Point3D(
-                x(u, v - Δ / 2),
-                y(u, v - Δ / 2),
-                z(u, v - Δ / 2))
+function makemobius(;
+        w = π/10, # "width"
+        stepsacross=6,   # steps across the band
+        stepsaround=150) # steps round the band
+    x(u, v) = (1 + (v/2 * cos(u/2))) * cos(u)
+    y(u, v) = (1 + (v/2 * cos(u/2))) * sin(u)
+    z(u, v) = v/2 * sin(u/2)
+    st = 2π/stepsaround
+    Δ  = 2w/stepsacross
+    result = Vector{Vector{Point3D}}()
+    for i in 1:stepsaround
+        u = (i - 1) * st
+        for j in 1:stepsacross
+            v = -w + (j - 1) * Δ
+            p1 = Point3D(x(u,      v + Δ), y(u,      v + Δ), z(u,      v + Δ))
+            p2 = Point3D(x(u + st, v + Δ), y(u + st, v + Δ), z(u + st, v + Δ))
+            p3 = Point3D(x(u + st, v),     y(u + st, v),     z(u + st, v))
+            p4 = Point3D(x(u,      v),     y(u,      v),     z(u,      v))
             push!(result, [p1, p2, p3, p4])
         end
     end
-    return result # as an array of 3D polygons
+    return result
 end
 
 # ... on a drawing
@@ -55,7 +47,8 @@ end
     setline(0.4)
     mb = makemobius()
     for pgon in mb
-        pin(100pgon)
+        randomhue()
+        pin(100pgon, gfunction = (p3, p2) -> poly(p2, :fill))
     end
 end 800 600
 ```
@@ -78,36 +71,28 @@ In this example, the gfunction draws colored circles inside each square:
 ```@example
 using Thebes, Luxor, Colors # hide
 
-function makemobius()
-    x(u, v) = (1 + (v / 2 * cos(u / 2))) * cos(u)
-    y(u, v) = (1 + (v / 2 * cos(u / 2))) * sin(u)
-    z(u, v) = v / 2 * sin(u / 2)
-    w = 1
-    st = 2π / 160
-    Δ = 0.1
-    result = Array{Point3D,1}[]
-    for u in 0:st:2π-st
-        for v in -w:Δ:w
-            p1 = Point3D(
-                x(u, v + Δ / 2),
-                y(u, v + Δ / 2),
-                z(u, v + Δ / 2))
-            p2 = Point3D(
-                x(u + st, v + Δ / 2),
-                y(u + st, v + Δ / 2),
-                z(u + st, v + Δ / 2))
-            p3 = Point3D(
-                x(u + st, v - Δ / 2),
-                y(u + st, v - Δ / 2),
-                z(u + st, v - Δ / 2))
-            p4 = Point3D(
-                x(u, v - Δ / 2),
-                y(u, v - Δ / 2),
-                z(u, v - Δ / 2))
+function makemobius(;
+        w = π/10, # "width"
+        stepsacross=6,   # steps across the band
+        stepsaround=150) # steps round the band
+    x(u, v) = (1 + (v/2 * cos(u/2))) * cos(u)
+    y(u, v) = (1 + (v/2 * cos(u/2))) * sin(u)
+    z(u, v) = v/2 * sin(u/2)
+    st = 2π/stepsaround
+    Δ  = 2w/stepsacross
+    result = Vector{Vector{Point3D}}()
+    for i in 1:stepsaround
+        u = (i - 1) * st
+        for j in 1:stepsacross
+            v = -w + (j - 1) * Δ
+            p1 = Point3D(x(u,      v + Δ), y(u,      v + Δ), z(u,      v + Δ))
+            p2 = Point3D(x(u + st, v + Δ), y(u + st, v + Δ), z(u + st, v + Δ))
+            p3 = Point3D(x(u + st, v),     y(u + st, v),     z(u + st, v))
+            p4 = Point3D(x(u,      v),     y(u,      v),     z(u,      v))
             push!(result, [p1, p2, p3, p4])
         end
     end
-    return result # as an array of 3D polygons
+    return result
 end
 
 # ... in a drawing
@@ -128,7 +113,7 @@ end 800 600
 
 ## Surfaces
 
-A surface plot like the following also works quite well, mainly because each new polygon hides the ones behind it.
+A surface plot like the following also works quite well, mainly because each new polygon hides the ones behind it. Although it's reallythen  a waste of time to draw polygons and hide them completely with other polygons.
 
 ```@example
 using Thebes, Luxor, Colors # hide
