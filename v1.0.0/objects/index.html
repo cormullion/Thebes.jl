@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Objects · Thebes</title><meta name="title" content="Objects · Thebes"/><meta property="og:title" content="Objects · Thebes"/><meta property="twitter:title" content="Objects · Thebes"/><meta name="description" content="Documentation for Thebes."/><meta property="og:description" content="Documentation for Thebes."/><meta property="twitter:description" content="Documentation for Thebes."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/thebes-docs.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="Thebes logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">Thebes</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction to Thebes</a></li><li><a class="tocitem" href="../basics/">The basics</a></li><li><a class="tocitem" href="../views/">Views</a></li><li><a class="tocitem" href="../polys/">Polygons and planes</a></li><li class="is-active"><a class="tocitem" href>Objects</a><ul class="internal"><li><a class="tocitem" href="#Making-objects-with-make"><span>Making objects with <code>make</code></span></a></li><li><a class="tocitem" href="#Making-objects-directly"><span>Making objects directly</span></a></li><li><a class="tocitem" href="#Using-objects"><span>Using objects</span></a></li><li><a class="tocitem" href="#Rendering-objects"><span>Rendering objects</span></a></li><li><a class="tocitem" href="#Using-custom-code"><span>Using custom code</span></a></li><li><a class="tocitem" href="#OFF-the-shelf-objects"><span>OFF the shelf objects</span></a></li></ul></li><li><a class="tocitem" href="../text/">Text</a></li><li><a class="tocitem" href="../tools/">Tools</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Objects</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Objects</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/cormullion/Thebes.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/cormullion/Thebes.jl/blob/master/docs/src/objects.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Objects"><a class="docs-heading-anchor" href="#Objects">Objects</a><a id="Objects-1"></a><a class="docs-heading-anchor-permalink" href="#Objects" title="Permalink"></a></h1><p>So far we’ve been drawing individual points, lines, and polygons. <code>pin()</code> has been projecting them all onto the current drawing. </p><p>You can also draw an <code>object</code>. This lets us complete the pin-table:</p><table><tr><th style="text-align: right"></th><th style="text-align: right"><code>pin()</code> arguments</th><th style="text-align: right">the gfunction arguments</th></tr><tr><td style="text-align: right">point</td><td style="text-align: right"><code>pin(p1::Point3D)</code></td><td style="text-align: right"><code>(p3::Point3D, p2::Point)</code></td></tr><tr><td style="text-align: right">line</td><td style="text-align: right"><code>pin(p1::Point3D, p2::Point3D)</code></td><td style="text-align: right"><code>((p31::Point3D, p32::Point3D), (p21::Point, p22::Point))</code></td></tr><tr><td style="text-align: right">polygon</td><td style="text-align: right"><code>pin(a::Vector{Point3D})</code></td><td style="text-align: right"><code>(a1::Vector{Point3D}, a2::Vector{Point})</code></td></tr><tr><td style="text-align: right">object</td><td style="text-align: right"><code>pin(o::Object)</code></td><td style="text-align: right"><code>(o::Object)</code></td></tr></table><p>An object is a collection of 3D points and a list of faces - which vertices are joined to form a face.</p><h2 id="Making-objects-with-make"><a class="docs-heading-anchor" href="#Making-objects-with-make">Making objects with <code>make</code></a><a id="Making-objects-with-make-1"></a><a class="docs-heading-anchor-permalink" href="#Making-objects-with-make" title="Permalink"></a></h2><p>You can make a 3D object using <code>make()</code>, and then use <code>pin()</code> to project it onto the 2D drawing.</p><p><code>make()</code> expects an array of 3D points, an (optional) array of face definitions, and an (optional) array of labels, plus an (optional) name. These arrays let you link faces with vertices. It returns an Object.</p><p>Information about cubes is already defined in Thebes (we needn&#39;t have made one earlier, really) as <code>Cube</code>, a tuple of Point3Ds and face definitions. You can make a cube object from this data with:</p><pre><code class="nohighlight hljs">cube = make(Cube, &quot;cube&quot;)</code></pre><p>Now the <code>cube</code> variable contains:</p><pre><code class="nohighlight hljs">Object(
+    Point3D[
+        Point3D(-0.5, 0.5, -0.5),
+        Point3D(0.5, 0.5, -0.5),
+        Point3D(0.5, -0.5, -0.5),
+        Point3D(-0.5, -0.5, -0.5),
+        Point3D(-0.5, 0.5, 0.5),
+        Point3D(0.5, 0.5, 0.5),
+        Point3D(0.5, -0.5, 0.5),
+        Point3D(-0.5, -0.5, 0.5)
+    ],
+
+    [[1, 2, 3, 4],
+     [2, 6, 7, 3],
+     [6, 5, 8, 7],
+     [5, 1, 4, 8],
+     [1, 5, 6, 2],
+     [4, 3, 7, 8]],
+
+     [1, 2, 3, 4, 5, 6],
+
+     &quot;cube&quot;)</code></pre><p>There are 8 3D points. And there are 6 faces defined. Face 1 is formed by vertices 1, 2, 3, and 4, face 2 is formed by vertices 2, 6, 7, and 3, and so on. The default rendering applied by <code>pin(o::Object)</code> is an attempt at a simple hidden-surface display. </p><pre><code class="language-julia hljs">@drawsvg begin
+eyepoint(2, 2, 2)
+perspective(500)
+cube = make(Cube, &quot;cube&quot;)
+pin(cube)
+
+end 800 400</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800pt" height="400pt" viewBox="0 0 800 400" version="1.1">
+<g id="surface64">
+<rect x="0" y="0" width="800" height="400" style="fill:rgb(20%25,20%25,20%25);fill-opacity:1;stroke:none;"/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(30.408672%25,30.408672%25,30.408672%25);fill-opacity:1;" d="M 494.210938 254.394531 L 400 328.566406 L 305.789062 254.394531 L 400 200 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,100%25,100%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 494.210938 254.394531 L 400 328.566406 L 305.789062 254.394531 L 400 200 Z M 494.210938 254.394531 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(30.408672%25,30.408672%25,30.408672%25);fill-opacity:1;" d="M 400 200 L 305.789062 254.394531 L 288.660156 135.71875 L 400 91.214844 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,100%25,100%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 400 200 L 305.789062 254.394531 L 288.660156 135.71875 L 400 91.214844 Z M 400 200 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(30.408672%25,30.408672%25,30.408672%25);fill-opacity:1;" d="M 511.339844 135.71875 L 494.210938 254.394531 L 400 200 L 400 91.214844 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,100%25,100%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 511.339844 135.71875 L 494.210938 254.394531 L 400 200 L 400 91.214844 Z M 511.339844 135.71875 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(69.591328%25,69.591328%25,69.591328%25);fill-opacity:1;" d="M 494.210938 254.394531 L 511.339844 135.71875 L 400 200 L 400 328.566406 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,100%25,100%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 494.210938 254.394531 L 511.339844 135.71875 L 400 200 L 400 328.566406 Z M 494.210938 254.394531 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(69.591328%25,69.591328%25,69.591328%25);fill-opacity:1;" d="M 400 200 L 511.339844 135.71875 L 400 91.214844 L 288.660156 135.71875 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,100%25,100%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 400 200 L 511.339844 135.71875 L 400 91.214844 L 288.660156 135.71875 Z M 400 200 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(69.591328%25,69.591328%25,69.591328%25);fill-opacity:1;" d="M 400 328.566406 L 400 200 L 288.660156 135.71875 L 305.789062 254.394531 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,100%25,100%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 400 328.566406 L 400 200 L 288.660156 135.71875 L 305.789062 254.394531 Z M 400 328.566406 "/>
+</g>
+</svg>
+'/><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>In real 3D software such as Makie.jl, the rendering is much more sophisticated!</p></div></div><p>The default gfunction for this method of <code>pin</code> is <code>hiddensurface</code>, which is built in to Thebes as <code>Thebes.hiddensurface(o::Object)</code>.  We could call:</p><pre><code class="language-julia hljs">    pin(cube, gfunction = hiddensurface)</code></pre><p>to specify the rendering function explicitly.</p><p>Another built-in gfunction is <code>wireframe(o::Object)</code>:</p><pre><code class="language-julia hljs">@drawsvg begin
+    eyepoint(2, 2, 2)
+    perspective(500)
+    sethue(&quot;gold&quot;)
+    cube = make(Cube, &quot;cube&quot;)
+    pin(cube, gfunction = wireframe)
+end 800 400</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800pt" height="400pt" viewBox="0 0 800 400" version="1.1">
+<g id="surface69">
+<rect x="0" y="0" width="800" height="400" style="fill:rgb(20%25,20%25,20%25);fill-opacity:1;stroke:none;"/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,84.313725%25,0%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 494.210938 254.394531 L 400 328.566406 L 305.789062 254.394531 L 400 200 Z M 494.210938 254.394531 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,84.313725%25,0%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 400 200 L 305.789062 254.394531 L 288.660156 135.71875 L 400 91.214844 Z M 400 200 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,84.313725%25,0%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 511.339844 135.71875 L 494.210938 254.394531 L 400 200 L 400 91.214844 Z M 511.339844 135.71875 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,84.313725%25,0%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 494.210938 254.394531 L 511.339844 135.71875 L 400 200 L 400 328.566406 Z M 494.210938 254.394531 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,84.313725%25,0%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 400 200 L 511.339844 135.71875 L 400 91.214844 L 288.660156 135.71875 Z M 400 200 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%25,84.313725%25,0%25);stroke-opacity:1;stroke-miterlimit:10;" d="M 400 328.566406 L 400 200 L 288.660156 135.71875 L 305.789062 254.394531 Z M 400 328.566406 "/>
+</g>
+</svg>
+'/><h2 id="Making-objects-directly"><a class="docs-heading-anchor" href="#Making-objects-directly">Making objects directly</a><a id="Making-objects-directly-1"></a><a class="docs-heading-anchor-permalink" href="#Making-objects-directly" title="Permalink"></a></h2><p>Here&#39;s a very simple example of how you might make your own object from scratch. We&#39;ll make a heptagonal pyramid, setting N to 7.</p><pre><code class="language-julia hljs">@drawsvg begin
+setlinejoin(&quot;bevel&quot;)
+carpet(200)
+vertices = Point3D[]
+
+# heptagonal = 7
+N = 7
+
+# make the base
+polygon = ngon(O, 150, N, vertices=true)
+for i in eachindex(polygon)
+    push!(vertices, convert(Point3D, polygon[i]))
+end
+
+# add the tip 200 units above the base
+push!(vertices, Point3D(0, 0, 200))
+
+# make the faces
+faces = Vector{Int64}[]
+for i in eachindex(polygon)
+    push!(faces, [i, mod1(i + 1, N), N + 1])
+end
+
+obj = make([vertices, faces], &quot;&quot;)
+setopacity(0.8)
+pin(obj, gfunction = hiddensurface)
+end 800 600</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800pt" height="600pt" viewBox="0 0 800 600" version="1.1">
+<g id="surface74">
+<rect x="0" y="0" width="800" height="600" style="fill:rgb(20%25,20%25,20%25);fill-opacity:1;stroke:none;"/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%25,0%25,0%25);fill-opacity:1;" d="M 258.578125 381.648438 L 273.402344 389.394531 L 289.492188 396.242188 L 306.6875 402.132812 L 324.8125 407 L 343.691406 410.800781 L 363.132812 413.492188 L 382.941406 415.050781 L 402.921875 415.457031 L 422.871094 414.710938 L 442.589844 412.820312 L 461.886719 409.804688 L 480.566406 405.6875 L 498.4375 400.515625 L 515.328125 394.339844 L 531.0625 387.222656 L 545.492188 379.230469 L 558.464844 370.449219 L 569.855469 360.964844 L 579.546875 350.867188 L 587.445312 340.265625 L 593.472656 329.261719 L 597.566406 317.960938 L 599.683594 306.484375 L 599.808594 294.945312 L 597.9375 283.453125 L 594.085938 272.125 L 588.296875 261.078125 L 580.625 250.417969 L 571.148438 240.257812 L 559.964844 230.691406 L 547.179688 221.816406 L 532.925781 213.722656 L 517.34375 206.492188 L 500.585938 200.195312 L 482.828125 194.898438 L 464.238281 190.648438 L 445.007812 187.492188 L 425.328125 185.460938 L 405.398438 184.570312 L 385.410156 184.835938 L 365.570312 186.253906 L 346.074219 188.804688 L 327.117188 192.46875 L 308.886719 197.207031 L 291.566406 202.972656 L 275.332031 209.707031 L 260.339844 217.34375 L 246.746094 225.808594 L 234.683594 235.011719 L 224.273438 244.863281 L 215.617188 255.269531 L 208.800781 266.121094 L 203.898438 277.308594 L 200.957031 288.726562 L 200 300.253906 L 201.042969 311.78125 L 204.074219 323.191406 L 209.0625 334.367188 L 215.960938 345.203125 L 224.695312 355.582031 L 235.183594 365.410156 L 247.316406 374.582031 Z M 258.578125 381.648438 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(38.651464%25,38.651464%25,38.651464%25);fill-opacity:0.8;" d="M 449.542969 218.257812 L 320.195312 226.671875 L 400 136.699219 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(100%25,100%25,100%25);stroke-opacity:0.8;stroke-miterlimit:10;" d="M 449.542969 218.257812 L 320.195312 226.671875 L 400 136.699219 Z M 449.542969 218.257812 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(45.042223%25,45.042223%25,45.042223%25);fill-opacity:0.8;" d="M 541.582031 271.398438 L 449.542969 218.257812 L 400 136.699219 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(100%25,100%25,100%25);stroke-opacity:0.8;stroke-miterlimit:10;" d="M 541.582031 271.398438 L 449.542969 218.257812 L 400 136.699219 Z M 541.582031 271.398438 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(48.832116%25,48.832116%25,48.832116%25);fill-opacity:0.8;" d="M 320.195312 226.671875 L 250.941406 290.304688 L 400 136.699219 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(100%25,100%25,100%25);stroke-opacity:0.8;stroke-miterlimit:10;" d="M 320.195312 226.671875 L 250.941406 290.304688 L 400 136.699219 Z M 320.195312 226.671875 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(63.06417%25,63.06417%25,63.06417%25);fill-opacity:0.8;" d="M 527.007812 346.074219 L 541.582031 271.398438 L 400 136.699219 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(100%25,100%25,100%25);stroke-opacity:0.8;stroke-miterlimit:10;" d="M 527.007812 346.074219 L 541.582031 271.398438 L 400 136.699219 Z M 527.007812 346.074219 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(68.411325%25,68.411325%25,68.411325%25);fill-opacity:0.8;" d="M 250.941406 290.304688 L 293.933594 361.238281 L 400 136.699219 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(100%25,100%25,100%25);stroke-opacity:0.8;stroke-miterlimit:10;" d="M 250.941406 290.304688 L 293.933594 361.238281 L 400 136.699219 Z M 250.941406 290.304688 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(85.359707%25,85.359707%25,85.359707%25);fill-opacity:0.8;" d="M 416.792969 386.058594 L 527.007812 346.074219 L 400 136.699219 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(100%25,100%25,100%25);stroke-opacity:0.8;stroke-miterlimit:10;" d="M 416.792969 386.058594 L 527.007812 346.074219 L 400 136.699219 Z M 416.792969 386.058594 "/>
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(91.174692%25,91.174692%25,91.174692%25);fill-opacity:0.8;" d="M 293.933594 361.238281 L 416.792969 386.058594 L 400 136.699219 "/>
+<path style="fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke:rgb(100%25,100%25,100%25);stroke-opacity:0.8;stroke-miterlimit:10;" d="M 293.933594 361.238281 L 416.792969 386.058594 L 400 136.699219 Z M 293.933594 361.238281 "/>
+</g>
+</svg>
+'/><p>First we pushed the vertices into an array, then added the top vertex as the <code>N + 1</code>th. The <code>faces</code> array is filled with lists such as <code>[1, 2, N]</code>, <code>[2, 3, N]</code> to make the sides. Finally the <code>make()</code> function takes the vertices and faces and returns an Object.</p><p>The pyramid doesn&#39;t have a base. To add one, add the line:</p><pre><code class="language-julia hljs">push!(faces, 1:N)</code></pre><p>just before the <code>make()</code> function builds the object.</p><h2 id="Using-objects"><a class="docs-heading-anchor" href="#Using-objects">Using objects</a><a id="Using-objects-1"></a><a class="docs-heading-anchor-permalink" href="#Using-objects" title="Permalink"></a></h2><p>Thebes has a few 3D coordinate sets pre-defined that you can use with <code>make()</code>:</p><pre><code class="language-julia hljs">@drawsvg begin
+setlinejoin(&quot;bevel&quot;)
+perspective(250)
+eyepoint(2, 2, 2)
+
+setopacity(0.8)
+
+pts = between.(boxmiddleleft(), boxmiddleright(), range(0.1, 0.9, length=4))
+for (n, o) in enumerate((Cube, Pyramid, Tetrahedron, Teapot))
+    @layer begin
+        translate(pts[n])
+        pin(make(o))
+    end
+end
+end 800 300</code></pre><img src="a77b4072.svg" alt="Example block output"/><p>These are automatically imported (from <code>data/objects.jl</code>) when Thebes.jl starts:</p><ul><li>Cube</li><li>Tetrahedron</li><li>Pyramid</li><li>Teapot</li></ul><p>The teapot is a thing in the world of 3D modelling, apparently.</p><pre><code class="language-julia hljs">@drawsvg begin
+    perspective(500)
+    eyepoint(200, 200, 150)
+    carpet(200)
+    axes3D()
+    teapot = make(Teapot)
+    setline(0.5)
+    sethue(&quot;white&quot;)
+    scaleby!(teapot, 100, 100, 100)
+    pin(teapot, gfunction=hiddensurface)
+end 800 400</code></pre><img src="edb2ee01.svg" alt="Example block output"/><p>You can load more objects by including the <code>moreobjects.jl</code> file from the <code>data</code> folder:</p><pre><code class="nohighlight hljs">include(dirname(dirname(pathof(Thebes))) * &quot;/data/moreobjects.jl&quot;)</code></pre><p>which brings these objects into play:</p><p><code>boxcube</code> <code>boxtorus</code> <code>concave</code> <code>cone</code> <code>crossshape</code> <code>cube</code> <code>cuboctahedron</code> <code>dodecahedron</code> <code>geodesic</code> <code>helix2</code> <code>icosahedron</code> <code>icosidodecahedron</code> <code>octahedron</code> <code>octtorus</code> <code>rhombicosidodecahedron</code> <code>rhombicuboctahedron</code> <code>rhombitruncated_cubeoctahedron</code> <code>rhombitruncated_icosidodecahedron</code> <code>snub_cube</code> <code>snub_dodecahedron</code> <code>sphere2</code> <code>tet3d</code> <code>tetrahedron</code> <code>triangle</code> <code>truncated_cube</code> <code>truncated_dodecahedron</code> <code>truncated_icosahedron</code> <code>truncated_octahedron</code> <code>truncated_tetrahedron</code></p><h2 id="Rendering-objects"><a class="docs-heading-anchor" href="#Rendering-objects">Rendering objects</a><a id="Rendering-objects-1"></a><a class="docs-heading-anchor-permalink" href="#Rendering-objects" title="Permalink"></a></h2><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>Rendering objects realistically is not something that Thebes really bothers with - there are many better options for this task. </p></div></div><p>There are many choices you can make about how to draw the faces and the vertices of an object.</p><h3 id="Writing-gfunctions"><a class="docs-heading-anchor" href="#Writing-gfunctions">Writing gfunctions</a><a id="Writing-gfunctions-1"></a><a class="docs-heading-anchor-permalink" href="#Writing-gfunctions" title="Permalink"></a></h3><p>The gfunction for <code>pin(o::Object)</code> determines the rendering style for an object.</p><p>Here&#39;s a simple example of a custom gfunction:</p><pre><code class="language-julia hljs">function mygfunction(o::Object)
+    sortfaces!(o)
+    if !isempty(o.faces)
+        @layer begin
+            for (n, face) in enumerate(o.faces)
+                @layer begin
+                    vertices = o.vertices[face]
+                    sn = surfacenormal(vertices)
+                    ang = anglebetweenvectors(sn, eyepoint())
+                    setgrey(rescale(ang, 0, π, 0, 1))
+                    pin(vertices, gfunction=(p3, p2) -&gt; poly(p2, :fill))
+                end
+            end
+        end
+    end
+end
+
+include(dirname(pathof(Thebes)) * &quot;/../data/moreobjects.jl&quot;)
+
+object = make(geodesic, &quot;geodesic&quot;)
+
+@draw begin
+    setlinejoin(&quot;bevel&quot;)
+    eyepoint(200, 200, 200)
+    pin(scaleby!(object, 300, 300, 300), gfunction=mygfunction)
+end 800 800</code></pre><img src="d087425d.png" alt="Example block output"/><p><code>pin(o::Object)</code> here calls <code>mygfunction(o::Object)</code> to render object <code>o</code>. First, the <code>sortfaces(o::Object)</code> function sorts the faces in the object <code>o</code> so that the ones that are furthest from the eyepoint are stored first. Then the surface normal of each face is calculated, and the angle between the surface normal and a line to the eyepoint determines the color of the face. </p><p>The surface normal is an imaginary line that meets the face at right angles, and thus indicates the direction of that face. If you measure the angle between the surface normal and the direction of a line from the origin to the eye point, you can obtain a value that indicates the orientation of the face relative to the eye point. You can then use this to control the rendering: an angle approaching π suggests that the facet is almost facing the viewer, and you can color it accordingly.</p><p><img src="../assets/figures/eyepoint.gif" alt="surface normal"/></p><h2 id="Using-custom-code"><a class="docs-heading-anchor" href="#Using-custom-code">Using custom code</a><a id="Using-custom-code-1"></a><a class="docs-heading-anchor-permalink" href="#Using-custom-code" title="Permalink"></a></h2><p>Thebes.jl is a toy rather than a full 3D renderer, and a general-purpose rendering function that draws everything with lots of optional parameters is not provided. There are plenty of ways to experiment though.</p><p>Suppose you want to remove the front-facing faces of an object, in order to see inside. That&#39;s possible, but a bit of code is needed.</p><pre><code class="language-julia hljs">using Thebes
+using Luxor
+using Rotations
+
+function mygfunction(o::Object)
+    sortfaces!(o)
+    if !isempty(o.faces)
+        @layer begin
+            for (n, face) in enumerate(o.faces)
+                @layer begin
+                    vertices = o.vertices[face]
+                    sn = surfacenormal(vertices)
+                    ang = anglebetweenvectors(sn, eyepoint())
+                    setgrey(rescale(ang, 0, π, 0, 1))
+                    pin(vertices, gfunction=(p3, p2) -&gt; poly(p2, :fillpreserve))
+                    sethue(&quot;grey20&quot;)
+                    strokepath()
+                end
+            end
+        end
+    end
+end
+
+function cullfrontfaces!(m::Object, angle;
+        eyepoint::Point3D=eyepoint())
+    avgs = Float64[]
+    for face in m.faces
+        vertices = m.vertices[face]
+        s = 0.0
+        for vertex in vertices
+            s += distance(vertex, eyepoint)
+        end
+        average = s / length(unique(vertices))
+        θ⃗ = surfacenormal(vertices)
+        if anglebetweenvectors(θ⃗, eyepoint) &gt; angle
+            push!(avgs, average)
+        end
+    end
+    neworder = sortperm(avgs)
+    m.faces = m.faces[neworder]
+    m.labels = m.labels[neworder]
+    return m
+end
+
+@drawsvg begin
+    helloworld()
+    setlinejoin(&quot;bevel&quot;)
+    setline(0.5)
+    setopacity(0.8)
+    include(dirname(pathof(Thebes)) * &quot;/../data/moreobjects.jl&quot;)
+    shape = icosidodecahedron
+    objectfull = make(shape, &quot;the full object&quot;)
+    objectcut = make(shape, &quot;the cut-open object&quot;)
+    map(o -&gt; scaleby!(o, 150, 150, 150), (objectfull, objectcut))
+    sortfaces!.((objectcut, objectfull))
+    cullfrontfaces!(objectcut, π / 3)
+    translate(-200, 0)
+    pin(objectcut, gfunction=mygfunction)
+    translate(400, 0)
+    pin(objectfull, gfunction=mygfunction)
+end 800 600</code></pre><img src="26b85756.svg" alt="Example block output"/><p>The object on the left has had its frontfacing faces removed. The one on the right is intact.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"></div></div><p>There are probably better ways to do this...!</p><h2 id="OFF-the-shelf-objects"><a class="docs-heading-anchor" href="#OFF-the-shelf-objects">OFF the shelf objects</a><a id="OFF-the-shelf-objects-1"></a><a class="docs-heading-anchor-permalink" href="#OFF-the-shelf-objects" title="Permalink"></a></h2><p>There are many formats for exchanging 3D data between software applications. Thebes.jl knows about one of these formats, the <a href="https://en.wikipedia.org/wiki/OFF_(file_format)">Object File Format (.OFF)</a>. You&#39;ll find a few objects already made for you to use directly.</p><p>Here&#39;s what a typical OFF file, &quot;cube.off&quot;, looks like:</p><pre><code class="language-plain hljs">OFF
+8 6 0
+-0.500000 -0.500000 0.500000
+0.500000 -0.500000 0.500000
+-0.500000 0.500000 0.500000
+0.500000 0.500000 0.500000
+-0.500000 0.500000 -0.500000
+0.500000 0.500000 -0.500000
+-0.500000 -0.500000 -0.500000
+0.500000 -0.500000 -0.500000
+4 0 1 3 2
+4 2 3 5 4
+4 4 5 7 6
+4 6 7 1 0
+4 1 7 5 3
+4 6 0 2 4</code></pre><p>The file contains 8 3D points, defined as three numbers, followed by the definitions of 6 faces. The first face <code>4 0 1 3 2</code> has 4 vertices, and joins vertices 0 (on line 3), 1, 3, and 2.</p><p>To load the contents of the OFF file into an object, use <code>import_off_file()</code>.</p><p>Here&#39;s an example that loads an OFF file of the mask of Tutenkhamun (whicn can be found in the Thebes <code>data</code> directory) and rotates it.</p><pre><code class="language-julia hljs">using Thebes, Luxor # hide
+
+function frame(scene, framenumber, o)
+    eased_n = rescale(scene.easingfunction(framenumber, 0, 1,
+            scene.framerange.stop), 0, 1, 0, 2π)
+    helloworld()
+    perspective(300)
+    eyepoint(200cos(eased_n), 200sin(eased_n), 80)
+    background(&quot;grey20&quot;)
+    setlinejoin(&quot;bevel&quot;)
+    setline(0.2)
+    pin(o)
+end
+
+function main()
+    scaleby!(o, 15)
+    moveby!(o, 0, 0, -150)
+    amovie = Movie(800, 600, &quot;tut&quot;)
+    animate(amovie,
+        Scene(amovie, (s, f) -&gt; frame(s, f, o), 1:100),
+        framerate=15,
+        creategif=true)
+end
+
+f = dirname(dirname(pathof(Thebes))) * &quot;/data/tut.off&quot;
+o = make(import_off_file(f))
+main()</code></pre><p><img src="../assets/figures/tut.gif" alt="animated Tutankhamun"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../polys/">« Polygons and planes</a><a class="docs-footer-nextpage" href="../text/">Text »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Monday 1 January 2024 12:29">Monday 1 January 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>The basics · Thebes</title><meta name="title" content="The basics · Thebes"/><meta property="og:title" content="The basics · Thebes"/><meta property="twitter:title" content="The basics · Thebes"/><meta name="description" content="Documentation for Thebes."/><meta property="og:description" content="Documentation for Thebes."/><meta property="twitter:description" content="Documentation for Thebes."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/thebes-docs.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="Thebes logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">Thebes</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction to Thebes</a></li><li class="is-active"><a class="tocitem" href>The basics</a><ul class="internal"><li><a class="tocitem" href="#A-simple-example"><span>A simple example</span></a></li><li><a class="tocitem" href="#Helical-dots"><span>Helical dots</span></a></li><li><a class="tocitem" href="#gfunctions"><span>gfunctions</span></a></li><li><a class="tocitem" href="#Lines"><span>Lines</span></a></li><li class="toplevel"><a class="tocitem" href="#When-things-go-wrong"><span>When things go wrong</span></a></li><li><a class="tocitem" href="#Conversions"><span>Conversions</span></a></li></ul></li><li><a class="tocitem" href="../views/">Views</a></li><li><a class="tocitem" href="../polys/">Polygons and planes</a></li><li><a class="tocitem" href="../objects/">Objects</a></li><li><a class="tocitem" href="../text/">Text</a></li><li><a class="tocitem" href="../tools/">Tools</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>The basics</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>The basics</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/cormullion/Thebes.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/cormullion/Thebes.jl/blob/master/docs/src/basics.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="The-basics"><a class="docs-heading-anchor" href="#The-basics">The basics</a><a id="The-basics-1"></a><a class="docs-heading-anchor-permalink" href="#The-basics" title="Permalink"></a></h1><p>Thebes.jl is a small package that adds some simple 3D features to <a href="https://github.com/JuliaGraphics/Luxor.jl">Luxor.jl</a> (a vector-graphics package for graphics workers who like to automate their work with Julia).</p><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>Remember: Thebes.jl is intended for simple wireframe constructions in 3D. Don&#39;t expect a comprehensive range of 3D modelling and rendering tools. Use Makie.jl (or Blender)!</p></div></div><p>The 3D world of Thebes is superimposed on the 2D world of Luxor:</p><pre><code class="language-julia hljs">using Thebes, Luxor
+
+@drawsvg begin  # a Luxor macro
+    background(&quot;grey20&quot;) # a Luxor function
+    rulers()             # a Luxor function
+    axes3D()             # a Thebes function
+end</code></pre><img src="acf19004.svg" alt="Example block output"/><p>There are two main things you have to know in order to draw in 3D:</p><ul><li><p>the <code>Point3D</code> type specifies the x, y, and z coordinates of a point in 3D space.</p></li><li><p>there&#39;s a function called <code>pin()</code> that draws 2D graphics on the Luxor drawing at the position corresponding to the 3D point.</p></li></ul><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>pin()</code> function (“&lt;b&gt;p&lt;/b&gt;roject &lt;b&gt;in&lt;/b&gt;to 2D” perhaps) “pins” 3D information onto the flat 2D drawing surface. I wanted to avoid everything obvious, like “draw”, “render”, “display”, “plot”, “show”, or whatever, and have something short and easy to type. Not to be confused with <code>Pkg.pin()</code>.</p></div></div><h2 id="A-simple-example"><a class="docs-heading-anchor" href="#A-simple-example">A simple example</a><a id="A-simple-example-1"></a><a class="docs-heading-anchor-permalink" href="#A-simple-example" title="Permalink"></a></h2><p>Here&#39;s a complete example showing Thebes and Luxor working together:</p><pre><code class="language-julia hljs">using Thebes, Luxor
+d = Drawing(800, 300, &quot;assets/figures/simpleexample.svg&quot;) # a drawing is required
+background(&quot;grey20&quot;)     # Luxor
+origin()                 # Luxor
+setline(1)               # Luxor
+sethue(&quot;white&quot;)          # Luxor
+axes3D()                 # Thebes
+
+p1 = Point3D(100, 20, 0) # Thebes
+
+loc = pin(p1)            # Thebes
+
+
+label(&quot;there it is!&quot;, :e, loc + (5, 0), offset=10, leader=true)  # Luxor
+
+finish()                 # Luxor</code></pre><img src="5811a602.svg" alt="Example block output"/><p>The <code>pin</code> function draws a small circle at the 3D point <code>p1</code> and this also returns the corresponding 2D point, which is stored in <code>loc</code> and can be used like any other Luxor 2D point.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>Because Thebes.jl displays 3D points on the current 2D Luxor drawing, you should always have a current drawing before using most of the functions from Thebes.</p></div></div><h3 id="Point-cloud"><a class="docs-heading-anchor" href="#Point-cloud">Point cloud</a><a id="Point-cloud-1"></a><a class="docs-heading-anchor-permalink" href="#Point-cloud" title="Permalink"></a></h3><p>We can do lots of points - here&#39;s a few thousand.</p><pre><code class="language-julia hljs">@draw begin
+background(&quot;grey20&quot;)
+setopacity(0.5)
+sethue(&quot;gold&quot;)
+c = pin.([Point3D(randn() * 70, randn() * 70, randn() * 70)
+    for x in 1:50, y in 1:50, z in 1:50])
+axes3D()
+end 800 600</code></pre><img src="b1e4945b.png" alt="Example block output"/><h2 id="Helical-dots"><a class="docs-heading-anchor" href="#Helical-dots">Helical dots</a><a id="Helical-dots-1"></a><a class="docs-heading-anchor-permalink" href="#Helical-dots" title="Permalink"></a></h2><p>Let&#39;s draw a helix with dots:</p><pre><code class="language-julia hljs">@drawsvg begin
+axes3D()
+
+sethue(&quot;white&quot;)
+helix = [Point3D(150cos(θ), 150sin(θ), 10θ) for θ in 0:π/24:4π]
+
+pin.(helix)
+end 800 500</code></pre><img src="7de46e8f.svg" alt="Example block output"/><h2 id="gfunctions"><a class="docs-heading-anchor" href="#gfunctions">gfunctions</a><a id="gfunctions-1"></a><a class="docs-heading-anchor-permalink" href="#gfunctions" title="Permalink"></a></h2><p>The default graphical rendition of a 3D point is pretty basic: a circle. But you can modify the graphics drawn at each location by passing a function to the <code>pin()</code> function&#39;s optional keyword argument, <code>gfunction</code>.</p><p>Suppose you want to draw a randomly colored circle at the location of each 3D point, with radius 5 units.</p><pre><code class="language-julia hljs">@drawsvg begin
+axes3D()
+
+helix_pts = [Point3D(150cos(θ), 150sin(θ), 10θ) for θ in 0:π/24:4π]
+
+pin.(helix_pts, gfunction = (_, pt) -&gt; begin
+    randomhue()
+    circle(pt, 5, :fill)
+    end)
+
+end 800 500</code></pre><img src="9ecd81bc.svg" alt="Example block output"/><p>The anonymous function passed to <code>gfunction</code> expects two arguments: the first contains the 3D point, the second contains the 2D point. The function then has the responsibility to draw the 2D graphics for that 2D point, with the possibility of using anything or nothing about the original 3D coordinates. This gives us more control over the rendering of the points.</p><p>If you just want simple Luxor stars, you use the second (2D) argument - you don&#39;t need the first (3D) one, and we can use the convention of having <code>_</code> to signify that.</p><pre><code class="language-julia hljs">@drawsvg begin
+axes3D()
+
+helix = [Point3D(150cos(θ), 150sin(θ), 10θ) for θ in 0:π/24:4π]
+
+pin.(helix, gfunction = (_, pt) -&gt; begin
+    randomhue()
+    star(pt, 5, 5, 0.5, 0.0, :fill)
+    end)
+
+end 800  500</code></pre><img src="3258b85d.svg" alt="Example block output"/><p>In this next example, the gfunction calculates the distance of the 3D point from the 3D origin, and then draws the 2D circle with a radius that reflects that distance. The function therefore requires both the original 3D point (in the first argument <code>p3</code>) and the second argument (in <code>p2</code>), its 2D projection.</p><pre><code class="language-julia hljs">@drawsvg begin
+axes3D(100)
+
+helix = [Point3D(100cos(θ), 100sin(θ), 10θ) for θ in 0:π/24:4π]
+
+sethue(&quot;orange&quot;)
+
+pin.(helix, gfunction = (p3, p2) -&gt; begin
+    d = rescale(distance(p3, Point3D(0, 0, 0)), 100, 200, 1, 10)
+    circle(p2, d, :fill)
+    end)
+
+end 800 500</code></pre><img src="dc373883.svg" alt="Example block output"/><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>Remember that all the graphics drawn are 2D graphics. This isn&#39;t real 3D, remember! The human brain is quite adaptable, though.</p></div></div><p>In the next example, each random 3D point is drawn twice, the second time using zero for the z coordinate, to make shadows.</p><pre><code class="language-julia hljs">@drawsvg begin
+carpet(300)
+axes3D(100)
+sethue(&quot;gold&quot;)
+for i in 1:300
+    randpoint3D = Point3D(rand(0.0:200, 3)...)
+    sethue(&quot;red&quot;)
+    pin(randpoint3D,
+        gfunction = (_, p2) -&gt; circle(p2, 2, :fill))
+    sethue(&quot;grey30&quot;)
+    pin(Point3D(randpoint3D.x, randpoint3D.y, 0),
+        gfunction = (_, p2) -&gt; circle(p2, 2, :fill))
+end
+end 800 500</code></pre><img src="6dfe0ff0.svg" alt="Example block output"/><h2 id="Lines"><a class="docs-heading-anchor" href="#Lines">Lines</a><a id="Lines-1"></a><a class="docs-heading-anchor-permalink" href="#Lines" title="Permalink"></a></h2><p>Dots are all very well, but suppose we wanted to draw lines? <code>pin()</code> also accepts two 3D points.</p><p>This code uses the same 3D points in the helix, but this time draws a line from each projected 2D point to the projection of the nearest point on the vertical z axis.</p><pre><code class="language-julia hljs">@drawsvg begin
+axes3D()
+
+helix = [Point3D(200cos(θ), 200sin(θ), 15θ) for θ in 0:π/48:4π]
+
+setline(0.5)
+sethue(&quot;gold&quot;)
+
+for p in helix
+    pin(p, Point3D(0, 0, p.z))
+end
+
+end 800 500</code></pre><img src="2a409a18.svg" alt="Example block output"/><p>The default gfunction&#39;s arguments for this <code>pin</code> method consist of two pairs of points (a pair of 3D points, and a pair of 2D points), not just two of each, and Luxor&#39;s trusty <code>line()</code> function is the default action, connecting the 2D pair.</p><p>Or you could provide a custom gfunction to draw multicoloured arrows instead:</p><pre><code class="language-julia hljs">@drawsvg begin
+axes3D()
+
+helix = [Point3D(200cos(θ), 200sin(θ), 15θ) for θ in 0:π/48:4π]
+
+for p in helix
+    pin(p, Point3D(0, 0, p.z), gfunction = (p3p, p2p) -&gt;
+        begin
+            randomhue()
+            arrow(last(p2p), first(p2p))
+        end)
+end
+
+end 800 500</code></pre><img src="7ed6bf54.svg" alt="Example block output"/><h1 id="When-things-go-wrong"><a class="docs-heading-anchor" href="#When-things-go-wrong">When things go wrong</a><a id="When-things-go-wrong-1"></a><a class="docs-heading-anchor-permalink" href="#When-things-go-wrong" title="Permalink"></a></h1><p>In 2D graphics, things sometimes go wrong when values get close to zero or infinity. The same thing is true for 3D too, when the coordinates start stressing out the projecting equations. Really good 3D software will prevent this happening. In Thebes, though, you may occasionally see glitches. You&#39;re only seeing half the &quot;world&quot; that&#39;s in front of you  - there&#39;s nearly a whole half-world falling behind the eye position, and this means that some points don&#39;t get drawn succesfully.</p><p>In general, if the <code>pin()</code> function can&#39;t display points or lines, it will probably just discard them and carry on, rather than attempt to draw things in impossible locations or straight lines that curve in space. So if you notice parts of your drawing missing, the easiest thing to do is to move the eyepoint further away from the 3D points in question.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>Makie.jl offers support for realistic andflexible 3D projections.</p></div></div><h2 id="Conversions"><a class="docs-heading-anchor" href="#Conversions">Conversions</a><a id="Conversions-1"></a><a class="docs-heading-anchor-permalink" href="#Conversions" title="Permalink"></a></h2><p>The <code>convert()</code> function provides a useful way to convert 2D coordinates to 3D. </p><pre><code class="language-julia hljs">convert(Point3D, Point(10, 30))
+3-element Point3D:
+ 10.0
+ 30.0
+  0.0</code></pre><p>If you can generate your graphics in 2D, you can convert them to 3D, and then use <code>pin()</code> to project them back into two dimensions.</p><p>This example shows how to draw the familiar Julia coloured circles. We can&#39;t use real circles (because there are no Bézier paths in Thebes yet), so we use <code>ngon()</code> with plenty of sides - 60 is probably good enough if your output is high-quality SVG.</p><pre><code class="language-julia hljs">function drawjuliadots3D(threedots, origin::Point3D,
+        rotation::Rotation=RotXYZ(0, 0, 0);
+        radius=100)
+    for (n, dot) in enumerate(threedots)
+        sethue([Luxor.julia_purple, Luxor.julia_green, Luxor.julia_red][mod1(n, end)])
+        d = dot .+ origin
+        rotateby!(d, origin, rotation)
+        pin(d, gfunction = (_, pts) -&gt; poly(pts, close=true, :fill))
+    end
+end
+
+function juliaroom()
+    @draw begin
+    background(&quot;black&quot;)
+    helloworld()
+    eyepoint(1200, 1200, 1200)
+    perspective(1200)
+
+    # create the basic three-dot shape
+    threedots = Array{Point3D, 1}[]
+    radius = 8
+    points = ngon(O, radius, 3, -π/3, vertices=true)
+    for (n, p) in enumerate(points)
+        # zcoordinate defaults to 0 in convert()
+        push!(threedots, convert.(Point3D, ngon(p, 0.75 * radius, 60)))
+    end
+
+    # draw lots in each plane
+    for x in 30:30:500
+        for y in 30:30:500
+            drawjuliadots3D(threedots, Point3D(x, y, 0), RotXYZ(0, 0, 0))
+        end
+    end
+
+    for x in 30:30:500
+        for z in 30:30:500
+            drawjuliadots3D(threedots, Point3D(x, 0, z), RotXYZ(-π/2, 0, π/2))
+        end
+    end
+
+    for y in 30:30:500
+        for z in 30:30:500
+            drawjuliadots3D(threedots, Point3D(0, y, z), RotXYZ(0, π/2, 0))
+        end
+    end
+
+    axes3D(300)
+    end 800 700
+end
+
+juliaroom()</code></pre><img src="7f5f7c6e.png" alt="Example block output"/></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Introduction to Thebes</a><a class="docs-footer-nextpage" href="../views/">Views »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Monday 1 January 2024 12:30">Monday 1 January 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
